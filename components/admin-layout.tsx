@@ -197,7 +197,7 @@ export function AdminLayout({ children, userRole = "superadmin" }: AdminLayoutPr
       </aside>
 
       {/* Main Content */}
-      <div className="flex flex-1 flex-col md:pl-64">
+      <div className="flex flex-1 flex-col md:pl-64 min-w-0">
         {/* Header */}
         <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-6">
           {/* Mobile Menu Trigger */}
@@ -270,7 +270,7 @@ export function AdminLayout({ children, userRole = "superadmin" }: AdminLayoutPr
             {/* Tambahkan konten header kanan di sini jika perlu */}
           </div>
         </header>
-        <main className="flex-1 p-6">{children}</main>
+        <main className="flex-1 p-6 min-w-0">{children}</main>
       </div>
     </div>
   )

@@ -28,12 +28,12 @@ export default function NotFound() {
                 Kembali ke Beranda
               </Link>
             </Button>
-            <Button variant="outline" asChild size="lg">
+            {/* <Button variant="outline" asChild size="lg">
               <Link href="javascript:history.back()" className="flex items-center gap-2">
                 <ArrowLeft className="h-4 w-4" />
                 Kembali
               </Link>
-            </Button>
+            </Button> */}
           </div>
         </div>
       </div>

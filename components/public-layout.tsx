@@ -1,16 +1,15 @@
 import type React from "react"
 import { Header } from "@/components/header"
+import { Footer } from "@/components/footer"
 
 export function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen flex flex-col">
-      <div className="container">
-        <Header />
-      </div>
-      <main className="flex-1 container pt-16">
+      <Header />
+      <main className="flex-1 ">
         {children}
       </main>
-      {/* Footer bisa ditambah di sini jika perlu */}
+      <Footer/>
     </div>
   )
 }
