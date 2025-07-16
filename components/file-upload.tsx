@@ -36,7 +36,6 @@ export function FileUpload({
   value,
   required = false,
 }: FileUploadProps) {
-  const [file, setFile] = useState<File | null>(null)
   const [status, setStatus] = useState<FileStatus>("idle")
   const [progress, setProgress] = useState(0)
   const [dragActive, setDragActive] = useState(false)
@@ -103,7 +102,6 @@ export function FileUpload({
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       const droppedFile = e.dataTransfer.files[0]
       if (validateFile(droppedFile)) {
-        setFile(droppedFile)
         onFileSelect(droppedFile)
         simulateUpload(droppedFile)
       }
@@ -115,7 +113,6 @@ export function FileUpload({
     if (e.target.files && e.target.files[0]) {
       const selectedFile = e.target.files[0]
       if (validateFile(selectedFile)) {
-        setFile(selectedFile)
         onFileSelect(selectedFile)
         simulateUpload(selectedFile)
       }
@@ -123,21 +120,17 @@ export function FileUpload({
   }
 
   const handleRemove = () => {
-    setFile(null)
-    setStatus("idle")
-    setProgress(0)
-    if (inputRef.current) inputRef.current.value = ""
-    if (onFileRemove) onFileRemove()
+    onFileRemove?.()
   }
 
   const getFileIcon = () => {
-    if (!file) return null
+    if (!value) return null
 
-    if (file.type.startsWith("image/")) {
-      return value || URL.createObjectURL(file)
+    if (value.startsWith("http://") || value.startsWith("https://")) {
+      return value
     }
 
-    return <FileText className="h-10 w-10 text-primary" />
+    return value
   }
 
   const getStatusIcon = () => {
@@ -172,19 +165,19 @@ export function FileUpload({
         onDragOver={handleDrag}
         onDrop={handleDrop}
       >
-        {file ? (
+        {value ? (
           <div className="p-4 flex flex-col items-center">
             <div className="relative mb-2">
               {typeof getFileIcon() === "string" ? (
                 <Image
-                  src={(getFileIcon() as string) || "/placeholder.svg"}
-                  alt={file.name}
+                  src={getFileIcon() || "/placeholder.svg"}
+                  alt="Uploaded file"
                   width={80}
                   height={80}
                   className="h-20 w-20 object-cover rounded-md"
                 />
               ) : (
-                getFileIcon()
+                <FileText className="h-10 w-10 text-primary" />
               )}
               <button
                 type="button"
@@ -195,8 +188,8 @@ export function FileUpload({
                 <span className="sr-only">Remove file</span>
               </button>
             </div>
-            <div className="text-sm truncate max-w-full">{file.name}</div>
-            <div className="text-xs text-muted-foreground">{(file.size / (1024 * 1024)).toFixed(2)} MB</div>
+            <div className="text-sm truncate max-w-full">{value.split("/").pop() || "No file selected"}</div>
+            <div className="text-xs text-muted-foreground">{(value.length / (1024 * 1024)).toFixed(2)} MB</div>
 
             {status === "uploading" && (
               <div className="w-full mt-2">

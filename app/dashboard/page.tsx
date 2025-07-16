@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { Calendar, MapPin, Users, Trophy, ArrowRight, Swords } from "lucide-react"
 import Link from "next/link"
 import { Hero } from "@/components/hero"
+import Image from "next/image"
 
 export default function HomePage() {
   // West Java events data from IKASI JABAR dummy API
@@ -222,9 +223,10 @@ export default function HomePage() {
             {featuredAthletes.map((athlete) => (
               <Card key={athlete.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                 <div className="relative h-64">
-                  <img
+                  <Image
                     src={athlete.image || "/placeholder.svg"}
                     alt={athlete.name}
+                    fill
                     className="absolute inset-0 w-full h-full object-cover"
                   />
                   <div className="absolute top-2 right-2">

@@ -1,16 +1,13 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
 import { AdminLayout } from "@/components/admin-layout"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Button } from "@/components/ui/button"
 
 export default function AdminDashboard() {
   const [isMounted, setIsMounted] = useState(false)
   const [userRole, setUserRole] = useState<"superadmin" | "admin_kontingen" | "admin_kegiatan">("superadmin")
-  const [assignedRegion, setAssignedRegion] = useState<string>("Jakarta")
-  const [assignedEvents, setAssignedEvents] = useState<string[]>(["Jakarta Open 2023"])
-  const router = useRouter()
 
   useEffect(() => {
     setIsMounted(true)

@@ -305,7 +305,7 @@ export default function AthletesPage() {
   // Fungsi tambah/edit atlet
   const handleSaveAthlete = async (athleteData?: Athlete) => {
     setIsLoading(true)
-    let data = athleteData || newAthlete // Use newAthlete for adding new athlete
+    const data = athleteData || newAthlete // Use newAthlete for adding new athlete
     if (!data.verificationStatus) data.verificationStatus = 'pending'
     if (typeof data.documentsComplete === 'undefined') data.documentsComplete = false
     try {
@@ -821,7 +821,7 @@ export default function AthletesPage() {
         <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit Athlete</DialogTitle>
-            <DialogDescription>Update the details of the athlete. Click save when you're done.</DialogDescription>
+            <DialogDescription>Update the details of the athlete. Click save when you&apos;re done.</DialogDescription>
           </DialogHeader>
 
           {selectedAthlete && (
@@ -912,7 +912,7 @@ export default function AthletesPage() {
                     accept="image/*"
                     maxSize={5}
                     onFileSelect={(file) => handleFileSelect(file, "photo")}
-                    helpText="Upload a clear photo of the athlete's face"
+                    helpText="Upload a clear photo of the athlete&apos;s face"
                     value={`/placeholder.svg?height=100&width=100&text=${selectedAthlete.name}`}
                     required
                   />
