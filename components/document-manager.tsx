@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
+import Image from "next/image"
 
 export interface Document {
   id: string
@@ -32,9 +33,6 @@ export function DocumentManager({
   onDelete,
   onDownload,
   className,
-  category,
-  userRole,
-  userRegion,
 }: DocumentManagerProps) {
   const [previewDocument, setPreviewDocument] = useState<Document | null>(null)
 
@@ -163,9 +161,11 @@ export function DocumentManager({
           </DialogHeader>
           <div className="mt-4 flex justify-center">
             {previewDocument?.type.startsWith("image/") ? (
-              <img
+              <Image
                 src={previewDocument.url || "/placeholder.svg"}
                 alt={previewDocument.name}
+                width={600}
+                height={400}
                 className="max-h-[500px] max-w-full object-contain rounded-md"
               />
             ) : previewDocument?.type.includes("pdf") ? (

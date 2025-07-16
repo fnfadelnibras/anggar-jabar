@@ -40,8 +40,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { FileUpload } from "@/components/file-upload"
 import { type Document, DocumentManager } from "@/components/document-manager"
 import { Card, CardContent } from "@/components/ui/card"
+import { Athlete } from "@/types/athlete"
 
-const staticAthletes = [
+const staticAthletes: Athlete[] = [
   {
     id: 1,
     name: "Andi Setiawan",
@@ -138,12 +139,13 @@ export default function AthletesPage() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [isDocumentsDialogOpen, setIsDocumentsDialogOpen] = useState(false)
   const [isVerificationDialogOpen, setIsVerificationDialogOpen] = useState(false)
-  const [selectedAthlete, setSelectedAthlete] = useState<any>(null)
+  const [selectedAthlete, setSelectedAthlete] = useState<Athlete | null>(null)
   const [isLoading, setIsLoading] = useState(false)
-  const [athletes, setAthletes] = useState<any[]>(staticAthletes)
+  const [athletes, setAthletes] = useState<Athlete[]>(staticAthletes)
 
   // Tambahkan state untuk form tambah atlet
-  const initialNewAthlete = {
+  const initialNewAthlete: Athlete = {
+    id: 0,
     name: "",
     region: "",
     category: "",
@@ -153,7 +155,7 @@ export default function AthletesPage() {
     verificationStatus: "pending",
     documentsComplete: false,
   }
-  const [newAthlete, setNewAthlete] = useState(initialNewAthlete)
+  const [newAthlete, setNewAthlete] = useState<Athlete>(initialNewAthlete)
 
   useEffect(() => {
     fetch('/api/athletes')
@@ -221,7 +223,7 @@ export default function AthletesPage() {
     }
   }
 
-  const handleEdit = (athlete: any) => {
+  const handleEdit = (athlete: Athlete) => {
     if (athlete.verificationStatus === "locked") {
       toast({
         title: "Data Terkunci",
@@ -234,7 +236,7 @@ export default function AthletesPage() {
     setIsEditDialogOpen(true)
   }
 
-  const handleDelete = (athlete: any) => {
+  const handleDelete = (athlete: Athlete) => {
     if (athlete.verificationStatus === "locked") {
       toast({
         title: "Data Terkunci",
@@ -247,38 +249,14 @@ export default function AthletesPage() {
     setIsDeleteDialogOpen(true)
   }
 
-  const handleViewDocuments = (athlete: any) => {
+  const handleViewDocuments = (athlete: Athlete) => {
     setSelectedAthlete(athlete)
     setIsDocumentsDialogOpen(true)
   }
 
-  const handleVerification = (athlete: any) => {
+  const handleVerification = (athlete: Athlete) => {
     setSelectedAthlete(athlete)
     setIsVerificationDialogOpen(true)
-  }
-
-  const handleApprove = () => {
-    setIsLoading(true)
-    setTimeout(() => {
-      setIsLoading(false)
-      toast({
-        title: "Atlet Disetujui",
-        description: `Data ${selectedAthlete.name} telah disetujui.`,
-      })
-      setIsVerificationDialogOpen(false)
-    }, 1000)
-  }
-
-  const handleLock = () => {
-    setIsLoading(true)
-    setTimeout(() => {
-      setIsLoading(false)
-      toast({
-        title: "Data Terkunci",
-        description: `Data ${selectedAthlete.name} telah dikunci dan tidak dapat diedit lagi.`,
-      })
-      setIsVerificationDialogOpen(false)
-    }, 1000)
   }
 
   // Fungsi hapus atlet
@@ -325,7 +303,7 @@ export default function AthletesPage() {
   }
 
   // Fungsi tambah/edit atlet
-  const handleSaveAthlete = async (athleteData?: any) => {
+  const handleSaveAthlete = async (athleteData?: Athlete) => {
     setIsLoading(true)
     let data = athleteData || newAthlete // Use newAthlete for adding new athlete
     if (!data.verificationStatus) data.verificationStatus = 'pending'
@@ -367,7 +345,7 @@ export default function AthletesPage() {
   }
 
   // Tambahkan fungsi untuk update status verifikasi
-  const handleVerificationAction = async (athlete: any, newStatus: string) => {
+  const handleVerificationAction = async (athlete: Athlete, newStatus: string) => {
     setIsLoading(true)
     try {
       const res = await fetch('/api/athletes', {
@@ -386,6 +364,13 @@ export default function AthletesPage() {
     }
     setIsLoading(false)
     setIsVerificationDialogOpen(false)
+  }
+
+  // Tambahkan fungsi berikut di dalam komponen AthletesPage
+  const handleEditSaveClick = async () => {
+    if (selectedAthlete) {
+      await handleSaveAthlete(selectedAthlete)
+    }
   }
 
   return (
@@ -910,7 +895,7 @@ export default function AthletesPage() {
                 <div className="space-y-2">
                   <Label>Status</Label>
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="edit-active" defaultChecked={selectedAthlete.status === "Active"} />
+                    <Checkbox id="edit-active" defaultChecked={selectedAthlete.status === "Aktif"} />
                     <Label htmlFor="edit-active">Active</Label>
                   </div>
                 </div>
@@ -966,7 +951,7 @@ export default function AthletesPage() {
             <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleSaveAthlete} disabled={isLoading}>
+            <Button onClick={handleEditSaveClick} disabled={isLoading}>
               {isLoading ? "Saving..." : isEditDialogOpen ? "Save Changes" : "Save Athlete"}
             </Button>
           </DialogFooter>

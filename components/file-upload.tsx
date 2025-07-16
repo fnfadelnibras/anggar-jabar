@@ -7,6 +7,7 @@ import { Upload, X, FileText, Check, AlertCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { cn } from "@/lib/utils"
+import Image from "next/image"
 
 export type FileStatus = "idle" | "uploading" | "success" | "error"
 
@@ -175,9 +176,11 @@ export function FileUpload({
           <div className="p-4 flex flex-col items-center">
             <div className="relative mb-2">
               {typeof getFileIcon() === "string" ? (
-                <img
+                <Image
                   src={(getFileIcon() as string) || "/placeholder.svg"}
                   alt={file.name}
+                  width={80}
+                  height={80}
                   className="h-20 w-20 object-cover rounded-md"
                 />
               ) : (

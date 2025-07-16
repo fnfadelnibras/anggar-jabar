@@ -3,11 +3,6 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { AdminLayout } from "@/components/admin-layout"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Users, Map, Calendar, Trophy, UserCog, Shield } from "lucide-react"
-import { Progress } from "@/components/ui/progress"
-import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 export default function AdminDashboard() {
@@ -32,7 +27,7 @@ export default function AdminDashboard() {
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium">View as:</span>
-            <Select value={userRole} onValueChange={(value: any) => setUserRole(value)}>
+            <Select value={userRole} onValueChange={(value: "superadmin" | "admin_kontingen" | "admin_kegiatan") => setUserRole(value)}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue />
               </SelectTrigger>

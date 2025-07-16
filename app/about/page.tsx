@@ -1,8 +1,9 @@
 import { PublicLayout } from "@/components/public-layout"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Sword, Award, Users, BookOpen, Landmark, Heart, Swords } from "lucide-react"
+import { Sword, Award, Users, BookOpen, Landmark, Heart } from "lucide-react"
 import { Hero } from "@/components/hero"
+import Image from "next/image"
 
 export default function AboutPage() {
   // IKASI JABAR team members data
@@ -122,9 +123,11 @@ export default function AboutPage() {
                 </div>
               </div>
               <div className="space-y-6">
-                <img
+                <Image
                   src="/placeholder.svg?height=400&width=600&text=IKASI+JABAR+Competition"
                   alt="IKASI JABAR Competition"
+                  width={600}
+                  height={400}
                   className="rounded-lg w-full h-auto"
                 />
                 <div className="bg-muted p-6 rounded-lg">
@@ -212,9 +215,11 @@ export default function AboutPage() {
                 </div>
               </div>
               <div className="space-y-6">
-                <img
+                <Image
                   src="/placeholder.svg?height=300&width=400&text=Historical+IKASI+Photo"
                   alt="Historical IKASI Photo"
+                  width={400}
+                  height={300}
                   className="rounded-lg w-full h-auto"
                 />
                 <Card>
@@ -258,10 +263,11 @@ export default function AboutPage() {
               {teamMembers.map((member) => (
                 <Card key={member.name} className="overflow-hidden">
                   <div className="aspect-square relative">
-                    <img
+                    <Image
                       src={member.image || "/placeholder.svg"}
                       alt={member.name}
-                      className="absolute inset-0 w-full h-full object-cover"
+                      layout="fill"
+                      objectFit="cover"
                     />
                   </div>
                   <CardContent className="p-6">
@@ -281,30 +287,38 @@ export default function AboutPage() {
                 <h3 className="text-xl font-bold mb-4">Mitra Resmi</h3>
                 <div className="grid grid-cols-2 gap-6">
                   <Card className="flex items-center justify-center p-6 h-32">
-                    <img
+                    <Image
                       src="/placeholder.svg?height=80&width=160&text=Dispora+Jabar"
                       alt="Dinas Olahraga Jawa Barat"
+                      width={160}
+                      height={80}
                       className="max-h-full"
                     />
                   </Card>
                   <Card className="flex items-center justify-center p-6 h-32">
-                    <img
+                    <Image
                       src="/placeholder.svg?height=80&width=160&text=KONI+Jabar"
                       alt="KONI Jawa Barat"
+                      width={160}
+                      height={80}
                       className="max-h-full"
                     />
                   </Card>
                   <Card className="flex items-center justify-center p-6 h-32">
-                    <img
+                    <Image
                       src="/placeholder.svg?height=80&width=160&text=IKASI+Pusat"
                       alt="IKASI Pusat"
+                      width={160}
+                      height={80}
                       className="max-h-full"
                     />
                   </Card>
                   <Card className="flex items-center justify-center p-6 h-32">
-                    <img
+                    <Image
                       src="/placeholder.svg?height=80&width=160&text=FIE"
                       alt="Federation Internationale d'Escrime"
+                      width={160}
+                      height={80}
                       className="max-h-full"
                     />
                   </Card>
@@ -313,44 +327,56 @@ export default function AboutPage() {
                 <h3 className="text-xl font-bold mb-4 mt-8">Sponsor Korporat</h3>
                 <div className="grid grid-cols-3 gap-4">
                   <Card className="flex items-center justify-center p-4 h-24">
-                    <img
+                    <Image
                       src="/placeholder.svg?height=60&width=120&text=Bank+Jabar"
                       alt="Bank Jabar"
+                      width={120}
+                      height={60}
                       className="max-h-full"
                     />
                   </Card>
                   <Card className="flex items-center justify-center p-4 h-24">
-                    <img
+                    <Image
                       src="/placeholder.svg?height=60&width=120&text=Telkom+Jabar"
                       alt="Telkom Jabar"
+                      width={120}
+                      height={60}
                       className="max-h-full"
                     />
                   </Card>
                   <Card className="flex items-center justify-center p-4 h-24">
-                    <img
+                    <Image
                       src="/placeholder.svg?height=60&width=120&text=PLN+Jabar"
                       alt="PLN Jabar"
+                      width={120}
+                      height={60}
                       className="max-h-full"
                     />
                   </Card>
                   <Card className="flex items-center justify-center p-4 h-24">
-                    <img
+                    <Image
                       src="/placeholder.svg?height=60&width=120&text=Jabar+Sport"
                       alt="Jabar Sport"
+                      width={120}
+                      height={60}
                       className="max-h-full"
                     />
                   </Card>
                   <Card className="flex items-center justify-center p-4 h-24">
-                    <img
+                    <Image
                       src="/placeholder.svg?height=60&width=120&text=Bandung+Corp"
                       alt="Bandung Corp"
+                      width={120}
+                      height={60}
                       className="max-h-full"
                     />
                   </Card>
                   <Card className="flex items-center justify-center p-4 h-24">
-                    <img
+                    <Image
                       src="/placeholder.svg?height=60&width=120&text=Jabar+Media"
                       alt="Jabar Media"
+                      width={120}
+                      height={60}
                       className="max-h-full"
                     />
                   </Card>
