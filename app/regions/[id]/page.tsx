@@ -1,11 +1,11 @@
 import { notFound } from "next/navigation"
 import { RegionDetailPageClient } from "@/components/region-detail-page" // Sesuaikan path jika perlu
 
-// Definisikan tipe props untuk halaman ini
+// Definisikan tipe props untuk halaman ini - params sekarang adalah Promise
 interface RegionDetailPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 // Fungsi ini akan berjalan di server untuk mengambil data
@@ -69,7 +69,9 @@ async function getRegionData(id: number) {
 
 // Ini adalah Server Component utama
 export default async function RegionDetailPage({ params }: RegionDetailPageProps) {
-  const regionId = Number.parseInt(params.id);
+  // Await params karena sekarang ini adalah Promise
+  const resolvedParams = await params;
+  const regionId = Number.parseInt(resolvedParams.id);
   const region = await getRegionData(regionId);
 
   if (!region) {
