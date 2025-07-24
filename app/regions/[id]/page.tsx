@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { notFound } from "next/navigation"
 import Link from "next/link"
+import Image from "next/image" // Impor komponen Image
 import { PublicLayout } from "@/components/public-layout"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -28,15 +29,19 @@ import {
   Building,
 } from "lucide-react"
 
-export default function RegionDetailPage({ params }: { params: { id: string } }) {
+// SOLUSI 1: Definisikan interface untuk props halaman untuk mengatasi error TypeScript
+interface RegionDetailPageProps {
+  params: {
+    id: string;
+  };
+}
+
+// SOLUSI 1 (Lanjutan): Gunakan interface yang sudah dibuat di sini
+export default function RegionDetailPage({ params }: RegionDetailPageProps) {
   const router = useRouter()
   const [activeTab, setActiveTab] = useState("overview")
-
-  // Mock data for a specific region
-  // In a real application, you would fetch this data based on the ID
   const regionId = Number.parseInt(params.id)
 
-  // Sample regions data
   const regions = [
     {
       id: 1,
@@ -46,107 +51,26 @@ export default function RegionDetailPage({ params }: { params: { id: string } })
       athletes: 120,
       clubsCount: 8,
       medals: { gold: 15, silver: 12, bronze: 18 },
-      description:
-        "The capital city with the highest concentration of fencing clubs and athletes in Indonesia. Jakarta has been a powerhouse in national competitions, consistently producing top-tier athletes who represent Indonesia in international events. The region benefits from excellent facilities and experienced coaches.",
-      contactInfo: {
-        email: "jakarta@fencing-id.org",
-        phone: "+62 21 5551234",
-        website: "jakarta-fencing.id",
-        address: "Jakarta International Sports Complex, Jl. Gatot Subroto No. 123, Jakarta",
-      },
+      description: "The capital city with the highest concentration of fencing clubs and athletes in Indonesia. Jakarta has been a powerhouse in national competitions, consistently producing top-tier athletes who represent Indonesia in international events. The region benefits from excellent facilities and experienced coaches.",
+      contactInfo: { email: "jakarta@fencing-id.org", phone: "+62 21 5551234", website: "jakarta-fencing.id", address: "Jakarta International Sports Complex, Jl. Gatot Subroto No. 123, Jakarta" },
       upcomingEvents: [
-        {
-          id: 1,
-          name: "Jakarta Open 2024",
-          date: "May 18, 2024",
-          location: "Jakarta Convention Center",
-          image: "/placeholder.svg?height=200&width=400&text=Jakarta+Open+2024",
-        },
-        {
-          id: 3,
-          name: "National Championship 2024",
-          date: "September 15, 2024",
-          location: "Jakarta Sports Arena",
-          image: "/placeholder.svg?height=200&width=400&text=National+Championship+2024",
-        },
+        { id: 1, name: "Jakarta Open 2024", date: "May 18, 2024", location: "Jakarta Convention Center", image: "/placeholder.svg?height=200&width=400&text=Jakarta+Open+2024" },
+        { id: 3, name: "National Championship 2024", date: "September 15, 2024", location: "Jakarta Sports Arena", image: "/placeholder.svg?height=200&width=400&text=National+Championship+2024" },
       ],
       pastEvents: [
-        {
-          id: 5,
-          name: "Jakarta Open 2023",
-          date: "May 15, 2023",
-          location: "Jakarta Convention Center",
-          image: "/placeholder.svg?height=200&width=400&text=Jakarta+Open+2023",
-          results: "15 Gold, 12 Silver, 18 Bronze",
-        },
-        {
-          id: 7,
-          name: "National Championship 2023",
-          date: "September 10, 2023",
-          location: "Jakarta Sports Arena",
-          image: "/placeholder.svg?height=200&width=400&text=National+Championship+2023",
-          results: "8 Gold, 10 Silver, 12 Bronze",
-        },
+        { id: 5, name: "Jakarta Open 2023", date: "May 15, 2023", location: "Jakarta Convention Center", image: "/placeholder.svg?height=200&width=400&text=Jakarta+Open+2023", results: "15 Gold, 12 Silver, 18 Bronze" },
+        { id: 7, name: "National Championship 2023", date: "September 10, 2023", location: "Jakarta Sports Arena", image: "/placeholder.svg?height=200&width=400&text=National+Championship+2023", results: "8 Gold, 10 Silver, 12 Bronze" },
       ],
       topAthletes: [
-        {
-          id: 1,
-          name: "Andi Wijaya",
-          image: "/placeholder.svg?height=100&width=100&text=AW",
-          category: "Men's Épée",
-          achievements: "Gold Medalist - National Championship 2023",
-          medals: { gold: 5, silver: 3, bronze: 2 },
-        },
-        {
-          id: 2,
-          name: "Siti Nurhaliza",
-          image: "/placeholder.svg?height=100&width=100&text=SN",
-          category: "Women's Foil",
-          achievements: "Silver Medalist - SEA Games 2023",
-          medals: { gold: 3, silver: 4, bronze: 1 },
-        },
-        {
-          id: 3,
-          name: "Budi Santoso",
-          image: "/placeholder.svg?height=100&width=100&text=BS",
-          category: "Men's Sabre",
-          achievements: "Bronze Medalist - Asian Championship 2023",
-          medals: { gold: 2, silver: 3, bronze: 5 },
-        },
-        {
-          id: 4,
-          name: "Dewi Anggraini",
-          image: "/placeholder.svg?height=100&width=100&text=DA",
-          category: "Women's Épée",
-          achievements: "Gold Medalist - Jakarta Open 2023",
-          medals: { gold: 4, silver: 2, bronze: 3 },
-        },
+        { id: 1, name: "Andi Wijaya", image: "/placeholder.svg?height=100&width=100&text=AW", category: "Men's Épée", achievements: "Gold Medalist - National Championship 2023", medals: { gold: 5, silver: 3, bronze: 2 } },
+        { id: 2, name: "Siti Nurhaliza", image: "/placeholder.svg?height=100&width=100&text=SN", category: "Women's Foil", achievements: "Silver Medalist - SEA Games 2023", medals: { gold: 3, silver: 4, bronze: 1 } },
+        { id: 3, name: "Budi Santoso", image: "/placeholder.svg?height=100&width=100&text=BS", category: "Men's Sabre", achievements: "Bronze Medalist - Asian Championship 2023", medals: { gold: 2, silver: 3, bronze: 5 } },
+        { id: 4, name: "Dewi Anggraini", image: "/placeholder.svg?height=100&width=100&text=DA", category: "Women's Épée", achievements: "Gold Medalist - Jakarta Open 2023", medals: { gold: 4, silver: 2, bronze: 3 } },
       ],
       clubs: [
-        {
-          id: 1,
-          name: "Jakarta Fencing Club",
-          location: "Central Jakarta",
-          members: 45,
-          established: 2005,
-          achievements: "Club Champion 2022, 2023",
-        },
-        {
-          id: 2,
-          name: "Épée Masters Jakarta",
-          location: "South Jakarta",
-          members: 32,
-          established: 2010,
-          achievements: "Best Youth Development Program 2023",
-        },
-        {
-          id: 3,
-          name: "Sabre Elite",
-          location: "East Jakarta",
-          members: 28,
-          established: 2012,
-          achievements: "Most Improved Club 2023",
-        },
+        { id: 1, name: "Jakarta Fencing Club", location: "Central Jakarta", members: 45, established: 2005, achievements: "Club Champion 2022, 2023" },
+        { id: 2, name: "Épée Masters Jakarta", location: "South Jakarta", members: 32, established: 2010, achievements: "Best Youth Development Program 2023" },
+        { id: 3, name: "Sabre Elite", location: "East Jakarta", members: 28, established: 2012, achievements: "Most Improved Club 2023" },
       ],
     },
     {
@@ -157,81 +81,32 @@ export default function RegionDetailPage({ params }: { params: { id: string } })
       athletes: 85,
       clubsCount: 5,
       medals: { gold: 10, silver: 14, bronze: 9 },
-      description:
-        "A growing fencing community with strong international connections and tourism support. Bali's fencing scene has flourished in recent years, attracting international coaches and hosting prestigious tournaments that draw participants from across Asia and beyond.",
-      contactInfo: {
-        email: "bali@fencing-id.org",
-        phone: "+62 361 4567890",
-        website: "bali-fencing.id",
-        address: "Bali Sports Center, Jl. Sunset Road No. 88, Kuta, Bali",
-      },
+      description: "A growing fencing community with strong international connections and tourism support. Bali's fencing scene has flourished in recent years, attracting international coaches and hosting prestigious tournaments that draw participants from across Asia and beyond.",
+      contactInfo: { email: "bali@fencing-id.org", phone: "+62 361 4567890", website: "bali-fencing.id", address: "Bali Sports Center, Jl. Sunset Road No. 88, Kuta, Bali" },
       upcomingEvents: [
-        {
-          id: 2,
-          name: "Bali Invitational 2024",
-          date: "July 22, 2024",
-          location: "Bali International Convention Center",
-          image: "/placeholder.svg?height=200&width=400&text=Bali+Invitational+2024",
-        },
+        { id: 2, name: "Bali Invitational 2024", date: "July 22, 2024", location: "Bali International Convention Center", image: "/placeholder.svg?height=200&width=400&text=Bali+Invitational+2024" },
       ],
       pastEvents: [
-        {
-          id: 6,
-          name: "Bali Invitational 2023",
-          date: "July 22, 2023",
-          location: "Bali International Convention Center",
-          image: "/placeholder.svg?height=200&width=400&text=Bali+Invitational+2023",
-          results: "10 Gold, 14 Silver, 9 Bronze",
-        },
+        { id: 6, name: "Bali Invitational 2023", date: "July 22, 2023", location: "Bali International Convention Center", image: "/placeholder.svg?height=200&width=400&text=Bali+Invitational+2023", results: "10 Gold, 14 Silver, 9 Bronze" },
       ],
       topAthletes: [
-        {
-          id: 5,
-          name: "Made Wirawan",
-          image: "/placeholder.svg?height=100&width=100&text=MW",
-          category: "Men's Foil",
-          achievements: "Gold Medalist - Bali Invitational 2023",
-          medals: { gold: 4, silver: 2, bronze: 1 },
-        },
-        {
-          id: 6,
-          name: "Ni Kadek Ari",
-          image: "/placeholder.svg?height=100&width=100&text=NKA",
-          category: "Women's Sabre",
-          achievements: "Silver Medalist - National Championship 2023",
-          medals: { gold: 2, silver: 5, bronze: 3 },
-        },
+        { id: 5, name: "Made Wirawan", image: "/placeholder.svg?height=100&width=100&text=MW", category: "Men's Foil", achievements: "Gold Medalist - Bali Invitational 2023", medals: { gold: 4, silver: 2, bronze: 1 } },
+        { id: 6, name: "Ni Kadek Ari", image: "/placeholder.svg?height=100&width=100&text=NKA", category: "Women's Sabre", achievements: "Silver Medalist - National Championship 2023", medals: { gold: 2, silver: 5, bronze: 3 } },
       ],
       clubs: [
-        {
-          id: 4,
-          name: "Bali Fencing Academy",
-          location: "Kuta",
-          members: 35,
-          established: 2008,
-          achievements: "Best Facilities Award 2023",
-        },
-        {
-          id: 5,
-          name: "Denpasar Fencing Club",
-          location: "Denpasar",
-          members: 28,
-          established: 2011,
-          achievements: "Most International Participants 2023",
-        },
+        { id: 4, name: "Bali Fencing Academy", location: "Kuta", members: 35, established: 2008, achievements: "Best Facilities Award 2023" },
+        { id: 5, name: "Denpasar Fencing Club", location: "Denpasar", members: 28, established: 2011, achievements: "Most International Participants 2023" },
       ],
     },
   ]
 
   const region = regions.find((r) => r.id === regionId)
 
-  // If region not found, show 404 page
   if (!region) {
     notFound()
   }
 
   const handleShare = () => {
-    // In a real app, implement sharing functionality
     navigator.clipboard.writeText(window.location.href)
     toast.success("Link copied to clipboard", {
       description: "You can now share this region page with others.",
@@ -240,14 +115,17 @@ export default function RegionDetailPage({ params }: { params: { id: string } })
 
   return (
     <PublicLayout>
-      {/* Hero Section with Region Cover Image */}
       <section className="relative">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/70 z-10" />
-        <div className="relative h-[400px] w-full">
-          <img
+        <div className="relative h-[400px] w-full overflow-hidden">
+          {/* SOLUSI 2: Menggunakan Next/Image untuk performa */}
+          <Image
             src={region.coverImage || "/placeholder.svg"}
             alt={`${region.name} Fencing Region`}
-            className="absolute inset-0 w-full h-full object-cover"
+            fill
+            className="object-cover"
+            priority
+            sizes="100vw"
           />
         </div>
         <div className="container absolute bottom-0 z-20 pb-8">
@@ -288,7 +166,6 @@ export default function RegionDetailPage({ params }: { params: { id: string } })
         </div>
       </section>
 
-      {/* Main Content */}
       <section className="container py-8">
         <Tabs defaultValue="overview" value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="mb-6">
@@ -307,7 +184,6 @@ export default function RegionDetailPage({ params }: { params: { id: string } })
                   </CardHeader>
                   <CardContent>
                     <p className="text-muted-foreground">{region.description}</p>
-
                     <div className="mt-6">
                       <h3 className="text-lg font-medium mb-4">Medal Achievements</h3>
                       <div className="flex gap-4">
@@ -325,9 +201,7 @@ export default function RegionDetailPage({ params }: { params: { id: string } })
                         </div>
                       </div>
                     </div>
-
                     <Separator className="my-6" />
-
                     <h3 className="text-lg font-medium mb-4">Contact Information</h3>
                     <div className="space-y-3">
                       <div className="flex items-center">
@@ -348,29 +222,25 @@ export default function RegionDetailPage({ params }: { params: { id: string } })
                       </div>
                       <div className="flex items-center">
                         <Globe className="h-4 w-4 mr-2 text-muted-foreground" />
-                        <a
-                          href={`https://${region.contactInfo.website}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-primary hover:underline"
-                        >
+                        <a href={`https://${region.contactInfo.website}`} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
                           {region.contactInfo.website}
                         </a>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
-
                 <div className="mt-6">
                   <h3 className="text-xl font-semibold mb-4">Upcoming Events</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {region.upcomingEvents.map((event) => (
                       <Card key={event.id} className="overflow-hidden">
                         <div className="relative h-40">
-                          <img
+                          <Image
                             src={event.image || "/placeholder.svg"}
                             alt={event.name}
-                            className="absolute inset-0 w-full h-full object-cover"
+                            fill
+                            className="object-cover"
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                           />
                           <div className="absolute top-2 right-2">
                             <Badge className="bg-primary">Upcoming</Badge>
@@ -400,7 +270,6 @@ export default function RegionDetailPage({ params }: { params: { id: string } })
                   </div>
                 </div>
               </div>
-
               <div>
                 <Card>
                   <CardHeader>
@@ -415,7 +284,6 @@ export default function RegionDetailPage({ params }: { params: { id: string } })
                     </div>
                   </CardContent>
                 </Card>
-
                 <Card className="mt-6">
                   <CardHeader>
                     <CardTitle>Top Athletes</CardTitle>
@@ -427,10 +295,7 @@ export default function RegionDetailPage({ params }: { params: { id: string } })
                           <Avatar className="h-10 w-10">
                             <AvatarImage src={athlete.image || "/placeholder.svg"} alt={athlete.name} />
                             <AvatarFallback>
-                              {athlete.name
-                                .split(" ")
-                                .map((n) => n[0])
-                                .join("")}
+                              {athlete.name.split(" ").map((n) => n[0]).join("")}
                             </AvatarFallback>
                           </Avatar>
                           <div className="flex-1 min-w-0">
@@ -467,10 +332,12 @@ export default function RegionDetailPage({ params }: { params: { id: string } })
                       {region.upcomingEvents.map((event) => (
                         <Card key={event.id} className="overflow-hidden">
                           <div className="relative h-40">
-                            <img
+                            <Image
                               src={event.image || "/placeholder.svg"}
                               alt={event.name}
-                              className="absolute inset-0 w-full h-full object-cover"
+                              fill
+                              className="object-cover"
+                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                             />
                             <div className="absolute top-2 right-2">
                               <Badge className="bg-primary">Upcoming</Badge>
@@ -505,7 +372,6 @@ export default function RegionDetailPage({ params }: { params: { id: string } })
                   )}
                 </CardContent>
               </Card>
-
               <Card>
                 <CardHeader>
                   <CardTitle>Past Events</CardTitle>
@@ -516,10 +382,12 @@ export default function RegionDetailPage({ params }: { params: { id: string } })
                       {region.pastEvents.map((event) => (
                         <Card key={event.id} className="overflow-hidden">
                           <div className="relative h-40">
-                            <img
+                            <Image
                               src={event.image || "/placeholder.svg"}
                               alt={event.name}
-                              className="absolute inset-0 w-full h-full object-cover"
+                              fill
+                              className="object-cover"
+                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                             />
                             <div className="absolute top-2 right-2">
                               <Badge variant="secondary">Completed</Badge>
@@ -578,24 +446,18 @@ export default function RegionDetailPage({ params }: { params: { id: string } })
                           <Avatar className="h-24 w-24 mb-4">
                             <AvatarImage src={athlete.image || "/placeholder.svg"} alt={athlete.name} />
                             <AvatarFallback className="text-2xl">
-                              {athlete.name
-                                .split(" ")
-                                .map((n) => n[0])
-                                .join("")}
+                              {athlete.name.split(" ").map((n) => n[0]).join("")}
                             </AvatarFallback>
                           </Avatar>
                           <h4 className="font-semibold text-lg">{athlete.name}</h4>
                           <p className="text-sm text-muted-foreground">{athlete.category}</p>
                         </div>
-
                         <Separator className="my-4" />
-
                         <div className="space-y-3">
                           <div className="flex items-center justify-between">
                             <span className="text-sm">Achievements:</span>
                             <span className="text-sm font-medium">{athlete.achievements}</span>
                           </div>
-
                           <div className="flex justify-between items-center">
                             <div className="flex items-center">
                               <div className="w-6 h-6 rounded-full bg-yellow-100 flex items-center justify-center mr-1">
@@ -617,7 +479,6 @@ export default function RegionDetailPage({ params }: { params: { id: string } })
                             </div>
                           </div>
                         </div>
-
                         <Button variant="outline" className="w-full mt-4" asChild>
                           <Link href={`/athletes/${athlete.id}`}>View Profile</Link>
                         </Button>
@@ -659,7 +520,6 @@ export default function RegionDetailPage({ params }: { params: { id: string } })
                             <span>{club.achievements}</span>
                           </div>
                         </div>
-
                         <Button variant="outline" className="w-full mt-4">
                           View Club Details
                         </Button>
