@@ -2,6 +2,7 @@ import { PublicLayout } from "@/components/public-layout"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Sword, Award, Users, BookOpen, Landmark, Heart, Swords } from "lucide-react"
+import Image from "next/image"
 
 export default function AboutPage() {
   // IKASI JABAR team members data
@@ -38,10 +39,13 @@ export default function AboutPage() {
       <section className="relative">
         <div className="absolute inset-0 bg-gradient-to-r from-primary/90 to-accent/90 z-10" />
         <div className="relative h-[300px] w-full">
-          <img
+          <Image
             src="/placeholder.svg?height=300&width=1920&text=IKASI+JABAR"
             alt="IKASI JABAR"
-            className="absolute inset-0 w-full h-full object-cover"
+            fill
+            className="object-cover"
+            sizes="100vw"
+            priority
           />
         </div>
         <div className="container absolute inset-0 z-20 flex flex-col items-center justify-center text-white">
@@ -142,11 +146,15 @@ export default function AboutPage() {
                 </div>
               </div>
               <div className="space-y-6">
-                <img
-                  src="/placeholder.svg?height=400&width=600&text=IKASI+JABAR+Competition"
-                  alt="IKASI JABAR Competition"
-                  className="rounded-lg w-full h-auto"
-                />
+                <div className="relative w-full h-[400px] rounded-lg overflow-hidden">
+                  <Image
+                    src="/placeholder.svg?height=400&width=600&text=IKASI+JABAR+Competition"
+                    alt="IKASI JABAR Competition"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                </div>
                 <div className="bg-muted p-6 rounded-lg">
                   <h3 className="font-bold text-xl mb-4">Target IKASI JABAR</h3>
                   <ul className="space-y-3">
@@ -232,11 +240,15 @@ export default function AboutPage() {
                 </div>
               </div>
               <div className="space-y-6">
-                <img
-                  src="/placeholder.svg?height=300&width=400&text=Historical+IKASI+Photo"
-                  alt="Historical IKASI Photo"
-                  className="rounded-lg w-full h-auto"
-                />
+                <div className="relative w-full h-[300px] rounded-lg overflow-hidden">
+                  <Image
+                    src="/placeholder.svg?height=300&width=400&text=Historical+IKASI+Photo"
+                    alt="Historical IKASI Photo"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                  />
+                </div>
                 <Card>
                   <CardContent className="p-6">
                     <h3 className="font-bold text-lg mb-4">Tonggak Bersejarah</h3>
@@ -278,10 +290,12 @@ export default function AboutPage() {
               {teamMembers.map((member) => (
                 <Card key={member.name} className="overflow-hidden">
                   <div className="aspect-square relative">
-                    <img
+                    <Image
                       src={member.image || "/placeholder.svg"}
                       alt={member.name}
-                      className="absolute inset-0 w-full h-full object-cover"
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                     />
                   </div>
                   <CardContent className="p-6">
@@ -300,78 +314,98 @@ export default function AboutPage() {
               <div>
                 <h3 className="text-xl font-bold mb-4">Mitra Resmi</h3>
                 <div className="grid grid-cols-2 gap-6">
-                  <Card className="flex items-center justify-center p-6 h-32">
-                    <img
+                  <Card className="flex items-center justify-center p-6 h-32 relative">
+                    <Image
                       src="/placeholder.svg?height=80&width=160&text=Dispora+Jabar"
                       alt="Dinas Olahraga Jawa Barat"
-                      className="max-h-full"
+                      width={160}
+                      height={80}
+                      className="object-contain"
                     />
                   </Card>
-                  <Card className="flex items-center justify-center p-6 h-32">
-                    <img
+                  <Card className="flex items-center justify-center p-6 h-32 relative">
+                    <Image
                       src="/placeholder.svg?height=80&width=160&text=KONI+Jabar"
                       alt="KONI Jawa Barat"
-                      className="max-h-full"
+                      width={160}
+                      height={80}
+                      className="object-contain"
                     />
                   </Card>
-                  <Card className="flex items-center justify-center p-6 h-32">
-                    <img
+                  <Card className="flex items-center justify-center p-6 h-32 relative">
+                    <Image
                       src="/placeholder.svg?height=80&width=160&text=IKASI+Pusat"
                       alt="IKASI Pusat"
-                      className="max-h-full"
+                      width={160}
+                      height={80}
+                      className="object-contain"
                     />
                   </Card>
-                  <Card className="flex items-center justify-center p-6 h-32">
-                    <img
+                  <Card className="flex items-center justify-center p-6 h-32 relative">
+                    <Image
                       src="/placeholder.svg?height=80&width=160&text=FIE"
                       alt="Federation Internationale d'Escrime"
-                      className="max-h-full"
+                      width={160}
+                      height={80}
+                      className="object-contain"
                     />
                   </Card>
                 </div>
 
                 <h3 className="text-xl font-bold mb-4 mt-8">Sponsor Korporat</h3>
                 <div className="grid grid-cols-3 gap-4">
-                  <Card className="flex items-center justify-center p-4 h-24">
-                    <img
+                  <Card className="flex items-center justify-center p-4 h-24 relative">
+                    <Image
                       src="/placeholder.svg?height=60&width=120&text=Bank+Jabar"
                       alt="Bank Jabar"
-                      className="max-h-full"
+                      width={120}
+                      height={60}
+                      className="object-contain"
                     />
                   </Card>
-                  <Card className="flex items-center justify-center p-4 h-24">
-                    <img
+                  <Card className="flex items-center justify-center p-4 h-24 relative">
+                    <Image
                       src="/placeholder.svg?height=60&width=120&text=Telkom+Jabar"
                       alt="Telkom Jabar"
-                      className="max-h-full"
+                      width={120}
+                      height={60}
+                      className="object-contain"
                     />
                   </Card>
-                  <Card className="flex items-center justify-center p-4 h-24">
-                    <img
+                  <Card className="flex items-center justify-center p-4 h-24 relative">
+                    <Image
                       src="/placeholder.svg?height=60&width=120&text=PLN+Jabar"
                       alt="PLN Jabar"
-                      className="max-h-full"
+                      width={120}
+                      height={60}
+                      className="object-contain"
                     />
                   </Card>
-                  <Card className="flex items-center justify-center p-4 h-24">
-                    <img
+                  <Card className="flex items-center justify-center p-4 h-24 relative">
+                    <Image
                       src="/placeholder.svg?height=60&width=120&text=Jabar+Sport"
                       alt="Jabar Sport"
-                      className="max-h-full"
+                      width={120}
+                      height={60}
+                      className="object-contain"
                     />
                   </Card>
-                  <Card className="flex items-center justify-center p-4 h-24">
-                    <img
+                  <Card className="flex items-center justify-center p-4 h-24 relative">
+                    <Image
                       src="/placeholder.svg?height=60&width=120&text=Bandung+Corp"
                       alt="Bandung Corp"
-                      className="max-h-full"
+                      width={120}
+                      height={60}
+                      className="object-contain"
                     />
                   </Card>
-                  <Card className="flex items-center justify-center p-4 h-24">
-                    <img
+                  <Card className="flex items-center justify-center p-4 h-24 relative">
+                    <Image
                       src="/placeholder.svg?height=60&width=120&text=Jabar+Media"
                       alt="Jabar Media"
-                      className="max-h-full"
+                      width={120}
+                      height={60}
+                      className="object-contain"
                     />
                   </Card>
                 </div>

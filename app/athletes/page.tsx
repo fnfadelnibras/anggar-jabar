@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Search, UserCheck, Lock, Clock } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 
 export default function AthletesPage() {
   const athletes = [
@@ -157,11 +158,13 @@ export default function AthletesPage() {
               className="overflow-hidden group border-border/60 hover:border-primary/80 transition-colors duration-300"
             >
               <Link href={`/athletes/${athlete.id}`} className="block">
-                <div className="relative">
-                  <img
+                <div className="relative h-80 w-full">
+                  <Image
                     src={athlete.image || "/placeholder.svg"}
                     alt={athlete.name}
-                    className="w-full h-80 object-cover group-hover:scale-105 transition-transform duration-300"
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                   />
                   <div className="absolute top-2 right-2">
                     <Badge variant="secondary">{athlete.category}</Badge>

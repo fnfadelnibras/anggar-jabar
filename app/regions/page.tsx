@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { Search, Filter, MapPin, Users, Trophy, Swords } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 export default function RegionsPage() {
@@ -148,10 +149,12 @@ export default function RegionsPage() {
                 {regions.map((region) => (
                   <Card key={region.id} className="overflow-hidden flex flex-col">
                     <div className="relative h-48">
-                      <img
+                      <Image
                         src={region.image || "/placeholder.svg"}
                         alt={region.name}
-                        className="absolute inset-0 w-full h-full object-cover"
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       />
                       <div className="absolute top-4 left-4">
                         <Badge className="bg-primary/90 text-white">
@@ -206,10 +209,12 @@ export default function RegionsPage() {
                   <Card key={region.id} className="overflow-hidden">
                     <div className="flex flex-col md:flex-row">
                       <div className="relative h-48 md:h-auto md:w-1/3 lg:w-1/4">
-                        <img
+                        <Image
                           src={region.image || "/placeholder.svg"}
                           alt={region.name}
-                          className="absolute inset-0 w-full h-full object-cover"
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 33vw, 25vw"
                         />
                         <div className="absolute top-4 left-4">
                           <Badge className="bg-primary/90 text-white">
