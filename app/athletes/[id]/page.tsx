@@ -5,11 +5,20 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ChevronLeft, Trophy, Medal, Calendar, MapPin, User } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 
-export default function AthleteProfilePage({ params }: { params: { id: string } }) {
+// Define the PageProps type for Next.js 15
+interface PageProps {
+  params: Promise<{ id: string }>
+}
+
+export default async function AthleteProfilePage({ params }: PageProps) {
+  // Await the params since they're now async in Next.js 15
+  const { id } = await params
+  
   // In a real app, you would fetch athlete data based on the ID
   const athlete = {
-    id: params.id,
+    id: id,
     name: "Ahmad Fauzi",
     region: "Jakarta",
     age: 24,
@@ -50,10 +59,12 @@ export default function AthleteProfilePage({ params }: { params: { id: string } 
             {/* Profile Image and Basic Info */}
             <Card className="md:col-span-1">
               <div className="relative h-80 w-full">
-                <img
+                <Image
                   src={`/placeholder.svg?height=400&width=300&text=${athlete.name}`}
                   alt={athlete.name}
-                  className="absolute inset-0 w-full h-full object-cover rounded-t-lg"
+                  fill
+                  className="object-cover rounded-t-lg"
+                  sizes="(max-width: 768px) 100vw, 33vw"
                 />
               </div>
               <CardContent className="p-6">
