@@ -1,6 +1,7 @@
 "use client"
 
 import type React from "react"
+
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -13,6 +14,10 @@ import {
   Medal,
   UserCog,
   Settings,
+  Bell,
+  Search,
+  LogOut,
+  User,
   Menu,
   BarChart3,
   FileText,
@@ -24,16 +29,20 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Input } from "@/components/ui/input"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Badge } from "@/components/ui/badge"
 
-type AdminLayoutProps = {
-  children: React.ReactNode
-  userRole?: "superadmin" | "admin_kontingen" | "admin_kegiatan"
-}
 
-export function AdminLayout({ children, userRole = "superadmin" }: AdminLayoutProps) {
+export function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const [isMounted, setIsMounted] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -42,6 +51,7 @@ export function AdminLayout({ children, userRole = "superadmin" }: AdminLayoutPr
     setIsMounted(true)
   }, [])
 
+  // Update the menuItems array to include role-based access control
   const menuItems = [
     {
       title: "Dashboard",
@@ -62,66 +72,6 @@ export function AdminLayout({ children, userRole = "superadmin" }: AdminLayoutPr
       roles: ["superadmin", "admin_kontingen"],
     },
     {
-      title: "Athlete Registration",
-      icon: UserPlus,
-      href: "/admin/athlete-registration",
-      roles: ["admin_kontingen"],
-    },
-    {
-      title: "Events",
-      icon: Calendar,
-      href: "/admin/events",
-      roles: ["superadmin", "admin_kegiatan"],
-    },
-    {
-      title: "Matches",
-      icon: Swords,
-      href: "/admin/matches",
-      roles: ["superadmin", "admin_kegiatan"],
-    },
-    {
-      title: "Winners",
-      icon: Medal,
-      href: "/admin/winners",
-      roles: ["superadmin", "admin_kegiatan"],
-    },
-    {
-      title: "Users",
-      icon: UserCog,
-      href: "/admin/users",
-      roles: ["superadmin"],
-    },
-    {
-      title: "Activity Log",
-      icon: History,
-      href: "/admin/activity-log",
-      roles: ["superadmin", "admin_kontingen", "admin_kegiatan"],
-    },
-    {
-      title: "Reports",
-      icon: BarChart3,
-      href: "/admin/reports",
-      roles: ["superadmin", "admin_kontingen", "admin_kegiatan"],
-    },
-    {
-      title: "Documents",
-      icon: FileText,
-      href: "/admin/documents",
-      roles: ["superadmin", "admin_kontingen", "admin_kegiatan"],
-    },
-    {
-      title: "Schedule",
-      icon: Clock,
-      href: "/admin/schedule",
-      roles: ["superadmin", "admin_kontingen", "admin_kegiatan"],
-    },
-    {
-      title: "Issues",
-      icon: AlertCircle,
-      href: "/admin/issues",
-      roles: ["superadmin"],
-    },
-    {
       title: "Settings",
       icon: Settings,
       href: "/admin/settings",
@@ -129,7 +79,10 @@ export function AdminLayout({ children, userRole = "superadmin" }: AdminLayoutPr
     },
   ]
 
-  const filteredMenuItems = menuItems.filter((item) => item.roles.includes(userRole))
+  // TODO: Replace this with actual user role from authentication context or props
+  const userRole = "superadmin"
+
+  const filteredMenuItems = menuItems.filter(item => item.roles.includes(userRole))
 
   if (!isMounted) {
     return null
@@ -153,29 +106,11 @@ export function AdminLayout({ children, userRole = "superadmin" }: AdminLayoutPr
                 <AvatarFallback>AD</AvatarFallback>
               </Avatar>
               <div>
-                <div className="font-medium text-sm">
-                  {userRole === "superadmin"
-                    ? "Super Admin"
-                    : userRole === "admin_kontingen"
-                      ? "Jakarta Admin"
-                      : "Event Admin"}
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  {userRole === "superadmin"
-                    ? "Full Access"
-                    : userRole === "admin_kontingen"
-                      ? "Region Access"
-                      : "Event Access"}
-                </div>
+               
+               
               </div>
             </div>
-            <Badge className="w-full justify-center mt-1" variant="outline">
-              {userRole === "superadmin"
-                ? "Super Admin"
-                : userRole === "admin_kontingen"
-                  ? "Region Admin"
-                  : "Event Admin"}
-            </Badge>
+        
           </div>
           <nav className="flex flex-col gap-1">
             {filteredMenuItems.map((item) => (
@@ -197,7 +132,7 @@ export function AdminLayout({ children, userRole = "superadmin" }: AdminLayoutPr
       </aside>
 
       {/* Main Content */}
-      <div className="flex flex-1 flex-col md:pl-64 min-w-0">
+      <div className="flex flex-1 flex-col md:pl-64">
         {/* Header */}
         <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-6">
           {/* Mobile Menu Trigger */}
@@ -222,30 +157,9 @@ export function AdminLayout({ children, userRole = "superadmin" }: AdminLayoutPr
                       <AvatarImage src="/placeholder.svg" alt="Admin" />
                       <AvatarFallback>AD</AvatarFallback>
                     </Avatar>
-                    <div>
-                      <div className="font-medium text-sm">
-                        {userRole === "superadmin"
-                          ? "Super Admin"
-                          : userRole === "admin_kontingen"
-                            ? "Jakarta Admin"
-                            : "Event Admin"}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        {userRole === "superadmin"
-                          ? "Full Access"
-                          : userRole === "admin_kontingen"
-                            ? "Region Access"
-                            : "Event Access"}
-                      </div>
-                    </div>
+                    
                   </div>
-                  <Badge className="w-full justify-center mt-1" variant="outline">
-                    {userRole === "superadmin"
-                      ? "Super Admin"
-                      : userRole === "admin_kontingen"
-                        ? "Region Admin"
-                        : "Event Admin"}
-                  </Badge>
+                
                 </div>
                 <nav className="flex flex-col gap-1">
                   {filteredMenuItems.map((item) => (
@@ -257,6 +171,7 @@ export function AdminLayout({ children, userRole = "superadmin" }: AdminLayoutPr
                           ? "bg-accent text-accent-foreground"
                           : "text-foreground"
                       }`}
+                      onClick={() => setIsMobileMenuOpen(false)}
                     >
                       <item.icon className="h-4 w-4" />
                       {item.title}
@@ -266,11 +181,78 @@ export function AdminLayout({ children, userRole = "superadmin" }: AdminLayoutPr
               </ScrollArea>
             </SheetContent>
           </Sheet>
-          <div className="flex-1 flex justify-end">
-            {/* Tambahkan konten header kanan di sini jika perlu */}
+
+          <div className="w-full flex items-center justify-between">
+            <div className="relative w-full max-w-sm">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="search"
+                placeholder="Search..."
+                className="w-full rounded-lg bg-background pl-8 md:w-[240px] lg:w-[320px]"
+              />
+            </div>
+            <div className="flex items-center gap-4">
+              <DropdownMenu>
+                <DropdownMenuContent align="end" className="w-[300px]">
+                  <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <div className="max-h-[300px] overflow-auto">
+                    <DropdownMenuItem className="flex flex-col items-start cursor-pointer">
+                      <div className="font-medium">New athlete registered</div>
+                      <div className="text-sm text-muted-foreground">2 hours ago</div>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="flex flex-col items-start cursor-pointer">
+                      <div className="font-medium">Match results submitted</div>
+                      <div className="text-sm text-muted-foreground">5 hours ago</div>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="flex flex-col items-start cursor-pointer">
+                      <div className="font-medium">System maintenance scheduled</div>
+                      <div className="text-sm text-muted-foreground">1 day ago</div>
+                    </DropdownMenuItem>
+                  </div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem className="justify-center cursor-pointer">View all notifications</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src="/placeholder.svg" alt="Admin" />
+                      <AvatarFallback>AD</AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="/admin/settings">
+                      <User className="mr-2 h-4 w-4" />
+                      <span>Profile</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/admin/settings">
+                      <Settings className="mr-2 h-4 w-4" />
+                      <span>Settings</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="/login">
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Log out</span>
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
         </header>
-        <main className="flex-1 p-6 min-w-0">{children}</main>
+
+        {/* Main Content */}
+        <main className="flex-1 p-6">{children}</main>
       </div>
     </div>
   )

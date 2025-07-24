@@ -1,9 +1,7 @@
 import { PublicLayout } from "@/components/public-layout"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Sword, Award, Users, BookOpen, Landmark, Heart } from "lucide-react"
-import { Hero } from "@/components/hero"
-import Image from "next/image"
+import { Sword, Award, Users, BookOpen, Landmark, Heart, Swords } from "lucide-react"
 
 export default function AboutPage() {
   // IKASI JABAR team members data
@@ -36,18 +34,39 @@ export default function AboutPage() {
 
   return (
     <PublicLayout>
-    <Hero/>
-      {/* Main Content */}
-      <section className="w-full py-12">
-        <Tabs defaultValue="mission" className="w-full">
-          <div className="flex w-full justify-center">
-            <TabsList className="mb-6 flex flex-wrap justify-center gap-x-1 w-auto">
-              <TabsTrigger value="mission" className="rounded-md px-4 py-2 text-base font-normal transition-colors border-none shadow-none data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:font-bold data-[state=inactive]:text-muted-foreground data-[state=inactive]:font-normal hover:data-[state=inactive]:bg-gray-200">Visi & Misi</TabsTrigger>
-              <TabsTrigger value="history" className="rounded-md px-4 py-2 text-base font-normal transition-colors border-none shadow-none data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:font-bold data-[state=inactive]:text-muted-foreground data-[state=inactive]:font-normal hover:data-[state=inactive]:bg-gray-200">Sejarah</TabsTrigger>
-              <TabsTrigger value="team" className="rounded-md px-4 py-2 text-base font-normal transition-colors border-none shadow-none data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:font-bold data-[state=inactive]:text-muted-foreground data-[state=inactive]:font-normal hover:data-[state=inactive]:bg-gray-200">Tim Kami</TabsTrigger>
-              <TabsTrigger value="partners" className="rounded-md px-4 py-2 text-base font-normal transition-colors border-none shadow-none data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:font-bold data-[state=inactive]:text-muted-foreground data-[state=inactive]:font-normal hover:data-[state=inactive]:bg-gray-200">Mitra</TabsTrigger>
-            </TabsList>
+      {/* Hero Section */}
+      <section className="relative">
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/90 to-accent/90 z-10" />
+        <div className="relative h-[300px] w-full">
+          <img
+            src="/placeholder.svg?height=300&width=1920&text=IKASI+JABAR"
+            alt="IKASI JABAR"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        </div>
+        <div className="container absolute inset-0 z-20 flex flex-col items-center justify-center text-white">
+          <div className="flex items-center mb-6">
+            <Swords className="h-16 w-16 text-white mr-4" />
+            <div className="text-center">
+              <h1 className="text-4xl md:text-5xl font-bold">IKASI JABAR</h1>
+              <p className="text-lg md:text-xl">Ikatan Anggar Seluruh Indonesia Jawa Barat</p>
+            </div>
           </div>
+          <p className="text-lg md:text-xl text-center max-w-2xl">
+            Memajukan dan mengembangkan olahraga anggar di seluruh Jawa Barat
+          </p>
+        </div>
+      </section>
+
+      {/* Main Content */}
+      <section className="container py-12">
+        <Tabs defaultValue="mission" className="w-full">
+          <TabsList className="mb-6 flex flex-wrap">
+            <TabsTrigger value="mission">Visi & Misi</TabsTrigger>
+            <TabsTrigger value="history">Sejarah</TabsTrigger>
+            <TabsTrigger value="team">Tim Kami</TabsTrigger>
+            <TabsTrigger value="partners">Mitra</TabsTrigger>
+          </TabsList>
 
           <TabsContent value="mission" className="mt-0">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -123,11 +142,9 @@ export default function AboutPage() {
                 </div>
               </div>
               <div className="space-y-6">
-                <Image
+                <img
                   src="/placeholder.svg?height=400&width=600&text=IKASI+JABAR+Competition"
                   alt="IKASI JABAR Competition"
-                  width={600}
-                  height={400}
                   className="rounded-lg w-full h-auto"
                 />
                 <div className="bg-muted p-6 rounded-lg">
@@ -215,11 +232,9 @@ export default function AboutPage() {
                 </div>
               </div>
               <div className="space-y-6">
-                <Image
+                <img
                   src="/placeholder.svg?height=300&width=400&text=Historical+IKASI+Photo"
                   alt="Historical IKASI Photo"
-                  width={400}
-                  height={300}
                   className="rounded-lg w-full h-auto"
                 />
                 <Card>
@@ -263,11 +278,10 @@ export default function AboutPage() {
               {teamMembers.map((member) => (
                 <Card key={member.name} className="overflow-hidden">
                   <div className="aspect-square relative">
-                    <Image
+                    <img
                       src={member.image || "/placeholder.svg"}
                       alt={member.name}
-                      layout="fill"
-                      objectFit="cover"
+                      className="absolute inset-0 w-full h-full object-cover"
                     />
                   </div>
                   <CardContent className="p-6">
@@ -287,38 +301,30 @@ export default function AboutPage() {
                 <h3 className="text-xl font-bold mb-4">Mitra Resmi</h3>
                 <div className="grid grid-cols-2 gap-6">
                   <Card className="flex items-center justify-center p-6 h-32">
-                    <Image
+                    <img
                       src="/placeholder.svg?height=80&width=160&text=Dispora+Jabar"
                       alt="Dinas Olahraga Jawa Barat"
-                      width={160}
-                      height={80}
                       className="max-h-full"
                     />
                   </Card>
                   <Card className="flex items-center justify-center p-6 h-32">
-                    <Image
+                    <img
                       src="/placeholder.svg?height=80&width=160&text=KONI+Jabar"
                       alt="KONI Jawa Barat"
-                      width={160}
-                      height={80}
                       className="max-h-full"
                     />
                   </Card>
                   <Card className="flex items-center justify-center p-6 h-32">
-                    <Image
+                    <img
                       src="/placeholder.svg?height=80&width=160&text=IKASI+Pusat"
                       alt="IKASI Pusat"
-                      width={160}
-                      height={80}
                       className="max-h-full"
                     />
                   </Card>
                   <Card className="flex items-center justify-center p-6 h-32">
-                    <Image
+                    <img
                       src="/placeholder.svg?height=80&width=160&text=FIE"
                       alt="Federation Internationale d'Escrime"
-                      width={160}
-                      height={80}
                       className="max-h-full"
                     />
                   </Card>
@@ -327,56 +333,44 @@ export default function AboutPage() {
                 <h3 className="text-xl font-bold mb-4 mt-8">Sponsor Korporat</h3>
                 <div className="grid grid-cols-3 gap-4">
                   <Card className="flex items-center justify-center p-4 h-24">
-                    <Image
+                    <img
                       src="/placeholder.svg?height=60&width=120&text=Bank+Jabar"
                       alt="Bank Jabar"
-                      width={120}
-                      height={60}
                       className="max-h-full"
                     />
                   </Card>
                   <Card className="flex items-center justify-center p-4 h-24">
-                    <Image
+                    <img
                       src="/placeholder.svg?height=60&width=120&text=Telkom+Jabar"
                       alt="Telkom Jabar"
-                      width={120}
-                      height={60}
                       className="max-h-full"
                     />
                   </Card>
                   <Card className="flex items-center justify-center p-4 h-24">
-                    <Image
+                    <img
                       src="/placeholder.svg?height=60&width=120&text=PLN+Jabar"
                       alt="PLN Jabar"
-                      width={120}
-                      height={60}
                       className="max-h-full"
                     />
                   </Card>
                   <Card className="flex items-center justify-center p-4 h-24">
-                    <Image
+                    <img
                       src="/placeholder.svg?height=60&width=120&text=Jabar+Sport"
                       alt="Jabar Sport"
-                      width={120}
-                      height={60}
                       className="max-h-full"
                     />
                   </Card>
                   <Card className="flex items-center justify-center p-4 h-24">
-                    <Image
+                    <img
                       src="/placeholder.svg?height=60&width=120&text=Bandung+Corp"
                       alt="Bandung Corp"
-                      width={120}
-                      height={60}
                       className="max-h-full"
                     />
                   </Card>
                   <Card className="flex items-center justify-center p-4 h-24">
-                    <Image
+                    <img
                       src="/placeholder.svg?height=60&width=120&text=Jabar+Media"
                       alt="Jabar Media"
-                      width={120}
-                      height={60}
                       className="max-h-full"
                     />
                   </Card>

@@ -6,6 +6,4 @@ export interface Athlete {
   birthDate: string;
   gender: string;
   status: "Aktif" | "Tidak Aktif";
-  verificationStatus: "pending" | "approved" | "locked";
-  documentsComplete: boolean;
 } 
