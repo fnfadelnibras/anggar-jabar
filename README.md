@@ -1,222 +1,361 @@
-# anggar-jabar
-digunakan untuk memenuhi tugas tahap 2
-# Komponen Header Sederhana - IKASI JABAR
+# Anggar Jawa Barat - IKASI JABAR
 
-Kumpulan komponen header yang sudah disalin dari project fencing-app untuk digunakan di project lain **tanpa fitur dark mode**.
+Aplikasi web untuk manajemen data atlet dan wilayah anggar Jawa Barat yang dikembangkan menggunakan Next.js, Prisma, dan PostgreSQL.
 
-## File yang Tersedia
+**Project ini dikembangkan sebagai bagian dari program Jabar Digital Academy x Alkademi di kelas Fullstack Engineer with AI.**
 
-### 1. `header-simple.tsx`
-Komponen header sederhana tanpa mode toggle. Fitur:
-- ✅ Responsive design (mobile & desktop)
-- ✅ Navigation menu dengan mobile sidebar
-- ✅ Logo dan branding IKASI JABAR
-- ✅ Tombol login admin
-- ❌ **TIDAK ADA** theme toggle (light/dark mode)
+## 🏆 Fitur Utama
 
-### 2. `layout-simple.tsx`
-Layout dasar tanpa ThemeProvider
+### **Public Pages (Halaman Publik)**
+- **🏠 Beranda**: Dashboard utama dengan statistik atlet dan wilayah
+- **👥 Atlet**: Galeri atlet dengan search dan filter (maksimal 12 atlet)
+- **🗺️ Wilayah**: Daftar wilayah dengan pagination (10 per halaman)
+- **ℹ️ Tentang**: Informasi tentang IKASI Jawa Barat
 
-### 3. `dashboard-simple.tsx`
-Contoh halaman dashboard yang menggunakan header sederhana
+### **Admin Panel (Panel Admin)**
+- **📊 Dashboard**: Statistik lengkap dengan grafik dan data real-time
+- **👥 Manajemen Atlet**: CRUD lengkap dengan search, filter, dan pagination
+- **🗺️ Manajemen Wilayah**: CRUD lengkap dengan search, filter, dan pagination
 
-### 4. `globals-simple.css`
-File CSS global dengan Tailwind CSS (tanpa dark mode variables)
+## 🛠️ Teknologi yang Digunakan
 
-## Langkah-langkah Penggunaan
+- **Framework**: Next.js 15.3.5
+- **Database**: PostgreSQL dengan Prisma ORM
+- **UI Components**: shadcn/ui + Tailwind CSS
+- **Icons**: Lucide React
+- **Type Safety**: TypeScript
 
-### **Step 1: Setup Project Baru**
-```bash
-# Buat project Next.js baru
-npx create-next-app@latest my-new-project --typescript --tailwind --app
+## 🚀 Fitur Detail
 
-# Masuk ke direktori project
-cd my-new-project
+### **Halaman Atlet (Public)**
+- ✅ **Search Real-time**: Pencarian berdasarkan nama atlet
+- ✅ **Filter**: Filter berdasarkan kategori dan wilayah
+- ✅ **Limit Display**: Maksimal 12 atlet per halaman
+- ✅ **Responsive Design**: Tampilan yang responsif di semua device
+- ✅ **Data Real**: Mengambil data dari database
+
+### **Halaman Wilayah (Public)**
+- ✅ **Search Real-time**: Pencarian berdasarkan nama wilayah
+- ✅ **Pagination**: 10 wilayah per halaman dengan navigasi
+- ✅ **Grid & List View**: Toggle antara tampilan grid dan list
+- ✅ **Dynamic Stats**: Statistik berdasarkan data real
+- ✅ **Responsive Design**: Tampilan yang responsif
+
+### **Admin Dashboard**
+- ✅ **Real-time Stats**: Statistik berdasarkan data database
+- ✅ **Gender Distribution**: Distribusi atlet berdasarkan gender
+- ✅ **Category Analysis**: Analisis atlet berdasarkan kategori
+- ✅ **Top Regions**: Wilayah dengan atlet terbanyak
+- ✅ **Recent Activity**: Aktivitas terbaru
+
+### **Admin Athletes Management**
+- ✅ **CRUD Operations**: Create, Read, Update, Delete atlet
+- ✅ **Advanced Search**: Search berdasarkan nama, wilayah, kategori
+- ✅ **Multiple Filters**: Filter berdasarkan kategori, wilayah, status
+- ✅ **Sorting**: Sort berdasarkan semua kolom
+- ✅ **Pagination**: 15 atlet per halaman
+- ✅ **Bulk Actions**: Edit dan delete multiple atlet
+
+### **Admin Regions Management**
+- ✅ **CRUD Operations**: Create, Read, Update, Delete wilayah
+- ✅ **Search & Filter**: Search nama wilayah, filter berdasarkan jumlah atlet
+- ✅ **Sorting**: Sort berdasarkan nama dan jumlah atlet
+- ✅ **Pagination**: 15 wilayah per halaman
+- ✅ **Athlete Count**: Menampilkan jumlah atlet per wilayah
+
+## 📊 Database Schema
+
+### **Athlete Model**
+```prisma
+model Athlete {
+  id        String    @id @default(cuid())
+  name      String
+  birthDate DateTime
+  gender    Gender
+  category  Category
+  status    Status
+  region    Region    @relation(fields: [regionId], references: [id])
+  regionId  String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
 ```
 
-### **Step 2: Install Dependencies**
+### **Region Model**
+```prisma
+model Region {
+  id       String    @id @default(cuid())
+  name     String
+  code     String    @unique
+  athletes Athlete[]
+}
+```
+
+### **Enums**
+```prisma
+enum Gender {
+  Pria
+  Wanita
+}
+
+enum Category {
+  EPEE
+  FOIL
+  SABRE
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+}
+```
+
+## 🚀 Cara Menjalankan
+
+### **Prerequisites**
+- Node.js 18+ 
+- PostgreSQL database
+- npm atau pnpm
+
+### **Installation**
+
+1. **Clone Repository**
 ```bash
-# Install dependencies yang diperlukan (tanpa next-themes)
-npm install lucide-react
+git clone <repository-url>
+cd anggar-jabar
+```
+
+2. **Install Dependencies**
+```bash
+npm install
 # atau
-pnpm add lucide-react
+pnpm install
 ```
 
-### **Step 3: Setup shadcn/ui**
+3. **Setup Environment**
 ```bash
-# Install shadcn/ui
-npx shadcn@latest init
+# Copy .env.example ke .env
+cp .env.example .env
 
-# Install komponen yang diperlukan
-npx shadcn@latest add button sheet card badge progress toaster
+# Edit .env dengan database credentials
+DATABASE_URL="postgresql://username:password@localhost:5432/anggar_jabar"
 ```
 
-### **Step 4: Copy File yang Dibuat**
-Copy semua file yang sudah dibuat ke project baru:
-
+4. **Setup Database**
 ```bash
-# Copy ke direktori yang sesuai
-cp header-simple.tsx components/header.tsx
-cp layout-simple.tsx app/layout.tsx
-cp dashboard-simple.tsx app/page.tsx
-cp globals-simple.css app/globals.css
+# Generate Prisma client
+npx prisma generate
+
+# Run database migrations
+npx prisma migrate dev
+
+# Seed database (optional)
+npx prisma db seed
 ```
 
-### **Step 5: Update Import Paths**
-Pastikan import paths sudah benar di file yang di-copy:
-
-```tsx
-// Di header.tsx, pastikan import sudah benar
-import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-
-// Di dashboard/page.tsx, update import header
-import { Header } from "@/components/header"
-```
-
-### **Step 6: Test Aplikasi**
+5. **Run Development Server**
 ```bash
-# Jalankan development server
 npm run dev
 # atau
 pnpm dev
 ```
 
-## Cara Menggunakan Header
-
-### **Penggunaan Dasar**
-```tsx
-// app/page.tsx
-import { Header } from "@/components/header"
-
-export default function HomePage() {
-  return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <main className="container mx-auto px-4 py-8">
-        <h1>Selamat Datang</h1>
-        {/* Konten halaman Anda */}
-      </main>
-    </div>
-  )
-}
+6. **Build for Production**
+```bash
+npm run build
+npm start
 ```
 
-### **Penggunaan di Halaman Lain**
-```tsx
-// app/about/page.tsx
-import { Header } from "@/components/header"
-
-export default function AboutPage() {
-  return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <main className="container mx-auto px-4 py-8">
-        <h1>Tentang Kami</h1>
-        <p>Informasi tentang IKASI JABAR...</p>
-      </main>
-    </div>
-  )
-}
-```
-
-## Kustomisasi
-
-### **Mengubah Branding**
-Edit bagian logo di `components/header.tsx`:
-```tsx
-<span className="hidden font-bold sm:inline-block text-sm leading-tight">
-  NAMA ORGANISASI ANDA
-</span>
-<span className="hidden text-xs text-muted-foreground sm:inline-block leading-tight">
-  Deskripsi Organisasi
-</span>
-```
-
-### **Mengubah Navigation Menu**
-Edit array `navigation` di `components/header.tsx`:
-```tsx
-const navigation = [
-  { name: "Beranda", href: "/" },
-  { name: "Tentang", href: "/about" },
-  { name: "Layanan", href: "/services" },
-  { name: "Kontak", href: "/contact" },
-  // Tambahkan menu sesuai kebutuhan
-]
-```
-
-### **Mengubah Warna Tema**
-Edit CSS variables di `app/globals.css`:
-```css
-:root {
-  --primary: 221.2 83.2% 53.3%; /* Warna primary */
-  --background: 0 0% 100%; /* Warna background */
-  --foreground: 222.2 84% 4.9%; /* Warna text */
-  /* ... variabel lainnya */
-}
-```
-
-## Struktur File yang Disarankan
+## 📁 Struktur Project
 
 ```
-my-new-project/
+anggar-jabar/
 ├── app/
-│   ├── layout.tsx          # Copy dari layout-simple.tsx
-│   ├── page.tsx            # Copy dari dashboard-simple.tsx
-│   └── globals.css         # Copy dari globals-simple.css
+│   ├── admin/
+│   │   ├── athletes/
+│   │   │   └── page.tsx          # Admin athletes page
+│   │   ├── regions/
+│   │   │   └── page.tsx          # Admin regions page
+│   │   └── page.tsx              # Admin dashboard
+│   ├── athletes/
+│   │   └── page.tsx              # Public athletes page
+│   ├── regions/
+│   │   └── page.tsx              # Public regions page
+│   ├── api/
+│   │   ├── athletes/
+│   │   │   └── route.ts          # Athletes API
+│   │   └── regions/
+│   │       └── route.ts          # Regions API
+│   └── page.tsx                  # Home page
 ├── components/
-│   ├── ui/
-│   │   ├── button.tsx      # shadcn/ui component
-│   │   ├── sheet.tsx       # shadcn/ui component
-│   │   ├── card.tsx        # shadcn/ui component
-│   │   ├── badge.tsx       # shadcn/ui component
-│   │   ├── progress.tsx    # shadcn/ui component
-│   │   └── toaster.tsx     # shadcn/ui component
-│   └── header.tsx          # Copy dari header-simple.tsx
-├── package.json
-└── tailwind.config.ts
+│   ├── admin-layout.tsx          # Admin layout
+│   ├── public-layout.tsx         # Public layout
+│   ├── athlete-client.tsx        # Athletes admin component
+│   ├── regions-client.tsx        # Regions admin component
+│   └── ui/                       # shadcn/ui components
+├── lib/
+│   └── prisma.ts                 # Prisma client
+├── prisma/
+│   ├── schema.prisma             # Database schema
+│   └── seed.js                   # Database seeder
+└── package.json
 ```
 
-## Perbedaan dengan Versi Sebelumnya
+## 🔧 API Endpoints
 
-| Fitur | Versi Sebelumnya | Versi Sederhana |
-|-------|------------------|-----------------|
-| Dark Mode Toggle | ✅ Ada | ❌ Tidak Ada |
-| Theme Provider | ✅ Ada | ❌ Tidak Ada |
-| next-themes | ✅ Diperlukan | ❌ Tidak Diperlukan |
-| CSS Variables Dark | ✅ Ada | ❌ Tidak Ada |
-| Kompleksitas | Tinggi | Rendah |
-| Dependencies | Lebih banyak | Lebih sedikit |
+### **Athletes API** (`/api/athletes`)
+- `GET`: Mendapatkan semua atlet
+- `POST`: Membuat atlet baru
+- `PUT`: Update atlet
+- `DELETE`: Hapus atlet
 
-## Keuntungan Versi Sederhana
+### **Regions API** (`/api/regions`)
+- `GET`: Mendapatkan semua wilayah
+- `POST`: Membuat wilayah baru
+- `PUT`: Update wilayah
+- `DELETE`: Hapus wilayah
 
-1. **Lebih Ringan** - Tidak perlu next-themes
-2. **Setup Lebih Mudah** - Dependencies lebih sedikit
-3. **Tidak Ada Hydration Issues** - Tidak ada client-side theme switching
-4. **Lebih Stabil** - Komponen lebih sederhana
-5. **Cocok untuk Project Sederhana** - Tidak memerlukan dark mode
+## 🎨 UI/UX Features
 
-## Troubleshooting
+### **Design System**
+- **Color Scheme**: Blue primary dengan accent colors
+- **Typography**: Inter font family
+- **Components**: shadcn/ui component library
+- **Responsive**: Mobile-first design
 
-### **Error: Cannot find module '@/components/ui/button'**
-Pastikan shadcn/ui sudah diinstall dengan benar:
+### **User Experience**
+- **Loading States**: Spinner dan skeleton loading
+- **Toast Notifications**: Feedback untuk user actions
+- **Form Validation**: Client-side validation
+- **Error Handling**: Graceful error handling
+- **Search & Filter**: Real-time search dan filtering
+
+## 📱 Responsive Design
+
+- **Mobile**: 320px - 768px
+- **Tablet**: 768px - 1024px
+- **Desktop**: 1024px+
+
+## 🔒 Security Features
+
+- **Input Validation**: Client dan server-side validation
+- **SQL Injection Protection**: Menggunakan Prisma ORM
+- **XSS Protection**: Sanitasi input
+- **CSRF Protection**: Built-in Next.js protection
+
+## 🚀 Performance
+
+- **Server Components**: Menggunakan Next.js 13+ app router
+- **Image Optimization**: Next.js Image component
+- **Code Splitting**: Automatic code splitting
+- **Caching**: Built-in caching mechanisms
+
+## 🧪 Testing
+
 ```bash
-npx shadcn@latest add button
+# Run tests
+npm test
+
+# Run linting
+npm run lint
+
+# Type checking
+npm run type-check
 ```
 
-### **Header tidak responsive di mobile**
-Pastikan Tailwind CSS sudah dikonfigurasi dengan benar di `tailwind.config.ts`
+## 📈 Monitoring & Analytics
 
-### **Icon tidak muncul**
-Pastikan lucide-react sudah diinstall:
-```bash
-npm install lucide-react
-```
+- **Error Tracking**: Console error logging
+- **Performance Monitoring**: Built-in Next.js analytics
+- **User Analytics**: Basic page view tracking
 
-## Catatan Penting
+<!-- ## 💡 Next Steps untuk Enhancement
 
-- ✅ Komponen ini menggunakan Tailwind CSS
-- ✅ Responsive dan mobile-first design
-- ✅ Tidak memerlukan next-themes
-- ✅ Tidak ada dark mode functionality
-- ✅ Lebih sederhana dan mudah dikustomisasi
+### **🔐 Authentication & Authorization**
+- **Login System**: Implementasi authentication untuk admin
+- **Role-based Access**: Different roles (Super Admin, Admin, Viewer)
+- **JWT/Session Management**: Secure token-based authentication
+- **Password Reset**: Email-based password reset functionality
+
+### **📁 File Upload & Media Management**
+- **Photo Upload**: Upload foto profil untuk athletes
+- **Image Optimization**: Automatic image compression dan resizing
+- **Cloud Storage**: Integration dengan AWS S3 atau Cloudinary
+- **Gallery Management**: Multiple photos per athlete
+
+### **📊 Data Export & Reporting**
+- **PDF Export**: Generate PDF reports untuk athletes dan regions
+- **Excel Export**: Export data ke format Excel (.xlsx)
+- **Custom Reports**: Advanced reporting dengan filters
+- **Scheduled Reports**: Automated report generation
+
+### **⚡ Real-time Features**
+- **WebSocket Integration**: Real-time updates menggunakan Socket.io
+- **Live Dashboard**: Real-time statistics updates
+- **Notifications**: Push notifications untuk admin
+- **Collaborative Editing**: Multi-user editing dengan conflict resolution
+
+### **📱 Mobile Application**
+- **React Native App**: Companion mobile app untuk athletes
+- **Offline Support**: Offline data synchronization
+- **Push Notifications**: Mobile push notifications
+- **QR Code Scanner**: Scan QR codes untuk quick athlete lookup
+
+
+### **🔗 API Enhancements**
+- **GraphQL**: Implementasi GraphQL untuk flexible data fetching
+- **API Rate Limiting**: Protect API dari abuse
+- **API Documentation**: Swagger/OpenAPI documentation
+- **Webhook Support**: Real-time integrations dengan external systems
+
+### **📈 Advanced Analytics**
+- **Google Analytics**: Integration dengan Google Analytics
+- **Custom Dashboards**: Advanced admin dashboards
+- **Data Visualization**: Charts dan graphs untuk insights
+- **Performance Metrics**: Track application performance
+
+### **🔐 Advanced Security**
+- **Two-Factor Authentication**: 2FA untuk admin accounts
+- **Audit Logs**: Track semua admin actions
+- **Data Encryption**: Encrypt sensitive data
+- **Backup System**: Automated database backups -->
+
+## 🤝 Contributing
+
+1. Fork repository
+2. Create feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 📞 Support
+
+Untuk dukungan teknis atau pertanyaan, silakan hubungi:
+- Email: fn.fadelnibras@gmail.com
+- Website: https://anggar-jabar.vercel.app/
+
+## 🎓 Program Jabar Digital Academy x Alkademi
+
+Project ini dikembangkan sebagai bagian dari program **Jabar Digital Academy x Alkademi** di kelas **Fullstack Engineer with AI**. Program ini bertujuan untuk:
+
+- **Mengembangkan skill fullstack development** dengan teknologi modern
+- **Mempelajari AI integration** dalam pengembangan aplikasi web
+- **Membuat project portfolio** yang siap untuk dunia kerja
+- **Menguasai best practices** dalam pengembangan aplikasi web
+
+### **Skills yang Dipelajari:**
+- ✅ **Frontend Development**: Next.js, React, TypeScript
+- ✅ **Backend Development**: API Routes, Database Design
+- ✅ **Database Management**: PostgreSQL, Prisma ORM
+- ✅ **UI/UX Design**: Modern design dengan shadcn/ui
+- ✅ **Fullstack Architecture**: End-to-end application development
+- ✅ **AI Integration**: AI Pieces
+
+---
+
+
+**Program: Jabar Digital Academy x Alkademi - Fullstack Engineer with AI**
