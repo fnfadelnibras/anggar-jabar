@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { AdminLayout } from "@/components/admin-layout"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -73,12 +73,7 @@ export default function AdminSettings() {
     location: ""
   })
 
-  // Fetch profile data on component mount
-  useEffect(() => {
-    fetchProfile()
-  }, [])
-
-  const fetchProfile = async () => {
+  const fetchProfile = useCallback(async () => {
     try {
       const response = await fetch('/api/admin/profile')
       if (response.ok) {
@@ -95,19 +90,23 @@ export default function AdminSettings() {
         toast({
           title: "Error",
           description: "Failed to fetch profile data.",
-          variant: "destructive",
+          type: "error",
         })
       }
     } catch (error) {
       toast({
         title: "Error",
         description: "Failed to fetch profile data.",
-        variant: "destructive",
+        type: "error",
       })
     } finally {
       setInitialLoading(false)
     }
-  }
+  }, [toast])
+
+  useEffect(() => {
+    fetchProfile()
+  }, [fetchProfile])
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
@@ -143,14 +142,14 @@ export default function AdminSettings() {
         toast({
           title: "Error",
           description: errorData.error || "Failed to update profile. Please try again.",
-          variant: "destructive",
+          type: "error",
         })
       }
     } catch (error) {
       toast({
         title: "Error",
         description: "Failed to update profile. Please try again.",
-        variant: "destructive",
+        type: "error",
       })
     } finally {
       setLoading(false)
@@ -185,14 +184,14 @@ export default function AdminSettings() {
           toast({
             title: "Error",
             description: errorData.error || "Failed to update avatar.",
-            variant: "destructive",
+            type: "error",
           })
         }
       } catch (error) {
         toast({
           title: "Error",
           description: "Failed to update avatar.",
-          variant: "destructive",
+          type: "error",
         })
       }
     }

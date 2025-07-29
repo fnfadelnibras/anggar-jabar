@@ -49,9 +49,9 @@ export async function PUT(request: NextRequest) {
       select: { password: true }
     })
 
-    if (!user) {
+    if (!user || !user.password) {
       return NextResponse.json(
-        { error: "User not found" },
+        { error: "User not found or no password set" },
         { status: 404 }
       )
     }

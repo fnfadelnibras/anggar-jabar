@@ -74,14 +74,14 @@ export function ChangePasswordDialog() {
         toast({
           title: "Error",
           description: errorData.error || "Failed to change password.",
-          variant: "destructive",
+          type: "error",
         })
       }
     } catch (error) {
       toast({
         title: "Error",
         description: "Failed to change password. Please try again.",
-        variant: "destructive",
+        type: "error",
       })
     } finally {
       setLoading(false)

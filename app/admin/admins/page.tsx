@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { AdminLayout } from "@/components/admin-layout"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -100,11 +100,7 @@ export default function AdminManagement() {
     location: ''
   })
 
-  useEffect(() => {
-    fetchAdmins()
-  }, [])
-
-  const fetchAdmins = async () => {
+  const fetchAdmins = useCallback(async () => {
     try {
       const response = await fetch('/api/admin/admins')
       if (response.ok) {
@@ -114,19 +110,29 @@ export default function AdminManagement() {
         toast({
           title: "Error",
           description: "Failed to fetch admins.",
-          variant: "destructive",
+          type: "error",
         })
       }
     } catch (error) {
       toast({
         title: "Error",
         description: "Failed to fetch admins.",
-        variant: "destructive",
+        type: "error",
       })
     } finally {
       setLoading(false)
     }
-  }
+  }, [toast])
+
+  useEffect(() => {
+    fetchAdmins()
+  }, [fetchAdmins])
+
+  useEffect(() => {
+    if (dialogOpen && !editingAdmin) {
+      resetForm()
+    }
+  }, [dialogOpen, editingAdmin])
 
   const handleInputChange = (field: string, value: string | string[]) => {
     setFormData(prev => ({
@@ -157,7 +163,7 @@ export default function AdminManagement() {
       toast({
         title: "Error",
         description: "Please fill in all required fields.",
-        variant: "destructive",
+        type: "error",
       })
       return
     }
@@ -195,15 +201,15 @@ export default function AdminManagement() {
         toast({
           title: "Error",
           description: errorData.error || "Failed to save admin.",
-          variant: "destructive",
+          type: "error",
         })
       }
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to save admin.",
-        variant: "destructive",
-      })
+              toast({
+          title: "Error",
+          description: "Failed to save admin.",
+          type: "error",
+        })
     }
   }
 
@@ -241,15 +247,15 @@ export default function AdminManagement() {
         toast({
           title: "Error",
           description: errorData.error || "Failed to delete admin.",
-          variant: "destructive",
+          type: "error",
         })
       }
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to delete admin.",
-        variant: "destructive",
-      })
+              toast({
+          title: "Error",
+          description: "Failed to delete admin.",
+          type: "error",
+        })
     }
   }
 
@@ -276,14 +282,14 @@ export default function AdminManagement() {
         toast({
           title: "Error",
           description: errorData.error || "Failed to update admin status.",
-          variant: "destructive",
+          type: "error",
         })
       }
     } catch (error) {
       toast({
         title: "Error",
         description: "Failed to update admin status.",
-        variant: "destructive",
+        type: "error",
       })
     }
   }
@@ -310,7 +316,7 @@ export default function AdminManagement() {
         </div>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => resetForm()}>
+            <Button>
               <UserPlus className="mr-2 h-4 w-4" />
               Add Admin
             </Button>

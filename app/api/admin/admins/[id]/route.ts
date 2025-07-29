@@ -7,7 +7,7 @@ import bcrypt from "bcryptjs"
 // PUT /api/admin/admins/[id] - Update admin
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -31,9 +31,11 @@ export async function PUT(
       )
     }
 
+    const { id } = await params
+    
     // Check if admin exists
     const existingAdmin = await prisma.user.findUnique({
-      where: { id: params.id }
+      where: { id }
     })
 
     if (!existingAdmin) {
@@ -48,7 +50,7 @@ export async function PUT(
       const emailExists = await prisma.user.findFirst({
         where: {
           email,
-          NOT: { id: params.id }
+          NOT: { id }
         }
       })
 
@@ -77,7 +79,7 @@ export async function PUT(
 
     // Update admin
     const updatedAdmin = await prisma.user.update({
-      where: { id: params.id },
+      where: { id },
       data: updateData,
       select: {
         id: true,
@@ -109,7 +111,7 @@ export async function PUT(
 // DELETE /api/admin/admins/[id] - Delete admin
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -121,10 +123,12 @@ export async function DELETE(
       )
     }
 
+    const { id } = await params
+    
     // Simplified - no permission check for now
     // Check if admin exists
     const existingAdmin = await prisma.user.findUnique({
-      where: { id: params.id }
+      where: { id }
     })
 
     if (!existingAdmin) {
@@ -144,7 +148,7 @@ export async function DELETE(
 
     // Delete admin
     await prisma.user.delete({
-      where: { id: params.id }
+      where: { id }
     })
 
     return NextResponse.json({

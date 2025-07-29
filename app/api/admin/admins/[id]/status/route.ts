@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma"
 // PUT /api/admin/admins/[id]/status - Toggle admin status
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -31,9 +31,11 @@ export async function PUT(
       )
     }
 
+    const { id } = await params
+    
     // Check if admin exists
     const existingAdmin = await prisma.user.findUnique({
-      where: { id: params.id }
+      where: { id }
     })
 
     if (!existingAdmin) {
@@ -54,7 +56,7 @@ export async function PUT(
     // For now, we'll just update the updatedAt field since we don't have a status field
     // In a real implementation, you might want to add a status field to the User model
     const updatedAdmin = await prisma.user.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         updatedAt: new Date()
       },
