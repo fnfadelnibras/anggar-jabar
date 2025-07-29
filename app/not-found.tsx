@@ -1,42 +1,59 @@
 import Link from "next/link"
-import { Header } from "@/components/header"
 import { Button } from "@/components/ui/button"
-import { Home } from "lucide-react"
+import { Swords, Home, ArrowLeft } from "lucide-react"
 
 export default function NotFound() {
   return (
-    <>
-      <Header />
-      <div className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center text-center">
-        <div className="space-y-6">
-          <div className="space-y-2">
-            <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl">
-              404
-            </h1>
-            <h2 className="text-xl font-semibold tracking-tight sm:text-2xl md:text-3xl">
-              Halaman Tidak Ditemukan
-            </h2>
-            <p className="text-muted-foreground max-w-[600px] text-lg md:text-xl">
-              Maaf, halaman yang Anda cari tidak dapat ditemukan. 
-              Mungkin halaman tersebut telah dipindahkan atau dihapus.
-            </p>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 to-accent/5">
+      <div className="text-center space-y-8 p-8">
+        <div className="flex justify-center">
+          <div className="relative">
+            <Swords className="h-32 w-32 text-primary/20" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="text-6xl font-bold text-primary">404</span>
+            </div>
           </div>
-          <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
-            <Button asChild size="lg">
-              <Link href="/" className="flex items-center gap-2">
-                <Home className="h-4 w-4" />
-                Kembali ke Beranda
-              </Link>
-            </Button>
-            {/* <Button variant="outline" asChild size="lg">
-              <Link href="javascript:history.back()" className="flex items-center gap-2">
-                <ArrowLeft className="h-4 w-4" />
-                Kembali
-              </Link>
-            </Button> */}
+        </div>
+        
+        <div className="space-y-4">
+          <h1 className="text-4xl font-bold">Halaman Tidak Ditemukan</h1>
+          <p className="text-lg text-muted-foreground max-w-md mx-auto">
+            Maaf, halaman yang Anda cari tidak dapat ditemukan. 
+            Mungkin halaman tersebut telah dipindahkan atau dihapus.
+          </p>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Button asChild>
+            <Link href="/">
+              <Home className="mr-2 h-4 w-4" />
+              Kembali ke Beranda
+            </Link>
+          </Button>
+          <Button asChild variant="outline" onClick={() => window.history.back()}>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Kembali
+          </Button>
+        </div>
+
+        <div className="mt-12 p-6 bg-muted rounded-lg max-w-md mx-auto">
+          <h3 className="font-semibold mb-2">Halaman Populer</h3>
+          <div className="space-y-2 text-sm">
+            <Link href="/athletes" className="block hover:text-primary transition-colors">
+              • Daftar Atlet
+            </Link>
+            <Link href="/regions" className="block hover:text-primary transition-colors">
+              • Wilayah
+            </Link>
+            <Link href="/about" className="block hover:text-primary transition-colors">
+              • Tentang Kami
+            </Link>
+            <Link href="/contact" className="block hover:text-primary transition-colors">
+              • Hubungi Kami
+            </Link>
           </div>
         </div>
       </div>
-    </>
+    </div>
   )
 } 

@@ -43,7 +43,7 @@ import {
   X,
 } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
-import { toast } from "@/hooks/use-toast"
+import { toast } from "sonner"
 import {
   Select,
   SelectContent,
@@ -158,6 +158,9 @@ export default function RegionsPage({ regions: initialRegions }: { regions: Regi
       setSortField(field)
       setSortOrder('asc')
     }
+    toast.info("Data diurutkan", {
+      description: `Data diurutkan berdasarkan ${field} (${sortField === field && sortOrder === 'asc' ? 'desc' : 'asc'})`,
+    })
   }
 
   const handleSearch = (value: string) => {
@@ -174,6 +177,9 @@ export default function RegionsPage({ regions: initialRegions }: { regions: Regi
     setSearchTerm('')
     setAthletesFilter('all')
     setCurrentPage(1)
+    toast.info("Filter telah dibersihkan", {
+      description: "Semua filter dan pencarian telah direset.",
+    })
   }
 
   const hasActiveFilters = searchTerm || athletesFilter !== 'all'
@@ -185,6 +191,9 @@ export default function RegionsPage({ regions: initialRegions }: { regions: Regi
       description: ''
     })
     setIsAddDialogOpen(true)
+    toast.info("Form tambah wilayah dibuka", {
+      description: "Silakan isi data wilayah yang akan ditambahkan.",
+    })
   }
 
   const handleEdit = (region: Region) => {
@@ -195,11 +204,17 @@ export default function RegionsPage({ regions: initialRegions }: { regions: Regi
       description: region.description || ''
     })
     setIsEditDialogOpen(true)
+    toast.info("Form edit wilayah dibuka", {
+      description: `Mengedit data wilayah: ${region.name}`,
+    })
   }
 
   const handleDelete = (region: Region) => {
     setSelectedRegion(region)
     setIsDeleteDialogOpen(true)
+    toast.warning("Konfirmasi penghapusan", {
+      description: `Anda akan menghapus wilayah: ${region.name}`,
+    })
   }
 
   const handleSaveRegion = async () => {
@@ -220,12 +235,14 @@ export default function RegionsPage({ regions: initialRegions }: { regions: Regi
       })
 
       if (response.ok) {
-        toast({
-          title: isEditDialogOpen ? "Region updated" : "Region created",
-          description: isEditDialogOpen
-            ? `The region ${selectedRegion?.name} has been updated.`
-            : "New region has been created.",
-        })
+        toast.success(
+          isEditDialogOpen ? "Wilayah berhasil diperbarui!" : "Wilayah berhasil ditambahkan!",
+          {
+            description: isEditDialogOpen
+              ? `Data wilayah ${selectedRegion?.name} telah berhasil diperbarui.`
+              : "Data wilayah baru telah berhasil ditambahkan ke sistem.",
+          }
+        )
         await fetchRegions()
         setIsAddDialogOpen(false)
         setIsEditDialogOpen(false)
@@ -238,9 +255,8 @@ export default function RegionsPage({ regions: initialRegions }: { regions: Regi
         throw new Error('Failed to save region')
       }
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to save region. Please try again.",
+      toast.error("Gagal menyimpan data wilayah!", {
+        description: "Terjadi kesalahan saat menyimpan data. Silakan coba lagi.",
       })
     } finally {
       setLoading(false)
@@ -261,9 +277,8 @@ export default function RegionsPage({ regions: initialRegions }: { regions: Regi
       })
 
       if (response.ok) {
-        toast({
-          title: "Region deleted",
-          description: "The region has been deleted successfully.",
+        toast.success("Wilayah berhasil dihapus!", {
+          description: "Data wilayah telah berhasil dihapus dari sistem.",
         })
         await fetchRegions()
         setIsDeleteDialogOpen(false)
@@ -271,9 +286,8 @@ export default function RegionsPage({ regions: initialRegions }: { regions: Regi
         throw new Error('Failed to delete region')
       }
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to delete region. Please try again.",
+      toast.error("Gagal menghapus data wilayah!", {
+        description: "Terjadi kesalahan saat menghapus data. Silakan coba lagi.",
       })
     } finally {
       setLoading(false)

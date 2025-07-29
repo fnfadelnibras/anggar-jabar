@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Search, Plus, MoreHorizontal, Pencil, Trash2, Users, Calendar, BadgeCheck, Globe2, ChevronLeft, ChevronRight, ArrowUpDown, Filter, X } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
-import { toast } from "@/hooks/use-toast"
+import { toast } from "sonner"
 
 export type Athlete = {
   id: string
@@ -169,6 +169,9 @@ export default function AthletesPage({ athletes: initialAthletes }: { athletes: 
       setSortField(field)
       setSortOrder('asc')
     }
+    toast.info("Data diurutkan", {
+      description: `Data diurutkan berdasarkan ${field} (${sortField === field && sortOrder === 'asc' ? 'desc' : 'asc'})`,
+    })
   }
 
   const handleSearch = (value: string) => {
@@ -197,6 +200,9 @@ export default function AthletesPage({ athletes: initialAthletes }: { athletes: 
     setRegionFilter('all')
     setStatusFilter('all')
     setCurrentPage(1)
+    toast.info("Filter telah dibersihkan", {
+      description: "Semua filter dan pencarian telah direset.",
+    })
   }
 
   const hasActiveFilters = searchTerm || categoryFilter !== 'all' || regionFilter !== 'all' || statusFilter !== 'all'
@@ -211,6 +217,9 @@ export default function AthletesPage({ athletes: initialAthletes }: { athletes: 
       regionId: ''
     })
     setIsAddDialogOpen(true)
+    toast.info("Form tambah atlet dibuka", {
+      description: "Silakan isi data atlet yang akan ditambahkan.",
+    })
   }
 
   const handleEdit = (athlete: Athlete) => {
@@ -224,11 +233,17 @@ export default function AthletesPage({ athletes: initialAthletes }: { athletes: 
       regionId: athlete.region.id
     })
     setIsEditDialogOpen(true)
+    toast.info("Form edit atlet dibuka", {
+      description: `Mengedit data atlet: ${athlete.name}`,
+    })
   }
 
   const handleDelete = (athlete: Athlete) => {
     setSelectedAthlete(athlete)
     setIsDeleteDialogOpen(true)
+    toast.warning("Konfirmasi penghapusan", {
+      description: `Anda akan menghapus atlet: ${athlete.name}`,
+    })
   }
 
   const handleSaveAthlete = async () => {
@@ -249,12 +264,14 @@ export default function AthletesPage({ athletes: initialAthletes }: { athletes: 
       })
 
       if (response.ok) {
-        toast({
-          title: isEditDialogOpen ? "Athlete updated" : "Athlete created",
-          description: isEditDialogOpen 
-            ? "The athlete has been updated successfully."
-            : "The athlete has been created successfully.",
-        })
+        toast.success(
+          isEditDialogOpen ? "Atlet berhasil diperbarui!" : "Atlet berhasil ditambahkan!",
+          {
+            description: isEditDialogOpen 
+              ? "Data atlet telah berhasil diperbarui dalam sistem."
+              : "Data atlet telah berhasil ditambahkan ke dalam sistem.",
+          }
+        )
         await fetchAthletes()
         setIsAddDialogOpen(false)
         setIsEditDialogOpen(false)
@@ -270,9 +287,8 @@ export default function AthletesPage({ athletes: initialAthletes }: { athletes: 
         throw new Error('Failed to save athlete')
       }
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to save athlete. Please try again.",
+      toast.error("Gagal menyimpan data atlet!", {
+        description: "Terjadi kesalahan saat menyimpan data. Silakan coba lagi.",
       })
     } finally {
       setLoading(false)
@@ -293,9 +309,8 @@ export default function AthletesPage({ athletes: initialAthletes }: { athletes: 
       })
 
       if (response.ok) {
-        toast({
-          title: "Athlete deleted",
-          description: "The athlete has been deleted successfully.",
+        toast.success("Atlet berhasil dihapus!", {
+          description: "Data atlet telah berhasil dihapus dari sistem.",
         })
         await fetchAthletes()
         setIsDeleteDialogOpen(false)
@@ -303,9 +318,8 @@ export default function AthletesPage({ athletes: initialAthletes }: { athletes: 
         throw new Error('Failed to delete athlete')
       }
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to delete athlete. Please try again.",
+      toast.error("Gagal menghapus data atlet!", {
+        description: "Terjadi kesalahan saat menghapus data. Silakan coba lagi.",
       })
     } finally {
       setLoading(false)

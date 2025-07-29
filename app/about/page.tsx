@@ -1,7 +1,8 @@
 import { PublicLayout } from "@/components/public-layout"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Sword, Award, Users, BookOpen, Landmark, Heart, Swords } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Sword, Award, Users, BookOpen, Landmark, Heart, Swords, Trophy } from "lucide-react"
 import Image from "next/image"
 
 export default function AboutPage() {
@@ -36,29 +37,53 @@ export default function AboutPage() {
   return (
     <PublicLayout>
       {/* Hero Section */}
-      <section className="relative">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/90 to-accent/90 z-10" />
-        <div className="relative h-[300px] w-full">
+      <section className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white py-20 overflow-hidden">
+        {/* Background Image dengan efek aesthetic */}
+        <div className="absolute inset-0">
           <Image
-            src="/placeholder.svg?height=300&width=1920&text=IKASI+JABAR"
-            alt="IKASI JABAR"
+            src="/fencing.svg"
+            alt="Fencing Background"
             fill
-            className="object-cover"
+            className="object-cover opacity-20"
             sizes="100vw"
-            priority
           />
         </div>
-        <div className="container absolute inset-0 z-20 flex flex-col items-center justify-center text-white">
-          <div className="flex items-center mb-6">
-            <Swords className="h-16 w-16 text-white mr-4" />
-            <div className="text-center">
-              <h1 className="text-4xl md:text-5xl font-bold">IKASI JABAR</h1>
-              <p className="text-lg md:text-xl">Ikatan Anggar Seluruh Indonesia Jawa Barat</p>
+        
+        {/* Gradient overlay yang lebih subtle */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/60 via-slate-800/40 to-slate-900/60"></div>
+        
+        {/* Additional aesthetic elements */}
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10"></div>
+        
+        <div className="container relative z-10">
+          <div className="text-center">
+            <div className="flex items-center justify-center gap-3 mb-6">
+              <Swords className="h-12 w-12 text-blue-400" />
+              <h1 className="text-5xl lg:text-6xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                IKASI JABAR
+              </h1>
+            </div>
+            <h2 className="text-2xl lg:text-3xl font-semibold mb-4 text-gray-100">
+              Ikatan Anggar Seluruh Indonesia Jawa Barat
+            </h2>
+            <p className="text-lg mb-8 text-gray-300 max-w-3xl mx-auto">
+              Memajukan dan mengembangkan olahraga anggar di seluruh Jawa Barat dengan dedikasi tinggi untuk menghasilkan atlet-atlet berprestasi tingkat nasional dan internasional.
+            </p>
+            <div className="flex items-center justify-center gap-6 text-sm text-gray-300">
+              <div className="flex items-center gap-2">
+                <Swords className="h-4 w-4 text-blue-400" />
+                <span>Est. 2010</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Trophy className="h-4 w-4 text-yellow-400" />
+                <span>Prestasi Nasional</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Users className="h-4 w-4 text-green-400" />
+                <span>Komunitas Aktif</span>
+              </div>
             </div>
           </div>
-          <p className="text-lg md:text-xl text-center max-w-2xl">
-            Memajukan dan mengembangkan olahraga anggar di seluruh Jawa Barat
-          </p>
         </div>
       </section>
 
@@ -70,6 +95,7 @@ export default function AboutPage() {
             <TabsTrigger value="history">Sejarah</TabsTrigger>
             <TabsTrigger value="team">Tim Kami</TabsTrigger>
             <TabsTrigger value="partners">Mitra</TabsTrigger>
+            <TabsTrigger value="developer">Developer</TabsTrigger>
           </TabsList>
 
           <TabsContent value="mission" className="mt-0">
@@ -308,6 +334,116 @@ export default function AboutPage() {
             </div>
           </TabsContent>
 
+          <TabsContent value="developer" className="mt-0">
+            <h2 className="text-3xl font-bold mb-6">Tim Pengembangan Sistem</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              <Card className="border-primary/20">
+                <CardContent className="p-6">
+                  <div className="flex items-start gap-4">
+                    <div className="relative w-16 h-16 rounded-full overflow-hidden bg-primary/10 flex items-center justify-center">
+                      <span className="text-primary font-bold text-lg">FN</span>
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-bold text-lg mb-1">FnCorporation</h4>
+                      <p className="text-sm text-primary mb-2">Software Development Company</p>
+                      <p className="text-sm text-muted-foreground mb-3">
+                        Perusahaan pengembangan software yang berfokus pada solusi digital untuk organisasi olahraga dan manajemen kompetisi.
+                      </p>
+                      <div className="flex gap-2">
+                        <Badge variant="outline">Next.js</Badge>
+                        <Badge variant="outline">React</Badge>
+                        <Badge variant="outline">TypeScript</Badge>
+                        <Badge variant="outline">Tailwind CSS</Badge>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card className="border-primary/20">
+                <CardContent className="p-6">
+                  <div className="flex items-start gap-4">
+                    <div className="relative w-16 h-16 rounded-full overflow-hidden bg-primary/10 flex items-center justify-center">
+                      <span className="text-primary font-bold text-lg">HN</span>
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-bold text-lg mb-1">A.M. Hud Nibras Fadhlullah</h4>
+                      <p className="text-sm text-primary mb-2">Lead Developer</p>
+                      <p className="text-sm text-muted-foreground mb-3">
+                        Full-stack developer dengan pengalaman dalam pengembangan aplikasi web modern dan sistem manajemen data.
+                      </p>
+                      <div className="flex gap-2">
+                        <Badge variant="outline">Full-Stack</Badge>
+                        <Badge variant="outline">UI/UX</Badge>
+                        <Badge variant="outline">Database</Badge>
+                        <Badge variant="outline">API</Badge>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="p-6 bg-muted rounded-lg">
+                <h4 className="font-bold text-lg mb-4">Tentang Pengembangan Sistem</h4>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Sistem Manajemen Kompetisi Anggar IKASI JABAR dikembangkan dengan teknologi modern untuk memberikan 
+                  pengalaman terbaik bagi pengguna. Platform ini dirancang dengan mempertimbangkan kebutuhan khusus 
+                  organisasi olahraga dan standar keamanan data yang tinggi.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <h5 className="font-semibold mb-2">Teknologi</h5>
+                    <ul className="space-y-1 text-muted-foreground">
+                      <li>• Next.js 14 (App Router)</li>
+                      <li>• TypeScript</li>
+                      <li>• Tailwind CSS</li>
+                      <li>• Prisma ORM</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h5 className="font-semibold mb-2">Fitur Utama</h5>
+                    <ul className="space-y-1 text-muted-foreground">
+                      <li>• Manajemen Data Atlet</li>
+                      <li>• Sistem Kompetisi</li>
+                      <li>• Dashboard Admin</li>
+                      <li>• Laporan Real-time</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="p-6 bg-muted rounded-lg">
+                <h4 className="font-bold text-lg mb-4">Keamanan & Performa</h4>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Sistem ini dibangun dengan mempertimbangkan aspek keamanan dan performa untuk memberikan 
+                  pengalaman yang aman dan responsif bagi semua pengguna.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <h5 className="font-semibold mb-2">Keamanan</h5>
+                    <ul className="space-y-1 text-muted-foreground">
+                      <li>• Autentikasi JWT</li>
+                      <li>• Enkripsi Data</li>
+                      <li>• Role-based Access</li>
+                      <li>• Audit Trail</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h5 className="font-semibold mb-2">Performa</h5>
+                    <ul className="space-y-1 text-muted-foreground">
+                      <li>• Server-side Rendering</li>
+                      <li>• Optimized Images</li>
+                      <li>• Caching Strategy</li>
+                      <li>• Database Indexing</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+
           <TabsContent value="partners" className="mt-0">
             <h2 className="text-3xl font-bold mb-6">Mitra IKASI JABAR</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -458,6 +594,134 @@ export default function AboutPage() {
                     </p>
                   </CardContent>
                 </Card>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="developer" className="mt-0">
+            <h2 className="text-3xl font-bold mb-6">Tim Pengembangan Sistem</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              <Card className="border-primary/20">
+                <CardContent className="p-6">
+                  <div className="flex items-start gap-4">
+                    <div className="relative w-16 h-16 rounded-full overflow-hidden bg-primary/10 flex items-center justify-center">
+                      <span className="text-primary font-bold text-lg">FN</span>
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-bold text-lg mb-1">FnCorporation</h4>
+                      <p className="text-sm text-primary mb-2">Software Development Company</p>
+                      <p className="text-sm text-muted-foreground mb-3">
+                        Perusahaan pengembangan software yang berfokus pada solusi digital untuk organisasi olahraga dan manajemen kompetisi.
+                      </p>
+                      <div className="flex gap-2">
+                        <Badge variant="outline">Next.js</Badge>
+                        <Badge variant="outline">React</Badge>
+                        <Badge variant="outline">TypeScript</Badge>
+                        <Badge variant="outline">Tailwind CSS</Badge>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card className="border-primary/20">
+                <CardContent className="p-6">
+                  <div className="flex items-start gap-4">
+                    <div className="relative w-16 h-16 rounded-full overflow-hidden bg-primary/10 flex items-center justify-center">
+                      <span className="text-primary font-bold text-lg">HN</span>
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-bold text-lg mb-1">A.M. Hud Nibras Fadhlullah</h4>
+                      <p className="text-sm text-primary mb-2">Lead Developer</p>
+                      <p className="text-sm text-muted-foreground mb-3">
+                        Full-stack developer dengan pengalaman dalam pengembangan aplikasi web modern dan sistem manajemen data.
+                      </p>
+                      <div className="flex gap-2">
+                        <Badge variant="outline">Full-Stack</Badge>
+                        <Badge variant="outline">UI/UX</Badge>
+                        <Badge variant="outline">Database</Badge>
+                        <Badge variant="outline">API</Badge>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="p-6 bg-muted rounded-lg">
+                <h4 className="font-bold text-lg mb-4">Tentang Pengembangan Sistem</h4>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Sistem Manajemen Kompetisi Anggar IKASI JABAR dikembangkan dengan teknologi modern untuk memberikan 
+                  pengalaman terbaik bagi pengguna. Platform ini dirancang dengan mempertimbangkan kebutuhan khusus 
+                  organisasi olahraga dan standar keamanan data yang tinggi.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <h5 className="font-semibold mb-2">Teknologi</h5>
+                    <ul className="space-y-1 text-muted-foreground">
+                      <li>• Next.js 14 (App Router)</li>
+                      <li>• TypeScript</li>
+                      <li>• Tailwind CSS</li>
+                      <li>• Prisma ORM</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h5 className="font-semibold mb-2">Fitur Utama</h5>
+                    <ul className="space-y-1 text-muted-foreground">
+                      <li>• Manajemen Data Atlet</li>
+                      <li>• Sistem Kompetisi</li>
+                      <li>• Dashboard Admin</li>
+                      <li>• Laporan Real-time</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="p-6 bg-muted rounded-lg">
+                <h4 className="font-bold text-lg mb-4">Keamanan & Performa</h4>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Sistem ini dibangun dengan mempertimbangkan aspek keamanan dan performa untuk memberikan 
+                  pengalaman yang aman dan responsif bagi semua pengguna.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <h5 className="font-semibold mb-2">Keamanan</h5>
+                    <ul className="space-y-1 text-muted-foreground">
+                      <li>• Autentikasi JWT</li>
+                      <li>• Enkripsi Data</li>
+                      <li>• Role-based Access</li>
+                      <li>• Audit Trail</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h5 className="font-semibold mb-2">Performa</h5>
+                    <ul className="space-y-1 text-muted-foreground">
+                      <li>• Server-side Rendering</li>
+                      <li>• Optimized Images</li>
+                      <li>• Caching Strategy</li>
+                      <li>• Database Indexing</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8 p-6 bg-primary/5 rounded-lg">
+              <h4 className="font-bold text-lg mb-4 text-primary">Kontak Pengembangan</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h5 className="font-semibold mb-2">FnCorporation</h5>
+                  <p className="text-sm text-muted-foreground mb-2">Email: contact@fncorporation.com</p>
+                  <p className="text-sm text-muted-foreground mb-2">Website: www.fncorporation.com</p>
+                  <p className="text-sm text-muted-foreground">Telp: +62 22 123-4567</p>
+                </div>
+                <div>
+                  <h5 className="font-semibold mb-2">A.M. Hud Nibras Fadhlullah</h5>
+                  <p className="text-sm text-muted-foreground mb-2">Email: hud.nibras@fncorporation.com</p>
+                  <p className="text-sm text-muted-foreground mb-2">LinkedIn: linkedin.com/in/hudnibras</p>
+                  <p className="text-sm text-muted-foreground">GitHub: github.com/hudnibras</p>
+                </div>
               </div>
             </div>
           </TabsContent>

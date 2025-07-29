@@ -26,6 +26,7 @@ import {
   Swords,
   UserPlus,
   History,
+  Shield,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -40,6 +41,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { AdminProfileDropdown } from "@/components/admin-profile-dropdown"
+import { AdminSidebarProfile } from "@/components/admin-sidebar-profile"
 
 
 export function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -51,38 +54,34 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
     setIsMounted(true)
   }, [])
 
-  // Update the menuItems array to include role-based access control
+  // Simplified menu items without role-based access control
   const menuItems = [
     {
       title: "Dashboard",
       icon: LayoutDashboard,
       href: "/admin",
-      roles: ["superadmin", "admin_kontingen", "admin_kegiatan"],
     },
     {
       title: "Regions",
       icon: Map,
       href: "/admin/regions",
-      roles: ["superadmin", "admin_kontingen"],
     },
     {
       title: "Athletes",
       icon: Users,
       href: "/admin/athletes",
-      roles: ["superadmin", "admin_kontingen"],
+    },
+    {
+      title: "Admins",
+      icon: Shield,
+      href: "/admin/admins",
     },
     {
       title: "Settings",
       icon: Settings,
       href: "/admin/settings",
-      roles: ["superadmin", "admin_kontingen", "admin_kegiatan"],
     },
   ]
-
-  // TODO: Replace this with actual user role from authentication context or props
-  const userRole = "superadmin"
-
-  const filteredMenuItems = menuItems.filter(item => item.roles.includes(userRole))
 
   if (!isMounted) {
     return null
@@ -100,20 +99,10 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
         </div>
         <ScrollArea className="h-[calc(100vh-4rem)] px-3 py-4">
           <div className="mb-4 px-4">
-            <div className="flex items-center gap-2 mb-2">
-              <Avatar className="h-8 w-8">
-                <AvatarImage src="/placeholder.svg" alt="Admin" />
-                <AvatarFallback>AD</AvatarFallback>
-              </Avatar>
-              <div>
-               
-               
-              </div>
-            </div>
-        
+            <AdminSidebarProfile />
           </div>
           <nav className="flex flex-col gap-1">
-            {filteredMenuItems.map((item) => (
+            {menuItems.map((item) => (
               <Link
                 key={item.title}
                 href={item.href}
@@ -152,17 +141,10 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
               </div>
               <ScrollArea className="h-[calc(100vh-4rem)] px-3 py-4">
                 <div className="mb-4 px-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src="/placeholder.svg" alt="Admin" />
-                      <AvatarFallback>AD</AvatarFallback>
-                    </Avatar>
-                    
-                  </div>
-                
+                  <AdminSidebarProfile />
                 </div>
                 <nav className="flex flex-col gap-1">
-                  {filteredMenuItems.map((item) => (
+                  {menuItems.map((item) => (
                     <Link
                       key={item.title}
                       href={item.href}
@@ -214,39 +196,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
                   <DropdownMenuItem className="justify-center cursor-pointer">View all notifications</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src="/placeholder.svg" alt="Admin" />
-                      <AvatarFallback>AD</AvatarFallback>
-                    </Avatar>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link href="/admin/settings">
-                      <User className="mr-2 h-4 w-4" />
-                      <span>Profile</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/admin/settings">
-                      <Settings className="mr-2 h-4 w-4" />
-                      <span>Settings</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link href="/login">
-                      <LogOut className="mr-2 h-4 w-4" />
-                      <span>Log out</span>
-                    </Link>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <AdminProfileDropdown />
             </div>
           </div>
         </header>

@@ -11,6 +11,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useState, useEffect } from "react"
+import { cn } from "@/lib/utils"
 
 interface Region {
   id: string
@@ -203,7 +204,7 @@ export default function RegionsPage() {
                         sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       />
                       <div className="absolute top-4 left-4">
-                        <Badge className="bg-primary/90 text-white">
+                        <Badge className="bg-slate-700/90 text-white border-0">
                           <Swords className="h-3 w-3 mr-1" />
                           IKASI
                         </Badge>
@@ -240,7 +241,7 @@ export default function RegionsPage() {
                       </div>
                     </CardContent>
                     <div className="p-6 pt-0 mt-auto">
-                      <Button asChild variant="default" className="w-full">
+                      <Button asChild variant="default" className="w-full bg-slate-700 hover:bg-slate-800 text-white border-0 shadow-sm hover:shadow-md transition-all duration-200">
                         <Link href={`/regions/${region.id}`}>Lihat Detail</Link>
                       </Button>
                     </div>
@@ -263,7 +264,7 @@ export default function RegionsPage() {
                           sizes="(max-width: 768px) 100vw, (max-width: 1024px) 33vw, 25vw"
                         />
                         <div className="absolute top-4 left-4">
-                          <Badge className="bg-primary/90 text-white">
+                          <Badge className="bg-slate-700/90 text-white border-0">
                             <Swords className="h-3 w-3 mr-1" />
                             IKASI
                           </Badge>
@@ -290,7 +291,7 @@ export default function RegionsPage() {
                           </div>
                         </div>
                         <p className="text-sm text-muted-foreground mb-4">{region.description}</p>
-                        <Button asChild variant="default">
+                        <Button asChild variant="default" className="bg-slate-700 hover:bg-slate-800 text-white border-0 shadow-sm hover:shadow-md transition-all duration-200">
                           <Link href={`/regions/${region.id}`}>Lihat Detail</Link>
                         </Button>
                       </div>
@@ -333,7 +334,12 @@ export default function RegionsPage() {
                       variant={currentPage === page ? "default" : "outline"}
                       size="sm"
                       onClick={() => handlePageChange(page)}
-                      className="w-8 h-8 p-0"
+                      className={cn(
+                        "w-8 h-8 p-0",
+                        currentPage === page 
+                          ? "bg-slate-700 hover:bg-slate-800 text-white border-0 shadow-sm" 
+                          : "border-slate-300 hover:bg-slate-50 text-slate-700"
+                      )}
                     >
                       {page}
                     </Button>
@@ -357,7 +363,7 @@ export default function RegionsPage() {
         <div className="bg-muted py-12 mt-12 rounded-lg">
           <div className="container">
             <div className="flex items-center mb-6">
-              <Swords className="h-6 w-6 text-primary mr-3" />
+              <Swords className="h-6 w-6 text-slate-600 mr-3" />
               <h2 className="text-2xl font-bold">Distribusi Regional IKASI</h2>
             </div>
             <div className="bg-background rounded-lg border p-4 h-[400px] flex items-center justify-center">

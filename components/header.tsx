@@ -11,12 +11,10 @@ export function Header() {
 
   const navigation = [
     { name: "Beranda", href: "/" },
-    // { name: "Event", href: "/events" },
     { name: "Atlet", href: "/athletes" },
-    // { name: "Pertandingan", href: "/matches" },
-    // { name: "Hasil", href: "/results" },
     { name: "Wilayah", href: "/regions" },
     { name: "Tentang", href: "/about" },
+    { name: "Kontak", href: "/contact" },
   ]
 
   return (

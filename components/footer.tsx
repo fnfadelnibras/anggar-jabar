@@ -10,71 +10,69 @@ export function Footer() {
               <div className="flex items-center gap-2">
                 <Swords className="h-5 w-5 text-primary" />
                 <h3 className="font-bold">
-                  ANGGAR<span className="text-primary">ID</span>
+                  IKASI<span className="text-primary">JABAR</span>
                 </h3>
               </div>
               <p className="text-sm text-muted-foreground">
-                Official platform for regional fencing competitions in Indonesia.
+                Sistem Manajemen Kompetisi Anggar Regional Jawa Barat
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Dikembangkan oleh FnCorporation
               </p>
             </div>
             <div>
-              <h4 className="font-semibold mb-3">Quick Links</h4>
+              <h4 className="font-semibold mb-3">Menu Utama</h4>
               <ul className="space-y-2 text-sm">
                 <li>
                   <Link href="/" className="hover:text-primary">
-                    Home
+                    Beranda
                   </Link>
                 </li>
                 <li>
                   <Link href="/athletes" className="hover:text-primary">
-                    Athletes
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/events" className="hover:text-primary">
-                    Events
+                    Atlet
                   </Link>
                 </li>
                 <li>
                   <Link href="/regions" className="hover:text-primary">
-                    Regions
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/results" className="hover:text-primary">
-                    Results
+                    Wilayah
                   </Link>
                 </li>
                 <li>
                   <Link href="/about" className="hover:text-primary">
-                    About
+                    Tentang Kami
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/admin" className="hover:text-primary">
+                    Admin Panel
                   </Link>
                 </li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-3">Resources</h4>
+              <h4 className="font-semibold mb-3">Informasi</h4>
               <ul className="space-y-2 text-sm">
                 <li>
-                  <Link href="#" className="hover:text-primary">
-                    Rules & Regulations
+                  <Link href="/about" className="hover:text-primary">
+                    Tentang Kami
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="hover:text-primary">
-                    About Fencing
+                  <Link href="/contact" className="hover:text-primary">
+                    Hubungi Kami
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="hover:text-primary">
-                    Contact Us
+                  <Link href="/privacy" className="hover:text-primary">
+                    Privacy Policy
                   </Link>
                 </li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-3">Connect</h4>
-              <div className="flex space-x-3">
+              <h4 className="font-semibold mb-3">Kontak</h4>
+              <div className="flex space-x-3 mb-4">
                 <Link href="#" className="hover:text-primary">
                   <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path
@@ -99,10 +97,28 @@ export function Footer() {
                   </svg>
                 </Link>
               </div>
+              <div className="text-xs text-muted-foreground">
+                <p>Email: info@ikasijabar.org</p>
+                <p>Telp: (022) 123-4567</p>
+              </div>
             </div>
           </div>
-          <div className="mt-8 border-t pt-8 text-center text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} ANGGARID. All rights reserved.
+          <div className="mt-8 border-t pt-8">
+            <div className="flex flex-col md:flex-row justify-between items-center text-sm text-muted-foreground">
+              <div className="mb-4 md:mb-0">
+                &copy; {new Date().getFullYear()} IKASI JABAR. All rights reserved.
+              </div>
+              <div className="flex flex-col md:flex-row items-center gap-4">
+                <div className="text-center md:text-left">
+                  <p className="font-medium">Dikembangkan oleh FnCorporation</p>
+                  <p className="text-xs">Developer: A.M. Hud Nibras Fadhlullah</p>
+                </div>
+                <div className="flex gap-4 text-xs">
+                  <Link href="/privacy" className="hover:text-primary">Privacy Policy</Link>
+                  <Link href="#" className="hover:text-primary">Terms of Service</Link>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
     </footer>

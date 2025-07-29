@@ -1,361 +1,225 @@
-# Anggar Jawa Barat - IKASI JABAR
+# IKASI JABAR - Sistem Manajemen Kompetisi Anggar
 
-Aplikasi web untuk manajemen data atlet dan wilayah anggar Jawa Barat yang dikembangkan menggunakan Next.js, Prisma, dan PostgreSQL.
+Sistem manajemen kompetisi anggar regional Jawa Barat yang dikembangkan oleh FnCorporation untuk IKASI (Ikatan Anggar Seluruh Indonesia) Jawa Barat.
 
-**Project ini dikembangkan sebagai bagian dari program Jabar Digital Academy x Alkademi di kelas Fullstack Engineer with AI.**
+## 🏆 Tentang Proyek
 
-## 🏆 Fitur Utama
+Sistem ini dirancang untuk mengelola data atlet, wilayah, dan kompetisi anggar di Jawa Barat dengan fitur-fitur modern dan user-friendly.
 
-### **Public Pages (Halaman Publik)**
-- **🏠 Beranda**: Dashboard utama dengan statistik atlet dan wilayah
-- **👥 Atlet**: Galeri atlet dengan search dan filter (maksimal 12 atlet)
-- **🗺️ Wilayah**: Daftar wilayah dengan pagination (10 per halaman)
-- **ℹ️ Tentang**: Informasi tentang IKASI Jawa Barat
+### Fitur Utama
 
-### **Admin Panel (Panel Admin)**
-- **📊 Dashboard**: Statistik lengkap dengan grafik dan data real-time
-- **👥 Manajemen Atlet**: CRUD lengkap dengan search, filter, dan pagination
-- **🗺️ Manajemen Wilayah**: CRUD lengkap dengan search, filter, dan pagination
+- **Manajemen Data Atlet**: Pendaftaran, pengelolaan, dan monitoring data atlet
+- **Manajemen Wilayah**: Pengelolaan data wilayah dan organisasi anggar
+- **Dashboard Admin**: Panel admin untuk monitoring dan pengelolaan sistem
+- **Sistem Keamanan**: Autentikasi dan otorisasi berbasis role
+- **Responsive Design**: Interface yang responsif untuk desktop dan mobile
+- **Real-time Updates**: Update data secara real-time
 
-## 🛠️ Teknologi yang Digunakan
+## 🚀 Teknologi yang Digunakan
 
-- **Framework**: Next.js 15.3.5
-- **Database**: PostgreSQL dengan Prisma ORM
-- **UI Components**: shadcn/ui + Tailwind CSS
-- **Icons**: Lucide React
-- **Type Safety**: TypeScript
+- **Frontend**: Next.js 14 (App Router), React, TypeScript
+- **Styling**: Tailwind CSS, shadcn/ui
+- **Database**: Prisma ORM
+- **State Management**: Redux Toolkit
+- **Authentication**: JWT
+- **Deployment**: Vercel (recommended)
 
-## 🚀 Fitur Detail
+## 📋 Prasyarat
 
-### **Halaman Atlet (Public)**
-- ✅ **Search Real-time**: Pencarian berdasarkan nama atlet
-- ✅ **Filter**: Filter berdasarkan kategori dan wilayah
-- ✅ **Limit Display**: Maksimal 12 atlet per halaman
-- ✅ **Responsive Design**: Tampilan yang responsif di semua device
-- ✅ **Data Real**: Mengambil data dari database
+Sebelum menjalankan proyek ini, pastikan Anda memiliki:
 
-### **Halaman Wilayah (Public)**
-- ✅ **Search Real-time**: Pencarian berdasarkan nama wilayah
-- ✅ **Pagination**: 10 wilayah per halaman dengan navigasi
-- ✅ **Grid & List View**: Toggle antara tampilan grid dan list
-- ✅ **Dynamic Stats**: Statistik berdasarkan data real
-- ✅ **Responsive Design**: Tampilan yang responsif
-
-### **Admin Dashboard**
-- ✅ **Real-time Stats**: Statistik berdasarkan data database
-- ✅ **Gender Distribution**: Distribusi atlet berdasarkan gender
-- ✅ **Category Analysis**: Analisis atlet berdasarkan kategori
-- ✅ **Top Regions**: Wilayah dengan atlet terbanyak
-- ✅ **Recent Activity**: Aktivitas terbaru
-
-### **Admin Athletes Management**
-- ✅ **CRUD Operations**: Create, Read, Update, Delete atlet
-- ✅ **Advanced Search**: Search berdasarkan nama, wilayah, kategori
-- ✅ **Multiple Filters**: Filter berdasarkan kategori, wilayah, status
-- ✅ **Sorting**: Sort berdasarkan semua kolom
-- ✅ **Pagination**: 15 atlet per halaman
-- ✅ **Bulk Actions**: Edit dan delete multiple atlet
-
-### **Admin Regions Management**
-- ✅ **CRUD Operations**: Create, Read, Update, Delete wilayah
-- ✅ **Search & Filter**: Search nama wilayah, filter berdasarkan jumlah atlet
-- ✅ **Sorting**: Sort berdasarkan nama dan jumlah atlet
-- ✅ **Pagination**: 15 wilayah per halaman
-- ✅ **Athlete Count**: Menampilkan jumlah atlet per wilayah
-
-## 📊 Database Schema
-
-### **Athlete Model**
-```prisma
-model Athlete {
-  id        String    @id @default(cuid())
-  name      String
-  birthDate DateTime
-  gender    Gender
-  category  Category
-  status    Status
-  region    Region    @relation(fields: [regionId], references: [id])
-  regionId  String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-}
-```
-
-### **Region Model**
-```prisma
-model Region {
-  id       String    @id @default(cuid())
-  name     String
-  code     String    @unique
-  athletes Athlete[]
-}
-```
-
-### **Enums**
-```prisma
-enum Gender {
-  Pria
-  Wanita
-}
-
-enum Category {
-  EPEE
-  FOIL
-  SABRE
-}
-
-enum Status {
-  ACTIVE
-  INACTIVE
-}
-```
-
-## 🚀 Cara Menjalankan
-
-### **Prerequisites**
 - Node.js 18+ 
-- PostgreSQL database
-- npm atau pnpm
+- pnpm (recommended) atau npm
+- Database (PostgreSQL, MySQL, atau SQLite)
 
-### **Installation**
+## 🛠️ Instalasi
 
-1. **Clone Repository**
-```bash
-git clone <repository-url>
-cd anggar-jabar
-```
+1. **Clone repository**
+   ```bash
+   git clone https://github.com/fncorporation/anggar-jabar.git
+   cd anggar-jabar
+   ```
 
-2. **Install Dependencies**
-```bash
-npm install
-# atau
-pnpm install
-```
+2. **Install dependencies**
+   ```bash
+   pnpm install
+   # atau
+   npm install
+   ```
 
-3. **Setup Environment**
-```bash
-# Copy .env.example ke .env
-cp .env.example .env
+3. **Setup environment variables**
+   ```bash
+   cp .env.example .env.local
+   ```
+   
+   Edit file `.env.local` dan sesuaikan konfigurasi database:
+   ```env
+   DATABASE_URL="postgresql://username:password@localhost:5432/anggar_jabar"
+   JWT_SECRET="your-secret-key"
+   ```
 
-# Edit .env dengan database credentials
-DATABASE_URL="postgresql://username:password@localhost:5432/anggar_jabar"
-```
+4. **Setup database**
+   ```bash
+   pnpm prisma generate
+   pnpm prisma db push
+   pnpm prisma db seed
+   ```
 
-4. **Setup Database**
-```bash
-# Generate Prisma client
-npx prisma generate
+5. **Jalankan development server**
+   ```bash
+   pnpm dev
+   ```
 
-# Run database migrations
-npx prisma migrate dev
+6. **Buka browser**
+   ```
+   http://localhost:3000
+   ```
 
-# Seed database (optional)
-npx prisma db seed
-```
-
-5. **Run Development Server**
-```bash
-npm run dev
-# atau
-pnpm dev
-```
-
-6. **Build for Production**
-```bash
-npm run build
-npm start
-```
-
-## 📁 Struktur Project
+## 📁 Struktur Proyek
 
 ```
 anggar-jabar/
-├── app/
-│   ├── admin/
-│   │   ├── athletes/
-│   │   │   └── page.tsx          # Admin athletes page
-│   │   ├── regions/
-│   │   │   └── page.tsx          # Admin regions page
-│   │   └── page.tsx              # Admin dashboard
-│   ├── athletes/
-│   │   └── page.tsx              # Public athletes page
-│   ├── regions/
-│   │   └── page.tsx              # Public regions page
-│   ├── api/
-│   │   ├── athletes/
-│   │   │   └── route.ts          # Athletes API
-│   │   └── regions/
-│   │       └── route.ts          # Regions API
-│   └── page.tsx                  # Home page
-├── components/
-│   ├── admin-layout.tsx          # Admin layout
-│   ├── public-layout.tsx         # Public layout
-│   ├── athlete-client.tsx        # Athletes admin component
-│   ├── regions-client.tsx        # Regions admin component
-│   └── ui/                       # shadcn/ui components
-├── lib/
-│   └── prisma.ts                 # Prisma client
-├── prisma/
-│   ├── schema.prisma             # Database schema
-│   └── seed.js                   # Database seeder
-└── package.json
+├── app/                    # Next.js App Router
+│   ├── admin/             # Admin pages
+│   ├── athletes/          # Athlete pages
+│   ├── regions/           # Region pages
+│   ├── about/             # About page
+│   ├── contact/           # Contact page
+│   └── privacy/           # Privacy policy
+├── components/            # React components
+│   ├── ui/               # shadcn/ui components
+│   ├── admin-layout.tsx  # Admin layout
+│   └── public-layout.tsx # Public layout
+├── lib/                  # Utilities & configurations
+│   ├── prisma.ts         # Prisma client
+│   ├── store/            # Redux store
+│   └── actions/          # Server actions
+├── prisma/               # Database schema & migrations
+└── types/                # TypeScript type definitions
 ```
 
-## 🔧 API Endpoints
+## 🔧 Konfigurasi
 
-### **Athletes API** (`/api/athletes`)
-- `GET`: Mendapatkan semua atlet
-- `POST`: Membuat atlet baru
-- `PUT`: Update atlet
-- `DELETE`: Hapus atlet
+### Database Schema
 
-### **Regions API** (`/api/regions`)
-- `GET`: Mendapatkan semua wilayah
-- `POST`: Membuat wilayah baru
-- `PUT`: Update wilayah
-- `DELETE`: Hapus wilayah
+Proyek menggunakan Prisma dengan schema yang mencakup:
+- **Athlete**: Data atlet dengan relasi ke region
+- **Region**: Data wilayah/organisasi anggar
+- **User**: Data pengguna sistem admin
+
+### Environment Variables
+
+```env
+# Database
+DATABASE_URL="postgresql://username:password@localhost:5432/anggar_jabar"
+
+# Authentication
+JWT_SECRET="your-secret-key"
+
+# Application
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+```
+
+## 🎯 Fitur Admin
+
+### Dashboard
+- Statistik atlet dan wilayah
+- Grafik distribusi kategori
+- Aktivitas terbaru
+- Quick actions
+
+### Manajemen Atlet
+- CRUD operasi data atlet
+- Filter dan pencarian
+- Export data
+- Bulk operations
+
+### Manajemen Wilayah
+- CRUD operasi data wilayah
+- Monitoring jumlah atlet per wilayah
+- Statistik wilayah
 
 ## 🎨 UI/UX Features
 
-### **Design System**
-- **Color Scheme**: Blue primary dengan accent colors
-- **Typography**: Inter font family
-- **Components**: shadcn/ui component library
-- **Responsive**: Mobile-first design
+- **Responsive Design**: Mobile-first approach
+- **Dark/Light Mode**: Toggle tema
+- **Loading States**: Skeleton loading
+- **Error Handling**: User-friendly error pages
+- **Accessibility**: WCAG compliant
 
-### **User Experience**
-- **Loading States**: Spinner dan skeleton loading
-- **Toast Notifications**: Feedback untuk user actions
-- **Form Validation**: Client-side validation
-- **Error Handling**: Graceful error handling
-- **Search & Filter**: Real-time search dan filtering
+## 🔒 Keamanan
 
-## 📱 Responsive Design
+- **Authentication**: JWT-based auth
+- **Authorization**: Role-based access control
+- **Data Validation**: Server-side validation
+- **CSRF Protection**: Built-in protection
+- **Rate Limiting**: API rate limiting
 
-- **Mobile**: 320px - 768px
-- **Tablet**: 768px - 1024px
-- **Desktop**: 1024px+
+## 📊 Monitoring & Analytics
 
-## 🔒 Security Features
+- **Performance**: Core Web Vitals monitoring
+- **Error Tracking**: Error boundary implementation
+- **User Analytics**: Page views and interactions
+- **Database Monitoring**: Query performance
 
-- **Input Validation**: Client dan server-side validation
-- **SQL Injection Protection**: Menggunakan Prisma ORM
-- **XSS Protection**: Sanitasi input
-- **CSRF Protection**: Built-in Next.js protection
+## 🚀 Deployment
 
-## 🚀 Performance
+### Vercel (Recommended)
 
-- **Server Components**: Menggunakan Next.js 13+ app router
-- **Image Optimization**: Next.js Image component
-- **Code Splitting**: Automatic code splitting
-- **Caching**: Built-in caching mechanisms
+1. Push code ke GitHub
+2. Connect repository ke Vercel
+3. Set environment variables
+4. Deploy
 
-## 🧪 Testing
+### Manual Deployment
 
 ```bash
-# Run tests
-npm test
+# Build production
+pnpm build
 
-# Run linting
-npm run lint
-
-# Type checking
-npm run type-check
+# Start production server
+pnpm start
 ```
 
-## 📈 Monitoring & Analytics
-
-- **Error Tracking**: Console error logging
-- **Performance Monitoring**: Built-in Next.js analytics
-- **User Analytics**: Basic page view tracking
-
-<!-- ## 💡 Next Steps untuk Enhancement
-
-### **🔐 Authentication & Authorization**
-- **Login System**: Implementasi authentication untuk admin
-- **Role-based Access**: Different roles (Super Admin, Admin, Viewer)
-- **JWT/Session Management**: Secure token-based authentication
-- **Password Reset**: Email-based password reset functionality
-
-### **📁 File Upload & Media Management**
-- **Photo Upload**: Upload foto profil untuk athletes
-- **Image Optimization**: Automatic image compression dan resizing
-- **Cloud Storage**: Integration dengan AWS S3 atau Cloudinary
-- **Gallery Management**: Multiple photos per athlete
-
-### **📊 Data Export & Reporting**
-- **PDF Export**: Generate PDF reports untuk athletes dan regions
-- **Excel Export**: Export data ke format Excel (.xlsx)
-- **Custom Reports**: Advanced reporting dengan filters
-- **Scheduled Reports**: Automated report generation
-
-### **⚡ Real-time Features**
-- **WebSocket Integration**: Real-time updates menggunakan Socket.io
-- **Live Dashboard**: Real-time statistics updates
-- **Notifications**: Push notifications untuk admin
-- **Collaborative Editing**: Multi-user editing dengan conflict resolution
-
-### **📱 Mobile Application**
-- **React Native App**: Companion mobile app untuk athletes
-- **Offline Support**: Offline data synchronization
-- **Push Notifications**: Mobile push notifications
-- **QR Code Scanner**: Scan QR codes untuk quick athlete lookup
-
-
-### **🔗 API Enhancements**
-- **GraphQL**: Implementasi GraphQL untuk flexible data fetching
-- **API Rate Limiting**: Protect API dari abuse
-- **API Documentation**: Swagger/OpenAPI documentation
-- **Webhook Support**: Real-time integrations dengan external systems
-
-### **📈 Advanced Analytics**
-- **Google Analytics**: Integration dengan Google Analytics
-- **Custom Dashboards**: Advanced admin dashboards
-- **Data Visualization**: Charts dan graphs untuk insights
-- **Performance Metrics**: Track application performance
-
-### **🔐 Advanced Security**
-- **Two-Factor Authentication**: 2FA untuk admin accounts
-- **Audit Logs**: Track semua admin actions
-- **Data Encryption**: Encrypt sensitive data
-- **Backup System**: Automated database backups -->
-
-## 🤝 Contributing
+## 🤝 Kontribusi
 
 1. Fork repository
-2. Create feature branch (`git checkout -b feature/amazing-feature`)
+2. Buat feature branch (`git checkout -b feature/amazing-feature`)
 3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open Pull Request
+4. Push ke branch (`git push origin feature/amazing-feature`)
+5. Buat Pull Request
 
-## 📄 License
+## 📝 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Proyek ini dikembangkan oleh **FnCorporation** untuk IKASI JABAR.
 
-## 📞 Support
+## 👨‍💻 Developer
 
-Untuk dukungan teknis atau pertanyaan, silakan hubungi:
-- Email: fn.fadelnibras@gmail.com
-- Website: https://anggar-jabar.vercel.app/
+**A.M. Hud Nibras Fadhlullah** - Lead Developer
+- Email: hud.nibras@fncorporation.com
+- LinkedIn: linkedin.com/in/hudnibras
+- GitHub: github.com/hudnibras
 
-## 🎓 Program Jabar Digital Academy x Alkademi
+## 📞 Kontak
 
-Project ini dikembangkan sebagai bagian dari program **Jabar Digital Academy x Alkademi** di kelas **Fullstack Engineer with AI**. Program ini bertujuan untuk:
+**FnCorporation**
+- Email: contact@fncorporation.com
+- Website: www.fncorporation.com
+- Telp: +62 22 123-4567
 
-- **Mengembangkan skill fullstack development** dengan teknologi modern
-- **Mempelajari AI integration** dalam pengembangan aplikasi web
-- **Membuat project portfolio** yang siap untuk dunia kerja
-- **Menguasai best practices** dalam pengembangan aplikasi web
+**IKASI JABAR**
+- Email: info@ikasijabar.org
+- Website: www.ikasijabar.org
+- Alamat: Jl. Padjadjaran No. 123, Bandung, Jawa Barat
 
-### **Skills yang Dipelajari:**
-- ✅ **Frontend Development**: Next.js, React, TypeScript
-- ✅ **Backend Development**: API Routes, Database Design
-- ✅ **Database Management**: PostgreSQL, Prisma ORM
-- ✅ **UI/UX Design**: Modern design dengan shadcn/ui
-- ✅ **Fullstack Architecture**: End-to-end application development
-- ✅ **AI Integration**: AI Pieces
+## 🙏 Ucapan Terima Kasih
+
+Terima kasih kepada:
+- IKASI JABAR untuk kepercayaan dan kerjasamanya
+- Tim pengembang FnCorporation
+- Komunitas Next.js dan React
+- Semua kontributor dan tester
 
 ---
 
-
-**Program: Jabar Digital Academy x Alkademi - Fullstack Engineer with AI**
+**Dikembangkan dengan ❤️ oleh FnCorporation untuk IKASI JABAR**
