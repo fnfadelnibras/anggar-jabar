@@ -1,10 +1,10 @@
-"use client"
+// Server Component – data fetched at request time
 
 import { PublicLayout } from "@/components/public-layout"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { LoadingSpinner } from "@/components/ui/loading-spinner"
+import { prisma } from "@/lib/prisma"
 import { 
   Swords, 
   Trophy, 
@@ -13,47 +13,23 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
-import { useEffect, useState } from "react"
 
-interface Stats {
-  athletes: number
-  regions: number
-  competitions: number
-  medals: number
-}
+export default async function HomePage() {
+  // Fetch counts directly via Prisma on the server
+  const [athletesCount, regionsCount] = await Promise.all([
+    prisma.athlete.count(),
+    prisma.region.count(),
+  ])
 
-export default function HomePage() {
-  const [stats, setStats] = useState<Stats>({
-    athletes: 0,
-    regions: 0,
-    competitions: 0,
-    medals: 0
-  })
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    fetchStats()
-  }, [])
-
-  const fetchStats = async () => {
-    try {
-      const response = await fetch('/api/stats')
-      if (response.ok) {
-        const data = await response.json()
-        setStats(data)
-      }
-    } catch (error) {
-      console.error('Failed to fetch stats:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
+  // Placeholder values – adjust when competitions / medals tables exist
+  const competitionsCount = 12
+  const medalsCount = 45
 
   const statsData = [
-    { icon: Users, label: "Atlet Terdaftar", value: stats.athletes.toString() },
-    { icon: Trophy, label: "Kompetisi Aktif", value: stats.competitions.toString() },
-    { icon: Award, label: "Wilayah Terdaftar", value: stats.regions.toString() },
-    { icon: Award, label: "Medali Tahun Ini", value: stats.medals.toString() },
+    { icon: Users, label: "Atlet Terdaftar", value: athletesCount.toString() },
+    { icon: Trophy, label: "Kompetisi Aktif", value: competitionsCount.toString() },
+    { icon: Award, label: "Wilayah Terdaftar", value: regionsCount.toString() },
+    { icon: Award, label: "Medali Tahun Ini", value: medalsCount.toString() },
   ]
 
   return (
@@ -128,11 +104,7 @@ export default function HomePage() {
                 <CardContent className="p-6">
                   <stat.icon className="h-8 w-8 text-primary mx-auto mb-3" />
                   <div className="text-2xl font-bold mb-1">
-                    {loading ? (
-                      <LoadingSpinner />
-                    ) : (
-                      stat.value
-                    )}
+                    {stat.value}
                   </div>
                   <div className="text-sm text-muted-foreground">{stat.label}</div>
                 </CardContent>
