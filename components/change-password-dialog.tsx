@@ -190,7 +190,7 @@ export function ChangePasswordDialog() {
             <Button type="submit" disabled={loading}>
               {loading ? (
                 <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-transparent border-t-white mr-2"></div>
                   Changing...
                 </>
               ) : (

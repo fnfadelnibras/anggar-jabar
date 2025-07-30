@@ -130,7 +130,7 @@ export default function AthletesPage() {
       <PublicLayout>
         <div className="container py-12 sm:py-16">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto"></div>
+            <div className="animate-spin rounded-full h-32 w-32 border-4 border-transparent border-t-gray-400 mx-auto"></div>
             <p className="mt-4 text-muted-foreground">Loading athletes...</p>
           </div>
         </div>

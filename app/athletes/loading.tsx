@@ -5,7 +5,7 @@ export default function AthletesLoading() {
   return (
     <PublicLayout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-primary/90 to-accent/90 text-white py-20">
+      <section className="py-20">
         <div className="container">
           <div className="text-center">
             <LoadingSpinner size="lg" className="mb-4" />
