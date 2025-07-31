@@ -18,7 +18,7 @@ export function AnimatedHeroImages() {
     }, 5000) // Change image every 5 seconds
 
     return () => clearInterval(interval)
-  }, [])
+  }, [heroImages.length])
 
   const handlePrev = () => {
     setCurrentImageIndex((prev: number) => (prev - 1 + heroImages.length) % heroImages.length)
