@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
 import { PublicLayout } from "@/components/public-layout"
@@ -14,12 +13,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { toast } from "sonner"
 import {
   MapPin, Users, Trophy, Calendar, ChevronLeft, ChevronRight, Share2, Mail,
-  Phone, Globe, Medal, Clock, Building
+  Phone, Globe, Clock, Building
 } from "lucide-react"
 
 // Terima 'region' sebagai props dari Server Component
 export function RegionDetailPageClient({ region }: { region: any }) {
-  const router = useRouter()
   const [activeTab, setActiveTab] = useState("overview")
 
   const handleShare = () => {
@@ -60,10 +58,6 @@ export function RegionDetailPageClient({ region }: { region: any }) {
                   <Building className="h-5 w-5 mr-2" />
                   <span>{region.clubsCount} Clubs</span>
                 </div>
-                <div className="flex items-center">
-                  <Trophy className="h-5 w-5 mr-2" />
-                  <span>{region.medals.gold + region.medals.silver + region.medals.bronze} Total Medals</span>
-                </div>
               </div>
             </div>
             <div className="flex gap-2">
@@ -75,7 +69,9 @@ export function RegionDetailPageClient({ region }: { region: any }) {
                 <Share2 className="h-4 w-4 mr-2" />
                 Share
               </Button>
-              <Button className="bg-primary text-primary-foreground hover:bg-primary/90">View Athletes</Button>
+              <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90">
+                <Link href="/athletes">View Athletes</Link>
+              </Button>
             </div>
           </div>
         </div>
@@ -85,7 +81,6 @@ export function RegionDetailPageClient({ region }: { region: any }) {
         <Tabs defaultValue="overview" value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="mb-6">
             <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="events">Events</TabsTrigger>
             <TabsTrigger value="athletes">Top Athletes</TabsTrigger>
             <TabsTrigger value="clubs">Clubs</TabsTrigger>
           </TabsList>
@@ -99,23 +94,6 @@ export function RegionDetailPageClient({ region }: { region: any }) {
                   </CardHeader>
                   <CardContent>
                     <p className="text-muted-foreground">{region.description}</p>
-                    <div className="mt-6">
-                      <h3 className="text-lg font-medium mb-4">Medal Achievements</h3>
-                      <div className="flex gap-4">
-                        <div className="flex-1 bg-yellow-50 dark:bg-yellow-950/30 rounded-lg p-4 text-center">
-                          <div className="text-3xl font-bold text-yellow-600">{region.medals.gold}</div>
-                          <div className="text-sm text-muted-foreground">Gold</div>
-                        </div>
-                        <div className="flex-1 bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4 text-center">
-                          <div className="text-3xl font-bold text-gray-500">{region.medals.silver}</div>
-                          <div className="text-sm text-muted-foreground">Silver</div>
-                        </div>
-                        <div className="flex-1 bg-amber-50 dark:bg-amber-950/30 rounded-lg p-4 text-center">
-                          <div className="text-3xl font-bold text-amber-700">{region.medals.bronze}</div>
-                          <div className="text-sm text-muted-foreground">Bronze</div>
-                        </div>
-                      </div>
-                    </div>
                     <Separator className="my-6" />
                     <h3 className="text-lg font-medium mb-4">Contact Information</h3>
                     <div className="space-y-3">
@@ -144,46 +122,6 @@ export function RegionDetailPageClient({ region }: { region: any }) {
                     </div>
                   </CardContent>
                 </Card>
-                <div className="mt-6">
-                  <h3 className="text-xl font-semibold mb-4">Upcoming Events</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {region.upcomingEvents.map((event: any) => (
-                      <Card key={event.id} className="overflow-hidden">
-                        <div className="relative h-40">
-                          <Image
-                            src={event.image || "/placeholder.svg"}
-                            alt={event.name}
-                            fill
-                            className="object-cover"
-                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                          />
-                          <div className="absolute top-2 right-2">
-                            <Badge className="bg-primary">Upcoming</Badge>
-                          </div>
-                        </div>
-                        <CardContent className="pt-4">
-                          <h4 className="font-semibold text-lg mb-2">{event.name}</h4>
-                          <div className="space-y-2 text-sm">
-                            <div className="flex items-center">
-                              <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
-                              <span>{event.date}</span>
-                            </div>
-                            <div className="flex items-center">
-                              <MapPin className="h-4 w-4 mr-2 text-muted-foreground" />
-                              <span>{event.location}</span>
-                            </div>
-                          </div>
-                          <Button variant="link" className="p-0 mt-2" asChild>
-                            <Link href={`/events/${event.id}`}>
-                              View Details
-                              <ChevronRight className="ml-1 h-4 w-4" />
-                            </Link>
-                          </Button>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                </div>
               </div>
               <div>
                 <Card>
@@ -217,12 +155,6 @@ export function RegionDetailPageClient({ region }: { region: any }) {
                             <p className="font-medium truncate">{athlete.name}</p>
                             <p className="text-sm text-muted-foreground">{athlete.category}</p>
                           </div>
-                          <div className="flex items-center">
-                            <Medal className="h-4 w-4 text-yellow-500 mr-1" />
-                            <span className="text-sm font-medium">
-                              {athlete.medals.gold + athlete.medals.silver + athlete.medals.bronze}
-                            </span>
-                          </div>
                         </div>
                       ))}
                     </div>
@@ -232,117 +164,6 @@ export function RegionDetailPageClient({ region }: { region: any }) {
                   </CardContent>
                 </Card>
               </div>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="events" className="mt-0">
-            <div className="grid grid-cols-1 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Upcoming Events</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {region.upcomingEvents.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {region.upcomingEvents.map((event: any) => (
-                        <Card key={event.id} className="overflow-hidden">
-                          <div className="relative h-40">
-                            <Image
-                              src={event.image || "/placeholder.svg"}
-                              alt={event.name}
-                              fill
-                              className="object-cover"
-                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                            />
-                            <div className="absolute top-2 right-2">
-                              <Badge className="bg-primary">Upcoming</Badge>
-                            </div>
-                          </div>
-                          <CardContent className="pt-4">
-                            <h4 className="font-semibold text-lg mb-2">{event.name}</h4>
-                            <div className="space-y-2 text-sm">
-                              <div className="flex items-center">
-                                <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
-                                <span>{event.date}</span>
-                              </div>
-                              <div className="flex items-center">
-                                <MapPin className="h-4 w-4 mr-2 text-muted-foreground" />
-                                <span>{event.location}</span>
-                              </div>
-                            </div>
-                            <Button variant="link" className="p-0 mt-2" asChild>
-                              <Link href={`/events/${event.id}`}>
-                                View Details
-                                <ChevronRight className="ml-1 h-4 w-4" />
-                              </Link>
-                            </Button>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-8">
-                      <p className="text-muted-foreground">No upcoming events scheduled for this region.</p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Past Events</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {region.pastEvents.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {region.pastEvents.map((event: any) => (
-                        <Card key={event.id} className="overflow-hidden">
-                          <div className="relative h-40">
-                            <Image
-                              src={event.image || "/placeholder.svg"}
-                              alt={event.name}
-                              fill
-                              className="object-cover"
-                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                            />
-                            <div className="absolute top-2 right-2">
-                              <Badge variant="secondary">Completed</Badge>
-                            </div>
-                          </div>
-                          <CardContent className="pt-4">
-                            <h4 className="font-semibold text-lg mb-2">{event.name}</h4>
-                            <div className="space-y-2 text-sm">
-                              <div className="flex items-center">
-                                <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
-                                <span>{event.date}</span>
-                              </div>
-                              <div className="flex items-center">
-                                <MapPin className="h-4 w-4 mr-2 text-muted-foreground" />
-                                <span>{event.location}</span>
-                              </div>
-                              <div className="flex items-center">
-                                <Trophy className="h-4 w-4 mr-2 text-muted-foreground" />
-                                <span>{event.results}</span>
-                              </div>
-                            </div>
-                            <div className="flex justify-between items-center mt-2">
-                              <Button variant="link" className="p-0" asChild>
-                                <Link href={`/events/${event.id}`}>Event Details</Link>
-                              </Button>
-                              <Button variant="link" className="p-0" asChild>
-                                <Link href={`/results?event=${event.id}`}>View Results</Link>
-                              </Button>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-8">
-                      <p className="text-muted-foreground">No past events found for this region.</p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
             </div>
           </TabsContent>
 
@@ -372,26 +193,6 @@ export function RegionDetailPageClient({ region }: { region: any }) {
                           <div className="flex items-center justify-between">
                             <span className="text-sm">Achievements:</span>
                             <span className="text-sm font-medium">{athlete.achievements}</span>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <div className="flex items-center">
-                              <div className="w-6 h-6 rounded-full bg-yellow-100 flex items-center justify-center mr-1">
-                                <span className="text-xs font-medium text-yellow-800">{athlete.medals.gold}</span>
-                              </div>
-                              <span className="text-xs text-muted-foreground">Gold</span>
-                            </div>
-                            <div className="flex items-center">
-                              <div className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center mr-1">
-                                <span className="text-xs font-medium text-gray-800">{athlete.medals.silver}</span>
-                              </div>
-                              <span className="text-xs text-muted-foreground">Silver</span>
-                            </div>
-                            <div className="flex items-center">
-                              <div className="w-6 h-6 rounded-full bg-amber-100 flex items-center justify-center mr-1">
-                                <span className="text-xs font-medium text-amber-800">{athlete.medals.bronze}</span>
-                              </div>
-                              <span className="text-xs text-muted-foreground">Bronze</span>
-                            </div>
                           </div>
                         </div>
                         <Button variant="outline" className="w-full mt-4" asChild>

@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma"
-import AthletesPageClient from "@/components/athlete-client"
+import { AdminAthletesClient } from "@/components/admin-athletes-client"
 
-export default async function AthletesPage() {
+export default async function AdminAthletesPage() {
   const athletes = await prisma.athlete.findMany({
     include: {
       region: true,
@@ -11,5 +11,5 @@ export default async function AthletesPage() {
     },
   })
 
-  return <AthletesPageClient athletes={athletes} />
+  return <AdminAthletesClient athletes={athletes} />
 }

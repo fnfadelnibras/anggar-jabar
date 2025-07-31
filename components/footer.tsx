@@ -21,36 +21,6 @@ export function Footer() {
               </p>
             </div>
             <div>
-              <h4 className="font-semibold mb-3">Menu Utama</h4>
-              <ul className="space-y-2 text-sm">
-                <li>
-                  <Link href="/" className="hover:text-primary">
-                    Beranda
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/athletes" className="hover:text-primary">
-                    Atlet
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/regions" className="hover:text-primary">
-                    Wilayah
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/about" className="hover:text-primary">
-                    Tentang Kami
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/admin" className="hover:text-primary">
-                    Admin Panel
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
               <h4 className="font-semibold mb-3">Informasi</h4>
               <ul className="space-y-2 text-sm">
                 <li>

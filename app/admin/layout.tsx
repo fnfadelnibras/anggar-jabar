@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -44,8 +43,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { AdminProfileDropdown } from "@/components/admin-profile-dropdown"
 import { AdminSidebarProfile } from "@/components/admin-sidebar-profile"
 
-
-export function AdminLayout({ children }: { children: React.ReactNode }) {
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const [isMounted, setIsMounted] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -206,4 +204,4 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
       </div>
     </div>
   )
-}
+} 

@@ -37,24 +37,6 @@ export default function NotFound() {
             Kembali
           </Button>
         </div>
-
-        <div className="mt-12 p-6 bg-muted rounded-lg max-w-md mx-auto">
-          <h3 className="font-semibold mb-2">Halaman Populer</h3>
-          <div className="space-y-2 text-sm">
-            <Link href="/athletes" className="block hover:text-primary transition-colors">
-              • Daftar Atlet
-            </Link>
-            <Link href="/regions" className="block hover:text-primary transition-colors">
-              • Wilayah
-            </Link>
-            <Link href="/about" className="block hover:text-primary transition-colors">
-              • Tentang Kami
-            </Link>
-            <Link href="/contact" className="block hover:text-primary transition-colors">
-              • Hubungi Kami
-            </Link>
-          </div>
-        </div>
       </div>
     </div>
   )

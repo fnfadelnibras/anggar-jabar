@@ -1,70 +1,56 @@
-"use client"
-
 import { PublicLayout } from "@/components/public-layout"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { 
-  Swords, 
   Trophy, 
   Users, 
   Award
 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
-import { useEffect, useState } from "react"
+import { prisma } from "@/lib/prisma"
+import { AnimatedHeroImages } from "@/components/animated-hero-images"
 
 interface Stats {
   athletes: number
   regions: number
-  competitions: number
-  medals: number
 }
 
-export default function HomePage() {
-  const [stats, setStats] = useState<Stats>({
-    athletes: 0,
-    regions: 0,
-    competitions: 0,
-    medals: 0
-  })
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    fetchStats()
-  }, [])
-
-  const fetchStats = async () => {
-    try {
-      const response = await fetch('/api/stats')
-      if (response.ok) {
-        const data = await response.json()
-        setStats(data)
+export default async function HomePage() {
+  // Fetch data on the server
+  const [athletes, regions] = await Promise.all([
+    prisma.athlete.findMany({
+      include: { region: true }
+    }),
+    prisma.region.findMany({
+      include: {
+        _count: {
+          select: { athletes: true }
+        }
       }
-    } catch (error) {
-      console.error('Failed to fetch stats:', error)
-    } finally {
-      setLoading(false)
-    }
+    })
+  ])
+
+  // Calculate stats
+  const stats: Stats = {
+    athletes: athletes.length,
+    regions: regions.length,
   }
 
   const statsData = [
     { icon: Users, label: "Atlet Terdaftar", value: stats.athletes.toString() },
-    { icon: Trophy, label: "Kompetisi Aktif", value: stats.competitions.toString() },
-    { icon: Award, label: "Wilayah Terdaftar", value: stats.regions.toString() },
-    { icon: Award, label: "Medali Tahun Ini", value: stats.medals.toString() },
+    { icon: Trophy, label: "Wilayah Terdaftar", value: stats.regions.toString() },
   ]
 
   return (
     <PublicLayout>
       {/* Hero Section dengan Background Aesthetic */}
       <section className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white py-20 overflow-hidden">
-        {/* Background Image dengan efek aesthetic */}
+        {/* Background Image */}
         <div className="absolute inset-0">
           <Image
-            src="/fencing.svg"
-            alt="Fencing Background"
+            src="/background.jpg"
+            alt="Hero Background"
             fill
             className="object-cover opacity-20"
             sizes="100vw"
@@ -81,7 +67,13 @@ export default function HomePage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <div className="flex items-center gap-3 mb-6">
-                <Swords className="h-8 w-8 text-blue-400" />
+                <Image
+                  src="/Logo.svg"
+                  alt="IKASI JABAR Logo"
+                  width={64}
+                  height={64}
+                  className="h-16 w-16"
+                />
                 <h1 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
                   IKASI JABAR
                 </h1>
@@ -93,7 +85,7 @@ export default function HomePage() {
                 Platform digital terpadu untuk mengelola kompetisi anggar, data atlet, dan pengembangan olahraga anggar di Jawa Barat.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button asChild size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                <Button asChild size="lg" className="bg-transparent border-2 border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-white transition-all duration-300 shadow-lg hover:shadow-xl backdrop-blur-sm transform hover:scale-105">
                   <Link href="/athletes">Lihat Atlet</Link>
                 </Button>
                 <Button asChild size="lg" className="bg-transparent border-2 border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-white transition-all duration-300 shadow-lg hover:shadow-xl backdrop-blur-sm transform hover:scale-105">
@@ -102,14 +94,8 @@ export default function HomePage() {
               </div>
             </div>
             <div className="relative">
-              <div className="relative w-full h-[400px] rounded-lg overflow-hidden bg-white/5 backdrop-blur-sm border border-white/10">
-                <Image
-                  src="/placeholder.svg?height=400&width=600&text=IKASI+JABAR+System"
-                  alt="IKASI JABAR System"
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                />
+              <div className="relative w-full h-[400px] rounded-lg overflow-hidden bg-white border border-white/10">
+                <AnimatedHeroImages />
                 {/* Subtle glow effect */}
                 <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-white/5"></div>
               </div>
@@ -122,17 +108,13 @@ export default function HomePage() {
       <section className="py-16 bg-muted/50">
         <div className="container">
           <h2 className="text-3xl font-bold text-center mb-12">Statistik IKASI JABAR</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-2 gap-6">
             {statsData.map((stat, index) => (
               <Card key={index} className="text-center">
                 <CardContent className="p-6">
                   <stat.icon className="h-8 w-8 text-primary mx-auto mb-3" />
                   <div className="text-2xl font-bold mb-1">
-                    {loading ? (
-                      <LoadingSpinner />
-                    ) : (
-                      stat.value
-                    )}
+                    {stat.value}
                   </div>
                   <div className="text-sm text-muted-foreground">{stat.label}</div>
                 </CardContent>
@@ -188,7 +170,7 @@ export default function HomePage() {
             <div className="relative">
               <div className="relative w-full h-[400px] rounded-lg overflow-hidden bg-white">
                 <Image
-                  src="/placeholder.svg?height=400&width=600&text=IKASI+JABAR+Team"
+                  src="/fencingteam.jpg"
                   alt="IKASI JABAR Team"
                   fill
                   className="object-cover"

@@ -1,586 +1,284 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { AdminLayout } from "@/components/admin-layout"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import {
-  Search,
-  Plus,
-  MoreHorizontal,
-  Pencil,
-  Trash2,
-  Users,
-  CheckCircle,
-  Map,
-  ChevronLeft,
-  ChevronRight,
-  ArrowUpDown,
-  X,
-} from "lucide-react"
-import { Card, CardContent } from "@/components/ui/card"
-import { toast } from "sonner"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Badge } from "@/components/ui/badge"
+import { Search, Filter, MapPin, Users, Trophy, Swords, ChevronLeft, ChevronRight } from "lucide-react"
+import Link from "next/link"
+import Image from "next/image"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { cn } from "@/lib/utils"
 
-export type Region = {
+interface Region {
   id: string
   name: string
-  code: string
-  description?: string
-  _count?: {
-    athletes: number
-  }
+  image: string
+  athletes: number
+  clubs: number
+  description: string
 }
 
-type SortField = 'name' | 'code' | 'athletes'
-type SortOrder = 'asc' | 'desc'
+interface RegionsClientProps {
+  regions: Region[]
+}
 
-export default function RegionsPage({ regions: initialRegions }: { regions: Region[] }) {
-  const [regions, setRegions] = useState<Region[]>(initialRegions)
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
-  const [selectedRegion, setSelectedRegion] = useState<Region | null>(null)
-  const [formData, setFormData] = useState({
-    name: '',
-    code: '',
-    description: ''
-  })
-  const [loading, setLoading] = useState(false)
-  
-  // Search and pagination state
-  const [searchTerm, setSearchTerm] = useState('')
+export function RegionsClient({ regions }: RegionsClientProps) {
+  const [filteredRegions, setFilteredRegions] = useState<Region[]>(regions)
+  const [searchTerm, setSearchTerm] = useState("")
   const [currentPage, setCurrentPage] = useState(1)
-  const [sortField, setSortField] = useState<SortField>('name')
-  const [sortOrder, setSortOrder] = useState<SortOrder>('asc')
-  const itemsPerPage = 15
+  const itemsPerPage = 10
 
-  // Filter state
-  const [athletesFilter, setAthletesFilter] = useState<string>('all')
+  // Filter regions based on search
+  useEffect(() => {
+    let filtered = regions
 
-  const fetchRegions = async () => {
-    try {
-      const response = await fetch('/api/regions')
-      const data = await response.json()
-      setRegions(data)
-    } catch (error) {
-      console.error('Failed to fetch regions:', error)
-    }
-  }
-
-  // Get unique values for filter options
-  const getAthletesFilterOptions = () => {
-    const athleteCounts = regions.map(region => region._count?.athletes || 0)
-    const uniqueCounts = [...new Set(athleteCounts)].sort((a, b) => a - b)
-    return uniqueCounts
-  }
-
-  // Filter and sort regions
-  const filteredRegions = regions.filter(region => {
-    const matchesSearch = 
-      region.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      region.code.toLowerCase().includes(searchTerm.toLowerCase())
-    
-    const matchesAthletes = athletesFilter === 'all' || (region._count?.athletes || 0) === parseInt(athletesFilter)
-
-    return matchesSearch && matchesAthletes
-  })
-
-  const sortedRegions = [...filteredRegions].sort((a, b) => {
-    let aValue: any
-    let bValue: any
-
-    switch (sortField) {
-      case 'name':
-        aValue = a.name
-        bValue = b.name
-        break
-      case 'code':
-        aValue = a.code
-        bValue = b.code
-        break
-      case 'athletes':
-        aValue = a._count?.athletes || 0
-        bValue = b._count?.athletes || 0
-        break
-      default:
-        aValue = a.name
-        bValue = b.name
+    // Search filter
+    if (searchTerm) {
+      filtered = filtered.filter(region =>
+        region.name.toLowerCase().includes(searchTerm.toLowerCase())
+      )
     }
 
-    if (sortOrder === 'asc') {
-      return aValue > bValue ? 1 : -1
-    } else {
-      return aValue < bValue ? 1 : -1
-    }
-  })
+    setFilteredRegions(filtered)
+    setCurrentPage(1) // Reset to first page when filtering
+  }, [regions, searchTerm])
 
   // Pagination
-  const totalPages = Math.ceil(sortedRegions.length / itemsPerPage)
+  const totalPages = Math.ceil(filteredRegions.length / itemsPerPage)
   const startIndex = (currentPage - 1) * itemsPerPage
   const endIndex = startIndex + itemsPerPage
-  const currentRegions = sortedRegions.slice(startIndex, endIndex)
-
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
-    } else {
-      setSortField(field)
-      setSortOrder('asc')
-    }
-    toast.info("Data diurutkan", {
-      description: `Data diurutkan berdasarkan ${field} (${sortField === field && sortOrder === 'asc' ? 'desc' : 'asc'})`,
-    })
-  }
+  const currentRegions = filteredRegions.slice(startIndex, endIndex)
 
   const handleSearch = (value: string) => {
     setSearchTerm(value)
-    setCurrentPage(1) // Reset to first page when searching
   }
 
-  const handleFilterChange = (filterType: 'athletes', value: string) => {
-    setAthletesFilter(value)
-    setCurrentPage(1) // Reset to first page when filtering
-  }
-
-  const clearAllFilters = () => {
-    setSearchTerm('')
-    setAthletesFilter('all')
-    setCurrentPage(1)
-    toast.info("Filter telah dibersihkan", {
-      description: "Semua filter dan pencarian telah direset.",
-    })
-  }
-
-  const hasActiveFilters = searchTerm || athletesFilter !== 'all'
-
-  const handleAdd = () => {
-    setFormData({
-      name: '',
-      code: '',
-      description: ''
-    })
-    setIsAddDialogOpen(true)
-    toast.info("Form tambah wilayah dibuka", {
-      description: "Silakan isi data wilayah yang akan ditambahkan.",
-    })
-  }
-
-  const handleEdit = (region: Region) => {
-    setSelectedRegion(region)
-    setFormData({
-      name: region.name,
-      code: region.code,
-      description: region.description || ''
-    })
-    setIsEditDialogOpen(true)
-    toast.info("Form edit wilayah dibuka", {
-      description: `Mengedit data wilayah: ${region.name}`,
-    })
-  }
-
-  const handleDelete = (region: Region) => {
-    setSelectedRegion(region)
-    setIsDeleteDialogOpen(true)
-    toast.warning("Konfirmasi penghapusan", {
-      description: `Anda akan menghapus wilayah: ${region.name}`,
-    })
-  }
-
-  const handleSaveRegion = async () => {
-    setLoading(true)
-    try {
-      const url = '/api/regions'
-      const method = isEditDialogOpen ? 'PUT' : 'POST'
-      const body = isEditDialogOpen 
-        ? { ...formData, id: selectedRegion?.id }
-        : formData
-
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(body),
-      })
-
-      if (response.ok) {
-        toast.success(
-          isEditDialogOpen ? "Wilayah berhasil diperbarui!" : "Wilayah berhasil ditambahkan!",
-          {
-            description: isEditDialogOpen
-              ? `Data wilayah ${selectedRegion?.name} telah berhasil diperbarui.`
-              : "Data wilayah baru telah berhasil ditambahkan ke sistem.",
-          }
-        )
-        await fetchRegions()
-        setIsAddDialogOpen(false)
-        setIsEditDialogOpen(false)
-        setFormData({
-          name: '',
-          code: '',
-          description: ''
-        })
-      } else {
-        throw new Error('Failed to save region')
-      }
-    } catch (error) {
-      toast.error("Gagal menyimpan data wilayah!", {
-        description: "Terjadi kesalahan saat menyimpan data. Silakan coba lagi.",
-      })
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleDeleteConfirm = async () => {
-    if (!selectedRegion) return
-    
-    setLoading(true)
-    try {
-      const response = await fetch('/api/regions', {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ id: selectedRegion.id }),
-      })
-
-      if (response.ok) {
-        toast.success("Wilayah berhasil dihapus!", {
-          description: "Data wilayah telah berhasil dihapus dari sistem.",
-        })
-        await fetchRegions()
-        setIsDeleteDialogOpen(false)
-      } else {
-        throw new Error('Failed to delete region')
-      }
-    } catch (error) {
-      toast.error("Gagal menghapus data wilayah!", {
-        description: "Terjadi kesalahan saat menghapus data. Silakan coba lagi.",
-      })
-    } finally {
-      setLoading(false)
-    }
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page)
   }
 
   return (
-    <AdminLayout>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold">Regions</h1>
-        <Button onClick={handleAdd}>
-          <Plus className="mr-2 h-4 w-4" /> Add Region
-        </Button>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <Card>
-          <CardContent className="p-6 flex items-center justify-between">
-            <div>
-              <p className="text-sm text-muted-foreground">Total Regions</p>
-              <h3 className="text-2xl font-bold mt-1">{regions.length}</h3>
-            </div>
-            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-              <Map className="h-6 w-6 text-primary" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-6 flex items-center justify-between">
-            <div>
-              <p className="text-sm text-muted-foreground">Total Athletes</p>
-              <h3 className="text-2xl font-bold mt-1">
-                {regions.reduce((total, region) => total + (region._count?.athletes || 0), 0)}
-              </h3>
-            </div>
-            <div className="h-12 w-12 rounded-full bg-green-500/10 flex items-center justify-center">
-              <Users className="h-6 w-6 text-green-500" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-6 flex items-center justify-between">
-            <div>
-              <p className="text-sm text-muted-foreground">Active Regions</p>
-              <h3 className="text-2xl font-bold mt-1">
-                {regions.filter((r) => (r._count?.athletes || 0) > 0).length}
-              </h3>
-            </div>
-            <div className="h-12 w-12 rounded-full bg-blue-500/10 flex items-center justify-center">
-              <CheckCircle className="h-6 w-6 text-blue-500" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Search and Filters */}
-      <div className="space-y-6 mb-6">
-        {/* Search Bar */}
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input 
-            placeholder="Search regions..." 
-            className="pl-10"
-            value={searchTerm}
-            onChange={(e) => handleSearch(e.target.value)}
-          />
-        </div>
-        
-        {/* Filters */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <Label htmlFor="athletes-filter" className="text-sm font-medium">Athletes Count</Label>
-            <Select value={athletesFilter} onValueChange={(value) => handleFilterChange('athletes', value)}>
-              <SelectTrigger>
-                <SelectValue placeholder="All Athletes Count" />
+    <div>
+      {/* Search and Filter */}
+      <Card className="p-4 mb-8 bg-card/80 backdrop-blur-sm">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="md:col-span-2 relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input 
+              placeholder="Cari nama wilayah..." 
+              className="pl-10 bg-background/50"
+              value={searchTerm}
+              onChange={(e) => handleSearch(e.target.value)}
+            />
+          </div>
+          <div>
+            <Select disabled>
+              <SelectTrigger className="bg-background/50">
+                <SelectValue placeholder="Filter per Wilayah" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Athletes Count</SelectItem>
-                {getAthletesFilterOptions().map((count) => (
-                  <SelectItem key={count} value={count.toString()}>
-                    {count} Athletes
-                  </SelectItem>
-                ))}
+                <SelectItem value="all">Semua Wilayah</SelectItem>
               </SelectContent>
             </Select>
           </div>
-          
-          <div className="flex items-end">
-            {hasActiveFilters && (
-              <Button 
-                variant="outline" 
-                onClick={clearAllFilters}
-                className="w-full h-10"
-              >
-                <X className="mr-2 h-4 w-4" />
-                Clear Filters
-              </Button>
-            )}
+          <div>
+            <Select disabled>
+              <SelectTrigger className="bg-background/50">
+                <SelectValue placeholder="Filter per Kategori" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Semua Kategori</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
-      </div>
+      </Card>
 
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>
-                <Button 
-                  variant="ghost" 
-                  onClick={() => handleSort('name')}
-                  className="h-auto p-0 font-medium"
-                >
-                  Name
-                  <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-              </TableHead>
-              <TableHead>
-                <Button 
-                  variant="ghost" 
-                  onClick={() => handleSort('code')}
-                  className="h-auto p-0 font-medium"
-                >
-                  Code
-                  <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-              </TableHead>
-              <TableHead>
-                <Button 
-                  variant="ghost" 
-                  onClick={() => handleSort('athletes')}
-                  className="h-auto p-0 font-medium"
-                >
-                  Athletes
-                  <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-              </TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {currentRegions.map((region) => (
-              <TableRow key={region.id}>
-                <TableCell>{region.name}</TableCell>
-                <TableCell>{region.code}</TableCell>
-                <TableCell className="flex items-center">
-                  <Users className="h-4 w-4 mr-1 text-muted-foreground" />
-                  {region._count?.athletes ?? 0}
-                </TableCell>
-                <TableCell className="text-right">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => handleEdit(region)}>
-                        <Pencil className="mr-2 h-4 w-4" /> Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleDelete(region)}>
-                        <Trash2 className="mr-2 h-4 w-4" /> Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between mt-4">
+      {/* Main Content */}
+      <div className="py-12">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+          <h2 className="text-2xl font-bold">Kota dan Kabupaten IKASI</h2>
           <div className="text-sm text-muted-foreground">
-            Showing {startIndex + 1} to {Math.min(endIndex, sortedRegions.length)} of {sortedRegions.length} results
+            Menampilkan {startIndex + 1}-{Math.min(endIndex, filteredRegions.length)} dari {filteredRegions.length} wilayah
           </div>
-          <div className="flex items-center space-x-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setCurrentPage(currentPage - 1)}
-              disabled={currentPage === 1}
-            >
-              <ChevronLeft className="h-4 w-4" />
-              Previous
-            </Button>
-            <div className="flex items-center space-x-1">
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                <Button
-                  key={page}
-                  variant={currentPage === page ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setCurrentPage(page)}
-                  className="w-8 h-8 p-0"
-                >
-                  {page}
-                </Button>
+        </div>
+
+        <Tabs defaultValue="grid" className="w-full">
+          <TabsList className="mb-6">
+            <TabsTrigger value="grid">Tampilan Grid</TabsTrigger>
+            <TabsTrigger value="list">Tampilan List</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="grid" className="mt-0">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {currentRegions.map((region) => (
+                <Card key={region.id} className="overflow-hidden flex flex-col">
+                  <div className="relative h-48">
+                    <Image
+                      src={region.image || "/placeholder.svg"}
+                      alt={region.name}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    />
+                    <div className="absolute top-4 left-4">
+                      <Badge className="bg-slate-700/90 text-white border-0">
+                        <Swords className="h-3 w-3 mr-1" />
+                        IKASI
+                      </Badge>
+                    </div>
+                  </div>
+                  <CardHeader>
+                    <CardTitle>{region.name}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="flex-grow">
+                    <div className="space-y-3">
+                      <div className="flex items-center text-sm">
+                        <Users className="h-4 w-4 mr-2 text-muted-foreground" />
+                        <span>{region.athletes} Atlet IKASI</span>
+                      </div>
+                      <div className="flex items-center text-sm">
+                        <MapPin className="h-4 w-4 mr-2 text-muted-foreground" />
+                        <span>{region.clubs} Klub IKASI</span>
+                      </div>
+                      <p className="text-sm text-muted-foreground mt-2">{region.description}</p>
+                    </div>
+                  </CardContent>
+                  <div className="p-6 pt-0 mt-auto">
+                    <Link href={`/regions/${region.id}`}>
+                      <Button variant="default" className="w-full bg-slate-700 hover:bg-slate-800 text-white border-0 shadow-sm hover:shadow-md transition-all duration-200">
+                        Lihat Detail
+                      </Button>
+                    </Link>
+                  </div>
+                </Card>
               ))}
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setCurrentPage(currentPage + 1)}
-              disabled={currentPage === totalPages}
-            >
-              Next
-              <ChevronRight className="h-4 w-4" />
-            </Button>
+          </TabsContent>
+
+          <TabsContent value="list" className="mt-0">
+            <div className="space-y-4">
+              {currentRegions.map((region) => (
+                <Card key={region.id} className="overflow-hidden">
+                  <div className="flex flex-col md:flex-row">
+                    <div className="relative h-48 md:h-auto md:w-1/3 lg:w-1/4">
+                      <Image
+                        src={region.image || "/placeholder.svg"}
+                        alt={region.name}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 33vw, 25vw"
+                      />
+                      <div className="absolute top-4 left-4">
+                        <Badge className="bg-slate-700/90 text-white border-0">
+                          <Swords className="h-3 w-3 mr-1" />
+                          IKASI
+                        </Badge>
+                      </div>
+                    </div>
+                    <div className="flex-1 p-6">
+                      <h3 className="text-xl font-bold mb-2">{region.name}</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div className="flex items-center text-sm">
+                          <Users className="h-4 w-4 mr-2 text-muted-foreground" />
+                          <span>{region.athletes} Atlet IKASI</span>
+                        </div>
+                        <div className="flex items-center text-sm">
+                          <MapPin className="h-4 w-4 mr-2 text-muted-foreground" />
+                          <span>{region.clubs} Klub IKASI</span>
+                        </div>
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-4">{region.description}</p>
+                      <Link href={`/regions/${region.id}`}>
+                        <Button variant="default" className="bg-slate-700 hover:bg-slate-800 text-white border-0 shadow-sm hover:shadow-md transition-all duration-200">
+                          Lihat Detail
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+        </Tabs>
+
+        {/* No results message */}
+        {filteredRegions.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground text-lg">
+              Tidak ada wilayah yang ditemukan dengan kriteria pencarian Anda.
+            </p>
+          </div>
+        )}
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between mt-8">
+            <div className="text-sm text-muted-foreground">
+              Menampilkan {startIndex + 1} sampai {Math.min(endIndex, filteredRegions.length)} dari {filteredRegions.length} hasil
+            </div>
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+              >
+                <ChevronLeft className="h-4 w-4" />
+                Sebelumnya
+              </Button>
+              <div className="flex items-center space-x-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <Button
+                    key={page}
+                    variant={currentPage === page ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => handlePageChange(page)}
+                    className={cn(
+                      "w-8 h-8 p-0",
+                      currentPage === page 
+                        ? "bg-slate-700 hover:bg-slate-800 text-white border-0 shadow-sm" 
+                        : "border-slate-300 hover:bg-slate-50 text-slate-700"
+                    )}
+                  >
+                    {page}
+                  </Button>
+                ))}
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+              >
+                Selanjutnya
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Map Section */}
+      <div className="bg-muted py-12 mt-12 rounded-lg">
+        <div className="container">
+          <div className="flex items-center mb-6">
+            <Swords className="h-6 w-6 text-slate-600 mr-3" />
+            <h2 className="text-2xl font-bold">Distribusi Regional IKASI</h2>
+          </div>
+          <div className="bg-background rounded-lg border p-4 h-[400px] flex items-center justify-center">
+            <div className="text-center">
+              <p className="text-muted-foreground mb-2">Peta interaktif akan ditampilkan di sini</p>
+              <p className="text-sm text-muted-foreground">
+                Menunjukkan distribusi klub dan atlet anggar IKASI di seluruh Jawa Barat
+              </p>
+            </div>
           </div>
         </div>
-      )}
-
-      {/* Add/Edit Dialog */}
-      <Dialog open={isAddDialogOpen || isEditDialogOpen} onOpenChange={(open) => {
-        if (!open) {
-          setIsAddDialogOpen(false)
-          setIsEditDialogOpen(false)
-        }
-      }}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{isEditDialogOpen ? 'Edit Region' : 'Add New Region'}</DialogTitle>
-            <DialogDescription>
-              {isEditDialogOpen ? 'Update the region\'s information.' : 'Enter the region\'s information.'}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name" className="text-sm font-medium">Region Name</Label>
-              <Input 
-                id="name" 
-                value={formData.name}
-                onChange={(e) => setFormData({...formData, name: e.target.value})}
-                placeholder="Region name" 
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="code" className="text-sm font-medium">Region Code</Label>
-              <Input 
-                id="code" 
-                value={formData.code}
-                onChange={(e) => setFormData({...formData, code: e.target.value.toUpperCase()})}
-                placeholder="3-letter code" 
-                maxLength={3} 
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="description" className="text-sm font-medium">Description</Label>
-              <Textarea 
-                id="description" 
-                value={formData.description}
-                onChange={(e) => setFormData({...formData, description: e.target.value})}
-                placeholder="Description" 
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => {
-              setIsAddDialogOpen(false)
-              setIsEditDialogOpen(false)
-            }}>
-              Cancel
-            </Button>
-            <Button onClick={handleSaveRegion} disabled={loading}>
-              {loading ? 'Saving...' : (isEditDialogOpen ? 'Save Changes' : 'Save')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Confirm Deletion</DialogTitle>
-            <DialogDescription>Are you sure you want to delete this region?</DialogDescription>
-          </DialogHeader>
-          {selectedRegion && (
-            <div>
-              <p>You are about to delete <strong>{selectedRegion.name}</strong>.</p>
-              <p className="text-sm text-muted-foreground">This action cannot be undone.</p>
-            </div>
-          )}
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button variant="destructive" onClick={handleDeleteConfirm} disabled={loading}>
-              {loading ? 'Deleting...' : 'Delete'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </AdminLayout>
+      </div>
+    </div>
   )
 }

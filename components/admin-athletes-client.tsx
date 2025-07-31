@@ -1,44 +1,39 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { AdminLayout } from "@/components/admin-layout"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Search, Plus, MoreHorizontal, Pencil, Trash2, Users, Calendar, BadgeCheck, Globe2, ChevronLeft, ChevronRight, ArrowUpDown, Filter, X } from "lucide-react"
-import { Card, CardContent } from "@/components/ui/card"
+import { Search, Plus, MoreHorizontal, Pencil, Trash2, Users, CheckCircle, ChevronLeft, ChevronRight, ArrowUpDown, Filter, X } from "lucide-react"
 import { toast } from "sonner"
 
-export type Athlete = {
+interface Athlete {
   id: string
   name: string
+  birthDate: string
   gender: string
-  birthDate: Date
   category: string
   status: string
   region: {
     id: string
     name: string
+    code: string
   }
+  createdAt: string
+  updatedAt: string
 }
 
-export type Region = {
-  id: string
-  name: string
-  code: string
-}
-
-type SortField = 'name' | 'gender' | 'birthDate' | 'category' | 'status' | 'region'
+type SortField = 'name' | 'category' | 'status' | 'region'
 type SortOrder = 'asc' | 'desc'
 
-export default function AthletesPage({ athletes: initialAthletes }: { athletes: Athlete[] }) {
+export function AdminAthletesClient({ athletes: initialAthletes }: { athletes: Athlete[] }) {
   const [athletes, setAthletes] = useState<Athlete[]>(initialAthletes)
-  const [regions, setRegions] = useState<Region[]>([])
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
@@ -62,23 +57,8 @@ export default function AthletesPage({ athletes: initialAthletes }: { athletes: 
 
   // Filter state
   const [categoryFilter, setCategoryFilter] = useState<string>('all')
-  const [regionFilter, setRegionFilter] = useState<string>('all')
   const [statusFilter, setStatusFilter] = useState<string>('all')
-
-  // Fetch regions on component mount
-  useEffect(() => {
-    fetchRegions()
-  }, [])
-
-  const fetchRegions = async () => {
-    try {
-      const response = await fetch('/api/regions')
-      const data = await response.json()
-      setRegions(data)
-    } catch (error) {
-      console.error('Failed to fetch regions:', error)
-    }
-  }
+  const [regionFilter, setRegionFilter] = useState<string>('all')
 
   const fetchAthletes = async () => {
     try {
@@ -93,26 +73,30 @@ export default function AthletesPage({ athletes: initialAthletes }: { athletes: 
   // Get unique values for filter options
   const getUniqueCategories = () => {
     const categories = athletes.map(athlete => athlete.category)
-    return [...new Set(categories)].sort()
+    return [...new Set(categories)]
   }
 
   const getUniqueStatuses = () => {
     const statuses = athletes.map(athlete => athlete.status)
-    return [...new Set(statuses)].sort()
+    return [...new Set(statuses)]
+  }
+
+  const getUniqueRegions = () => {
+    const regions = athletes.map(athlete => athlete.region.name)
+    return [...new Set(regions)]
   }
 
   // Filter and sort athletes
   const filteredAthletes = athletes.filter(athlete => {
     const matchesSearch = 
       athlete.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      athlete.region.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      athlete.category.toLowerCase().includes(searchTerm.toLowerCase())
+      athlete.region.name.toLowerCase().includes(searchTerm.toLowerCase())
     
     const matchesCategory = categoryFilter === 'all' || athlete.category === categoryFilter
-    const matchesRegion = regionFilter === 'all' || athlete.region.id === regionFilter
     const matchesStatus = statusFilter === 'all' || athlete.status === statusFilter
+    const matchesRegion = regionFilter === 'all' || athlete.region.name === regionFilter
 
-    return matchesSearch && matchesCategory && matchesRegion && matchesStatus
+    return matchesSearch && matchesCategory && matchesStatus && matchesRegion
   })
 
   const sortedAthletes = [...filteredAthletes].sort((a, b) => {
@@ -123,14 +107,6 @@ export default function AthletesPage({ athletes: initialAthletes }: { athletes: 
       case 'name':
         aValue = a.name
         bValue = b.name
-        break
-      case 'gender':
-        aValue = a.gender
-        bValue = b.gender
-        break
-      case 'birthDate':
-        aValue = new Date(a.birthDate)
-        bValue = new Date(b.birthDate)
         break
       case 'category':
         aValue = a.category
@@ -179,16 +155,16 @@ export default function AthletesPage({ athletes: initialAthletes }: { athletes: 
     setCurrentPage(1) // Reset to first page when searching
   }
 
-  const handleFilterChange = (filterType: 'category' | 'region' | 'status', value: string) => {
+  const handleFilterChange = (filterType: 'category' | 'status' | 'region', value: string) => {
     switch (filterType) {
       case 'category':
         setCategoryFilter(value)
         break
-      case 'region':
-        setRegionFilter(value)
-        break
       case 'status':
         setStatusFilter(value)
+        break
+      case 'region':
+        setRegionFilter(value)
         break
     }
     setCurrentPage(1) // Reset to first page when filtering
@@ -197,15 +173,15 @@ export default function AthletesPage({ athletes: initialAthletes }: { athletes: 
   const clearAllFilters = () => {
     setSearchTerm('')
     setCategoryFilter('all')
-    setRegionFilter('all')
     setStatusFilter('all')
+    setRegionFilter('all')
     setCurrentPage(1)
     toast.info("Filter telah dibersihkan", {
       description: "Semua filter dan pencarian telah direset.",
     })
   }
 
-  const hasActiveFilters = searchTerm || categoryFilter !== 'all' || regionFilter !== 'all' || statusFilter !== 'all'
+  const hasActiveFilters = searchTerm || categoryFilter !== 'all' || statusFilter !== 'all' || regionFilter !== 'all'
 
   const handleAdd = () => {
     setFormData({
@@ -226,7 +202,7 @@ export default function AthletesPage({ athletes: initialAthletes }: { athletes: 
     setSelectedAthlete(athlete)
     setFormData({
       name: athlete.name,
-      birthDate: new Date(athlete.birthDate).toISOString().split('T')[0],
+      birthDate: athlete.birthDate,
       gender: athlete.gender,
       category: athlete.category,
       status: athlete.status,
@@ -249,7 +225,7 @@ export default function AthletesPage({ athletes: initialAthletes }: { athletes: 
   const handleSaveAthlete = async () => {
     setLoading(true)
     try {
-      const url = isEditDialogOpen ? '/api/athletes' : '/api/athletes'
+      const url = '/api/athletes'
       const method = isEditDialogOpen ? 'PUT' : 'POST'
       const body = isEditDialogOpen 
         ? { ...formData, id: selectedAthlete?.id }
@@ -267,9 +243,9 @@ export default function AthletesPage({ athletes: initialAthletes }: { athletes: 
         toast.success(
           isEditDialogOpen ? "Atlet berhasil diperbarui!" : "Atlet berhasil ditambahkan!",
           {
-            description: isEditDialogOpen 
-              ? "Data atlet telah berhasil diperbarui dalam sistem."
-              : "Data atlet telah berhasil ditambahkan ke dalam sistem.",
+            description: isEditDialogOpen
+              ? `Data atlet ${selectedAthlete?.name} telah berhasil diperbarui.`
+              : "Data atlet baru telah berhasil ditambahkan ke sistem.",
           }
         )
         await fetchAthletes()
@@ -327,7 +303,7 @@ export default function AthletesPage({ athletes: initialAthletes }: { athletes: 
   }
 
   return (
-    <AdminLayout>
+    <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold">Athletes</h1>
         <Button onClick={handleAdd}>
@@ -335,8 +311,7 @@ export default function AthletesPage({ athletes: initialAthletes }: { athletes: 
         </Button>
       </div>
 
-       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <Card>
           <CardContent className="p-6 flex items-center justify-between">
             <div>
@@ -351,22 +326,39 @@ export default function AthletesPage({ athletes: initialAthletes }: { athletes: 
         <Card>
           <CardContent className="p-6 flex items-center justify-between">
             <div>
-              <p className="text-sm text-muted-foreground">Male</p>
-              <h3 className="text-2xl font-bold mt-1">{athletes.filter((a) => a.gender === "Pria").length}</h3>
+              <p className="text-sm text-muted-foreground">Active Athletes</p>
+              <h3 className="text-2xl font-bold mt-1">
+                {athletes.filter((a) => a.status === 'ACTIVE').length}
+              </h3>
             </div>
-            <div className="h-12 w-12 rounded-full bg-blue-500/10 flex items-center justify-center">
-              <BadgeCheck className="h-6 w-6 text-blue-500" />
+            <div className="h-12 w-12 rounded-full bg-green-500/10 flex items-center justify-center">
+              <CheckCircle className="h-6 w-6 text-green-500" />
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-6 flex items-center justify-between">
             <div>
-              <p className="text-sm text-muted-foreground">Female</p>
-              <h3 className="text-2xl font-bold mt-1">{athletes.filter((a) => a.gender === "Wanita").length}</h3>
+              <p className="text-sm text-muted-foreground">Male Athletes</p>
+              <h3 className="text-2xl font-bold mt-1">
+                {athletes.filter((a) => a.gender === 'Pria').length}
+              </h3>
+            </div>
+            <div className="h-12 w-12 rounded-full bg-blue-500/10 flex items-center justify-center">
+              <Users className="h-6 w-6 text-blue-500" />
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-6 flex items-center justify-between">
+            <div>
+              <p className="text-sm text-muted-foreground">Female Athletes</p>
+              <h3 className="text-2xl font-bold mt-1">
+                {athletes.filter((a) => a.gender === 'Wanita').length}
+              </h3>
             </div>
             <div className="h-12 w-12 rounded-full bg-pink-500/10 flex items-center justify-center">
-              <Globe2 className="h-6 w-6 text-pink-500" />
+              <Users className="h-6 w-6 text-pink-500" />
             </div>
           </CardContent>
         </Card>
@@ -405,23 +397,6 @@ export default function AthletesPage({ athletes: initialAthletes }: { athletes: 
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="region-filter" className="text-sm font-medium">Region</Label>
-            <Select value={regionFilter} onValueChange={(value) => handleFilterChange('region', value)}>
-              <SelectTrigger>
-                <SelectValue placeholder="All Regions" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Regions</SelectItem>
-                {regions.map((region) => (
-                  <SelectItem key={region.id} value={region.id}>
-                    {region.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <div className="space-y-2">
             <Label htmlFor="status-filter" className="text-sm font-medium">Status</Label>
             <Select value={statusFilter} onValueChange={(value) => handleFilterChange('status', value)}>
               <SelectTrigger>
@@ -432,6 +407,23 @@ export default function AthletesPage({ athletes: initialAthletes }: { athletes: 
                 {getUniqueStatuses().map((status) => (
                   <SelectItem key={status} value={status}>
                     {status}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="region-filter" className="text-sm font-medium">Region</Label>
+            <Select value={regionFilter} onValueChange={(value) => handleFilterChange('region', value)}>
+              <SelectTrigger>
+                <SelectValue placeholder="All Regions" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Regions</SelectItem>
+                {getUniqueRegions().map((region) => (
+                  <SelectItem key={region} value={region}>
+                    {region}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -467,26 +459,8 @@ export default function AthletesPage({ athletes: initialAthletes }: { athletes: 
                   <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
               </TableHead>
-              <TableHead>
-                <Button 
-                  variant="ghost" 
-                  onClick={() => handleSort('gender')}
-                  className="h-auto p-0 font-medium"
-                >
-                  Gender
-                  <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-              </TableHead>
-              <TableHead>
-                <Button 
-                  variant="ghost" 
-                  onClick={() => handleSort('birthDate')}
-                  className="h-auto p-0 font-medium"
-                >
-                  Birth Date
-                  <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-              </TableHead>
+              <TableHead>Birth Date</TableHead>
+              <TableHead>Gender</TableHead>
               <TableHead>
                 <Button 
                   variant="ghost" 
@@ -523,28 +497,37 @@ export default function AthletesPage({ athletes: initialAthletes }: { athletes: 
           <TableBody>
             {currentAthletes.map((athlete) => (
               <TableRow key={athlete.id}>
-                <TableCell>{athlete.name}</TableCell>
-                <TableCell>{athlete.gender}</TableCell>
-                <TableCell>{new Date(athlete.birthDate).toLocaleDateString("id-ID")}</TableCell>
+                <TableCell className="font-medium">{athlete.name}</TableCell>
+                <TableCell>{new Date(athlete.birthDate).toLocaleDateString()}</TableCell>
+                <TableCell>
+                  <Badge variant={athlete.gender === 'Pria' ? 'default' : 'secondary'}>
+                    {athlete.gender}
+                  </Badge>
+                </TableCell>
                 <TableCell>{athlete.category}</TableCell>
-                <TableCell>{athlete.status}</TableCell>
+                <TableCell>
+                  <Badge variant={athlete.status === 'ACTIVE' ? 'default' : 'secondary'}>
+                    {athlete.status}
+                  </Badge>
+                </TableCell>
                 <TableCell>{athlete.region.name}</TableCell>
                 <TableCell className="text-right">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => handleEdit(athlete)}>
-                        <Pencil className="mr-2 h-4 w-4" /> Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleDelete(athlete)}>
-                        <Trash2 className="mr-2 h-4 w-4" /> Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <div className="flex items-center justify-end space-x-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleEdit(athlete)}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDelete(athlete)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
@@ -646,9 +629,10 @@ export default function AthletesPage({ athletes: initialAthletes }: { athletes: 
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="EPEE">EPEE</SelectItem>
-                  <SelectItem value="SABRE">SABRE</SelectItem>
-                  <SelectItem value="FOIL">FOIL</SelectItem>
+                  <SelectItem value="Pemula">Pemula</SelectItem>
+                  <SelectItem value="Menengah">Menengah</SelectItem>
+                  <SelectItem value="Lanjutan">Lanjutan</SelectItem>
+                  <SelectItem value="Elit">Elit</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -659,8 +643,8 @@ export default function AthletesPage({ athletes: initialAthletes }: { athletes: 
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="ACTIVE">ACTIVE</SelectItem>
-                  <SelectItem value="INACTIVE">INACTIVE</SelectItem>
+                  <SelectItem value="ACTIVE">Active</SelectItem>
+                  <SelectItem value="INACTIVE">Inactive</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -671,9 +655,9 @@ export default function AthletesPage({ athletes: initialAthletes }: { athletes: 
                   <SelectValue placeholder="Select region" />
                 </SelectTrigger>
                 <SelectContent>
-                  {regions.map((region) => (
-                    <SelectItem key={region.id} value={region.id}>
-                      {region.name}
+                  {getUniqueRegions().map((region) => (
+                    <SelectItem key={region} value={region}>
+                      {region}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -716,6 +700,6 @@ export default function AthletesPage({ athletes: initialAthletes }: { athletes: 
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </AdminLayout>
+    </div>
   )
-}
+} 

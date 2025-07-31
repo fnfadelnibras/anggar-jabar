@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ChevronLeft, Trophy, Medal, Calendar, MapPin, User } from "lucide-react"
+import { ChevronLeft, Trophy, Calendar, MapPin, User } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 
@@ -23,7 +23,7 @@ export default async function AthleteProfilePage({ params }: PageProps) {
     region: "Jakarta",
     age: 24,
     category: "Épée",
-    bio: "Ahmad Fauzi is a professional fencer with over 8 years of experience. He specializes in Épée and has represented Jakarta in multiple national competitions. His technical precision and strategic approach have earned him numerous medals throughout his career.",
+    bio: "Ahmad Fauzi is a professional fencer with over 8 years of experience. He specializes in Épée and has represented Jakarta in multiple national competitions. His technical precision and strategic approach have earned him numerous achievements throughout his career.",
     achievements: [
       { event: "Jakarta Open 2023", medal: "Gold", category: "Épée Men's Individual" },
       { event: "National Championship 2022", medal: "Silver", category: "Épée Men's Individual" },
@@ -36,12 +36,7 @@ export default async function AthleteProfilePage({ params }: PageProps) {
       losses: 12,
       winRate: "78.9%",
       tournaments: 18,
-      medals: { gold: 3, silver: 1, bronze: 2 },
     },
-    upcomingEvents: [
-      { name: "Jakarta Open 2024", date: "May 15, 2024", location: "Jakarta Convention Center" },
-      { name: "National Championship 2024", date: "July 8, 2024", location: "Surabaya Sports Arena" },
-    ],
   }
 
   return (
@@ -84,16 +79,16 @@ export default async function AthleteProfilePage({ params }: PageProps) {
                   </div>
                   <div className="grid grid-cols-3 w-full gap-2 mb-4">
                     <div className="flex flex-col items-center p-2 bg-muted rounded-md">
-                      <span className="text-lg font-bold">{athlete.stats.medals.gold}</span>
-                      <span className="text-xs text-muted-foreground">Gold</span>
+                      <span className="text-lg font-bold">{athlete.stats.wins}</span>
+                      <span className="text-xs text-muted-foreground">Wins</span>
                     </div>
                     <div className="flex flex-col items-center p-2 bg-muted rounded-md">
-                      <span className="text-lg font-bold">{athlete.stats.medals.silver}</span>
-                      <span className="text-xs text-muted-foreground">Silver</span>
+                      <span className="text-lg font-bold">{athlete.stats.tournaments}</span>
+                      <span className="text-xs text-muted-foreground">Events</span>
                     </div>
                     <div className="flex flex-col items-center p-2 bg-muted rounded-md">
-                      <span className="text-lg font-bold">{athlete.stats.medals.bronze}</span>
-                      <span className="text-xs text-muted-foreground">Bronze</span>
+                      <span className="text-lg font-bold">{athlete.stats.winRate}</span>
+                      <span className="text-xs text-muted-foreground">Win Rate</span>
                     </div>
                   </div>
                   <Button className="w-full">Follow Athlete</Button>
@@ -111,7 +106,6 @@ export default async function AthleteProfilePage({ params }: PageProps) {
                   <TabsList className="mb-4">
                     <TabsTrigger value="bio">Biography</TabsTrigger>
                     <TabsTrigger value="stats">Statistics</TabsTrigger>
-                    <TabsTrigger value="events">Upcoming Events</TabsTrigger>
                   </TabsList>
                   <TabsContent value="bio" className="space-y-4">
                     <div>
@@ -125,8 +119,8 @@ export default async function AthleteProfilePage({ params }: PageProps) {
                           <div key={i} className="flex items-start">
                             <div className="mr-3 mt-0.5">
                               {achievement.medal === "Gold" && <Trophy className="h-5 w-5 text-secondary" />}
-                              {achievement.medal === "Silver" && <Medal className="h-5 w-5 text-accent" />}
-                              {achievement.medal === "Bronze" && <Medal className="h-5 w-5 text-amber-600" />}
+                              {achievement.medal === "Silver" && <Trophy className="h-5 w-5 text-accent" />}
+                              {achievement.medal === "Bronze" && <Trophy className="h-5 w-5 text-amber-600" />}
                             </div>
                             <div>
                               <p className="font-medium">{achievement.event}</p>
@@ -157,7 +151,7 @@ export default async function AthleteProfilePage({ params }: PageProps) {
                       </Card>
                       <Card>
                         <CardContent className="p-4 flex flex-col items-center justify-center">
-                          <Medal className="h-5 w-5 text-secondary mb-1" />
+                          <Trophy className="h-5 w-5 text-secondary mb-1" />
                           <span className="text-2xl font-bold">{athlete.stats.winRate}</span>
                           <span className="text-xs text-muted-foreground">Win Rate</span>
                         </CardContent>
@@ -180,31 +174,6 @@ export default async function AthleteProfilePage({ params }: PageProps) {
                         </div>
                       </CardContent>
                     </Card>
-                  </TabsContent>
-                  <TabsContent value="events">
-                    <div className="space-y-4">
-                      <h3 className="text-lg font-semibold">Upcoming Competitions</h3>
-                      {athlete.upcomingEvents.map((event, i) => (
-                        <Card key={i}>
-                          <CardContent className="p-4">
-                            <div className="flex justify-between items-start">
-                              <div>
-                                <h4 className="font-semibold">{event.name}</h4>
-                                <div className="flex items-center text-sm text-muted-foreground mt-1">
-                                  <Calendar className="h-4 w-4 mr-1" />
-                                  <span>{event.date}</span>
-                                </div>
-                                <div className="flex items-center text-sm text-muted-foreground mt-1">
-                                  <MapPin className="h-4 w-4 mr-1" />
-                                  <span>{event.location}</span>
-                                </div>
-                              </div>
-                              <Button size="sm">View Event</Button>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
                   </TabsContent>
                 </Tabs>
               </CardContent>

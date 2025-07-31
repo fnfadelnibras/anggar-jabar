@@ -41,7 +41,7 @@ export default function AboutPage() {
         {/* Background Image dengan efek aesthetic */}
         <div className="absolute inset-0">
           <Image
-            src="/fencing.svg"
+            src="/background.jpg"
             alt="Fencing Background"
             fill
             className="object-cover opacity-20"

@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { AdminLayout } from "@/components/admin-layout"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -296,19 +295,17 @@ export default function AdminManagement() {
 
   if (loading) {
     return (
-      <AdminLayout>
-        <div className="flex items-center justify-center h-64">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading admins...</p>
-          </div>
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-2 border-transparent border-t-gray-400 mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading admins...</p>
         </div>
-      </AdminLayout>
+      </div>
     )
   }
 
   return (
-    <AdminLayout>
+    <div>
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-3xl font-bold">Admin Management</h1>
@@ -546,6 +543,6 @@ export default function AdminManagement() {
           </div>
         </CardContent>
       </Card>
-    </AdminLayout>
+    </div>
   )
 } 

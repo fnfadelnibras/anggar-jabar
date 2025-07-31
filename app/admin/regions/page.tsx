@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma"
-import RegionsPage from "@/components/regions-client"
+import { AdminRegionsClient } from "@/components/admin-regions-client"
 
-export default async function RegionsPageServer() {
+export default async function AdminRegionsPage() {
   const regions = await prisma.region.findMany({
     include: {
       _count: {
@@ -15,5 +15,5 @@ export default async function RegionsPageServer() {
     },
   })
 
-  return <RegionsPage regions={regions} />
+  return <AdminRegionsClient regions={regions} />
 }
