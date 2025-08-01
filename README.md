@@ -5,7 +5,6 @@ Sistem manajemen kompetisi anggar regional Jawa Barat yang dikembangkan sebagai 
 ## 📋 Tentang Proyek
 
 Sistem modern untuk mengelola data atlet, wilayah, dan kompetisi anggar di Jawa Barat dengan fitur-fitur:
-
 - **Manajemen Data Atlet**: Pendaftaran, pengelolaan, dan monitoring data atlet
 - **Manajemen Wilayah**: Pengelolaan data wilayah dan organisasi anggar  
 - **Dashboard Admin**: Panel admin untuk monitoring dan pengelolaan sistem
@@ -59,6 +58,13 @@ Sistem modern untuk mengelola data atlet, wilayah, dan kompetisi anggar di Jawa 
 - **Manajemen Wilayah**: CRUD operasi data wilayah dengan image upload
 - **Profile Management**: Pengelolaan profil admin dengan avatar
 - **Activity Logging**: Tracking semua aktivitas sistem
+
+## 🎨 UI/UX Features
+
+- **Responsive Design**: Mobile-first approach
+- **Dark/Light Mode**: Toggle tema
+- **Loading States**: Skeleton loading
+- **Error Handling**: User-friendly error pages
 
 ## 🚀 Deployment
 

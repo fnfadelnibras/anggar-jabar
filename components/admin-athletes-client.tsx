@@ -207,6 +207,8 @@ export function AdminAthletesClient({ athletes: initialAthletes }: { athletes: A
     setCurrentPage(1)
   }
 
+  const hasActiveFilters = searchTerm || categoryFilter !== 'all' || statusFilter !== 'all' || regionFilter !== 'all'
+
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
