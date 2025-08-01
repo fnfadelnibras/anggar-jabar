@@ -60,8 +60,8 @@ export function AthletesClient({ athletes: initialAthletes, regions: initialRegi
       setAthletes(transformedAthletes)
       
       // Update regions and categories from fresh data
-      const uniqueRegions = [...new Set(data.map((a: any) => a.region.name))]
-      const uniqueCategories = [...new Set(data.map((a: any) => a.category))]
+      const uniqueRegions = [...new Set(data.map((a: any) => a.region.name))] as string[]
+      const uniqueCategories = [...new Set(data.map((a: any) => a.category))] as string[]
       setRegions(uniqueRegions)
       setCategories(uniqueCategories)
     } catch (error) {

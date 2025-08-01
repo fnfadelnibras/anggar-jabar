@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Search, Plus, MoreHorizontal, Pencil, Trash2, Users, CheckCircle, ChevronLeft, ChevronRight, ArrowUpDown, Filter, X } from "lucide-react"
 import { toast } from "sonner"
 import { ImageCropper } from "@/components/ui/image-cropper"
+import Image from "next/image"
 
 interface Athlete {
   id: string
@@ -601,10 +602,12 @@ export function AdminAthletesClient({ athletes: initialAthletes }: { athletes: A
                 <TableCell className="font-medium">{athlete.name}</TableCell>
                 <TableCell>
                   {athlete.image && (
-                     <img 
+                     <Image 
                        src={athlete.image ? `${athlete.image}?f_auto,q_100,w_40,h_40,c_fill` : "/placeholder.svg"} 
                        alt="Athlete" 
-                       className="w-10 h-10 object-cover rounded-md"
+                       width={40}
+                       height={40}
+                       className="rounded-md"
                      />
                    )}
                 </TableCell>
@@ -797,9 +800,11 @@ export function AdminAthletesClient({ athletes: initialAthletes }: { athletes: A
                 />
                 {(imagePreview || formData.image) && (
                   <div className="mt-2">
-                    <img 
+                    <Image 
                       src={imagePreview || (formData.image ? `${formData.image}?f_auto,q_100` : '')} 
                       alt="Preview" 
+                      width={80}
+                      height={80}
                       className="w-20 h-20 object-cover rounded-md border"
                     />
                     {isEditDialogOpen && formData.image && !imagePreview && (

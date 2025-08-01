@@ -193,6 +193,7 @@ export function ImageCropper({
                   objectFit: 'contain'
                 }}
                 onLoad={onImageLoad}
+                // eslint-disable-next-line @next/next/no-img-element
               />
             </ReactCrop>
           </div>

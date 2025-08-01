@@ -116,12 +116,12 @@ export default function AdminManagement() {
       } else {
         toast.error("Failed to fetch admins.")
       }
-          } catch (error) {
-        toast.error("Failed to fetch admins.")
-      } finally {
+    } catch (error) {
+      toast.error("Failed to fetch admins.")
+    } finally {
       setLoading(false)
     }
-  }, [toast])
+  }, [])
 
   useEffect(() => {
     fetchAdmins()

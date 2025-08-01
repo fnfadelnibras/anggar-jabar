@@ -10,9 +10,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Search, Plus, MoreHorizontal, Pencil, Trash2, Map, CheckCircle, ChevronLeft, ChevronRight, ArrowUpDown, Filter, X } from "lucide-react"
+import { Search, Plus, MoreHorizontal, Pencil, Trash2, MapPin, CheckCircle, ChevronLeft, ChevronRight, ArrowUpDown, Filter, X } from "lucide-react"
 import { toast } from "sonner"
 import { ImageCropper } from "@/components/ui/image-cropper"
+import Image from "next/image"
 
 interface Region {
   id: string
@@ -338,7 +339,7 @@ export function AdminRegionsClient({ regions: initialRegions }: { regions: Regio
               <h3 className="text-2xl font-bold mt-1">{regions.length}</h3>
             </div>
             <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-              <Map className="h-6 w-6 text-primary" />
+              <MapPin className="h-6 w-6 text-primary" />
             </div>
           </CardContent>
         </Card>
@@ -459,7 +460,21 @@ export function AdminRegionsClient({ regions: initialRegions }: { regions: Regio
             {currentRegions.map((region) => (
               <TableRow key={region.id}>
                 <TableCell>{region.name}</TableCell>
-                <TableCell>{region.image ? <img src={`${region.image}?f_auto,q_100,w_40,h_40,c_fill`} alt="Region" className="h-10 w-10 rounded-full" /> : 'No Image'}</TableCell>
+                <TableCell>
+                  {region.image ? (
+                    <Image
+                      src={`${region.image}?f_auto,q_100,w_40,h_40,c_fill`}
+                      alt="Region"
+                      width={40}
+                      height={40}
+                      className="rounded-full"
+                    />
+                  ) : (
+                    <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 text-sm">
+                      No Image
+                    </div>
+                  )}
+                </TableCell>
                 <TableCell>{region.code}</TableCell>
                 <TableCell className="flex items-center">
                   <CheckCircle className="h-4 w-4 mr-1 text-muted-foreground" />
@@ -579,7 +594,13 @@ export function AdminRegionsClient({ regions: initialRegions }: { regions: Regio
                 <Label htmlFor="current-image" className="text-sm font-medium">Current Image</Label>
                 {formData.image ? (
                   <div className="flex items-center space-x-2">
-                    <img src={formData.image} alt="Current Region" className="h-10 w-10 rounded-full" />
+                    <Image
+                      src={formData.image}
+                      alt="Current Region"
+                      width={40}
+                      height={40}
+                      className="rounded-full"
+                    />
                     <Button
                       variant="outline"
                       size="sm"
@@ -605,9 +626,11 @@ export function AdminRegionsClient({ regions: initialRegions }: { regions: Regio
               />
                 {(imagePreview || formData.image) && (
                   <div className="mt-2">
-                    <img 
-                      src={imagePreview || (formData.image ? `${formData.image}?f_auto,q_100` : '')} 
-                      alt="Preview" 
+                    <Image
+                      src={imagePreview || (formData.image ? `${formData.image}?f_auto,q_100` : '')}
+                      alt="Preview"
+                      width={80}
+                      height={80}
                       className="w-20 h-20 object-cover rounded-md border"
                     />
                     {isEditDialogOpen && formData.image && !imagePreview && (

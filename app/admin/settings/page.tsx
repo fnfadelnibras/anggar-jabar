@@ -81,21 +81,21 @@ export default function AdminSettings() {
         const data = await response.json()
         setProfile(data)
         setFormData({
-          name: data.name,
-          email: data.email,
-          phone: data.phone || "",
-          bio: data.bio || "",
-          location: data.location || ""
+          name: data.name || '',
+          email: data.email || '',
+          phone: data.phone || '',
+          bio: data.bio || '',
+          location: data.location || '',
         })
       } else {
-        toast.error("Failed to fetch profile data.")
+        toast.error("Failed to fetch profile.")
       }
-          } catch (error) {
-        toast.error("Failed to fetch profile data.")
-      } finally {
+    } catch (error) {
+      toast.error("Failed to fetch profile.")
+    } finally {
       setInitialLoading(false)
     }
-  }, [toast])
+  }, [])
 
   useEffect(() => {
     fetchProfile()
