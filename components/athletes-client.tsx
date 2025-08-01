@@ -126,6 +126,11 @@ export function AthletesClient({ athletes: initialAthletes, regions: initialRegi
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
+  // Fetch fresh data on component mount
+  useEffect(() => {
+    fetchAthletes()
+  }, [])
+
   return (
     <div>
       {/* Search and Filter */}

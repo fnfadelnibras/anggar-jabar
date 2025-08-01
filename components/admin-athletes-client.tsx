@@ -398,6 +398,11 @@ export function AdminAthletesClient({ athletes: initialAthletes }: { athletes: A
     fetchRegions()
   }, [])
 
+  // Update athletes state when initialAthletes prop changes
+  useEffect(() => {
+    setAthletes(initialAthletes)
+  }, [initialAthletes])
+
   // Refresh athletes data on component mount and after operations
   useEffect(() => {
     fetchAthletes()
