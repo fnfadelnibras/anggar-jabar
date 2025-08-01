@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Search, Plus, MoreHorizontal, Pencil, Trash2, Users, CheckCircle, ChevronLeft, ChevronRight, ArrowUpDown, Filter, X } from "lucide-react"
 import { toast } from "sonner"
+import { ImageCropper } from "@/components/ui/image-cropper"
 
 interface Athlete {
   id: string
@@ -20,6 +21,7 @@ interface Athlete {
   gender: string
   category: string
   status: string
+  image?: string // Cloudinary URL for athlete photo
   region: {
     id: string
     name: string
@@ -29,11 +31,18 @@ interface Athlete {
   updatedAt: string
 }
 
+interface Region {
+  id: string
+  name: string
+  code: string
+}
+
 type SortField = 'name' | 'category' | 'status' | 'region'
 type SortOrder = 'asc' | 'desc'
 
 export function AdminAthletesClient({ athletes: initialAthletes }: { athletes: Athlete[] }) {
   const [athletes, setAthletes] = useState<Athlete[]>(initialAthletes)
+  const [regions, setRegions] = useState<Region[]>([])
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
@@ -44,9 +53,14 @@ export function AdminAthletesClient({ athletes: initialAthletes }: { athletes: A
     gender: '',
     category: '',
     status: '',
-    regionId: ''
+    regionId: '',
+    image: ''
   })
   const [loading, setLoading] = useState(false)
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [imagePreview, setImagePreview] = useState<string>('')
+  const [isCropperOpen, setIsCropperOpen] = useState(false)
+  const [tempImageSrc, setTempImageSrc] = useState<string>('')
   
   // Search and pagination state
   const [searchTerm, setSearchTerm] = useState('')
@@ -70,6 +84,16 @@ export function AdminAthletesClient({ athletes: initialAthletes }: { athletes: A
     }
   }
 
+  const fetchRegions = async () => {
+    try {
+      const response = await fetch('/api/regions')
+      const data = await response.json()
+      setRegions(data)
+    } catch (error) {
+      console.error('Failed to fetch regions:', error)
+    }
+  }
+
   // Get unique values for filter options
   const getUniqueCategories = () => {
     const categories = athletes.map(athlete => athlete.category)
@@ -82,8 +106,8 @@ export function AdminAthletesClient({ athletes: initialAthletes }: { athletes: A
   }
 
   const getUniqueRegions = () => {
-    const regions = athletes.map(athlete => athlete.region.name)
-    return [...new Set(regions)]
+    // Use regions from database instead of only from athletes
+    return regions.map(region => ({ id: region.id, name: region.name }))
   }
 
   // Filter and sort athletes
@@ -181,6 +205,51 @@ export function AdminAthletesClient({ athletes: initialAthletes }: { athletes: A
     })
   }
 
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      setImageFile(file)
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        const imageSrc = e.target?.result as string
+        setTempImageSrc(imageSrc)
+        setIsCropperOpen(true)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const handleCropComplete = (croppedImageUrl: string) => {
+    setImagePreview(croppedImageUrl)
+    setImageFile(null) // Reset file since we're using cropped image
+    setIsCropperOpen(false)
+  }
+
+  const uploadImage = async (file: File | string): Promise<string> => {
+    const formData = new FormData()
+    
+    if (typeof file === 'string') {
+      // Convert data URL to blob
+      const response = await fetch(file)
+      const blob = await response.blob()
+      formData.append('file', blob, 'cropped-image.jpg')
+    } else {
+      formData.append('file', file)
+    }
+
+    const response = await fetch('/api/upload', {
+      method: 'POST',
+      body: formData,
+    })
+
+    if (!response.ok) {
+      throw new Error('Upload failed')
+    }
+
+    const data = await response.json()
+    return data.url
+  }
+
   const hasActiveFilters = searchTerm || categoryFilter !== 'all' || statusFilter !== 'all' || regionFilter !== 'all'
 
   const handleAdd = () => {
@@ -190,8 +259,13 @@ export function AdminAthletesClient({ athletes: initialAthletes }: { athletes: A
       gender: '',
       category: '',
       status: '',
-      regionId: ''
+      regionId: '',
+      image: ''
     })
+    // Reset image states for add mode
+    setImageFile(null)
+    setImagePreview('')
+    setSelectedAthlete(null)
     setIsAddDialogOpen(true)
     toast.info("Form tambah atlet dibuka", {
       description: "Silakan isi data atlet yang akan ditambahkan.",
@@ -206,8 +280,12 @@ export function AdminAthletesClient({ athletes: initialAthletes }: { athletes: A
       gender: athlete.gender,
       category: athlete.category,
       status: athlete.status,
-      regionId: athlete.region.id
+      regionId: athlete.region.id,
+      image: athlete.image || ''
     })
+    // Reset image states for edit mode
+    setImageFile(null)
+    setImagePreview('')
     setIsEditDialogOpen(true)
     toast.info("Form edit atlet dibuka", {
       description: `Mengedit data atlet: ${athlete.name}`,
@@ -225,11 +303,20 @@ export function AdminAthletesClient({ athletes: initialAthletes }: { athletes: A
   const handleSaveAthlete = async () => {
     setLoading(true)
     try {
+      let imageUrl = formData.image
+
+      // Upload image if a new file is selected or if we have a cropped image
+      if (imageFile) {
+        imageUrl = await uploadImage(imageFile)
+      } else if (imagePreview && imagePreview !== formData.image) {
+        imageUrl = await uploadImage(imagePreview)
+      }
+
       const url = '/api/athletes'
       const method = isEditDialogOpen ? 'PUT' : 'POST'
       const body = isEditDialogOpen 
-        ? { ...formData, id: selectedAthlete?.id }
-        : formData
+        ? { ...formData, id: selectedAthlete?.id, image: imageUrl }
+        : { ...formData, image: imageUrl }
 
       const response = await fetch(url, {
         method,
@@ -249,6 +336,7 @@ export function AdminAthletesClient({ athletes: initialAthletes }: { athletes: A
           }
         )
         await fetchAthletes()
+        await fetchRegions() // Refresh regions data
         setIsAddDialogOpen(false)
         setIsEditDialogOpen(false)
         setFormData({
@@ -257,8 +345,11 @@ export function AdminAthletesClient({ athletes: initialAthletes }: { athletes: A
           gender: '',
           category: '',
           status: '',
-          regionId: ''
+          regionId: '',
+          image: ''
         })
+        setImageFile(null)
+        setImagePreview('')
       } else {
         throw new Error('Failed to save athlete')
       }
@@ -289,6 +380,7 @@ export function AdminAthletesClient({ athletes: initialAthletes }: { athletes: A
           description: "Data atlet telah berhasil dihapus dari sistem.",
         })
         await fetchAthletes()
+        await fetchRegions() // Refresh regions data
         setIsDeleteDialogOpen(false)
       } else {
         throw new Error('Failed to delete athlete')
@@ -301,6 +393,11 @@ export function AdminAthletesClient({ athletes: initialAthletes }: { athletes: A
       setLoading(false)
     }
   }
+
+  // Load regions on component mount
+  useEffect(() => {
+    fetchRegions()
+  }, [])
 
   return (
     <div>
@@ -413,22 +510,22 @@ export function AdminAthletesClient({ athletes: initialAthletes }: { athletes: A
             </Select>
           </div>
           
-          <div className="space-y-2">
-            <Label htmlFor="region-filter" className="text-sm font-medium">Region</Label>
-            <Select value={regionFilter} onValueChange={(value) => handleFilterChange('region', value)}>
-              <SelectTrigger>
-                <SelectValue placeholder="All Regions" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Regions</SelectItem>
-                {getUniqueRegions().map((region) => (
-                  <SelectItem key={region} value={region}>
-                    {region}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+                     <div className="space-y-2">
+             <Label htmlFor="region-filter" className="text-sm font-medium">Region</Label>
+             <Select value={regionFilter} onValueChange={(value) => handleFilterChange('region', value)}>
+               <SelectTrigger>
+                 <SelectValue placeholder="All Regions" />
+               </SelectTrigger>
+               <SelectContent>
+                 <SelectItem value="all">All Regions</SelectItem>
+                 {getUniqueRegions().map((region) => (
+                   <SelectItem key={region.id} value={region.name}>
+                     {region.name}
+                   </SelectItem>
+                 ))}
+               </SelectContent>
+             </Select>
+           </div>
           
           <div className="flex items-end">
             {hasActiveFilters && (
@@ -459,6 +556,7 @@ export function AdminAthletesClient({ athletes: initialAthletes }: { athletes: A
                   <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
               </TableHead>
+              <TableHead>Photo</TableHead>
               <TableHead>Birth Date</TableHead>
               <TableHead>Gender</TableHead>
               <TableHead>
@@ -498,6 +596,15 @@ export function AdminAthletesClient({ athletes: initialAthletes }: { athletes: A
             {currentAthletes.map((athlete) => (
               <TableRow key={athlete.id}>
                 <TableCell className="font-medium">{athlete.name}</TableCell>
+                <TableCell>
+                  {athlete.image && (
+                     <img 
+                       src={athlete.image ? `${athlete.image}?f_auto,q_100,w_40,h_40,c_fill` : "/placeholder.svg"} 
+                       alt="Athlete" 
+                       className="w-10 h-10 object-cover rounded-md"
+                     />
+                   )}
+                </TableCell>
                 <TableCell>{new Date(athlete.birthDate).toLocaleDateString()}</TableCell>
                 <TableCell>
                   <Badge variant={athlete.gender === 'Pria' ? 'default' : 'secondary'}>
@@ -582,6 +689,19 @@ export function AdminAthletesClient({ athletes: initialAthletes }: { athletes: A
         if (!open) {
           setIsAddDialogOpen(false)
           setIsEditDialogOpen(false)
+          // Reset form data when dialog closes
+          setFormData({
+            name: '',
+            birthDate: '',
+            gender: '',
+            category: '',
+            status: '',
+            regionId: '',
+            image: ''
+          })
+          setImageFile(null)
+          setImagePreview('')
+          setSelectedAthlete(null)
         }
       }}>
         <DialogContent>
@@ -622,20 +742,19 @@ export function AdminAthletesClient({ athletes: initialAthletes }: { athletes: A
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="category" className="text-sm font-medium">Category</Label>
-              <Select value={formData.category} onValueChange={(value) => setFormData({...formData, category: value})}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select category" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Pemula">Pemula</SelectItem>
-                  <SelectItem value="Menengah">Menengah</SelectItem>
-                  <SelectItem value="Lanjutan">Lanjutan</SelectItem>
-                  <SelectItem value="Elit">Elit</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+                         <div className="space-y-2">
+               <Label htmlFor="category" className="text-sm font-medium">Category</Label>
+               <Select value={formData.category} onValueChange={(value) => setFormData({...formData, category: value})}>
+                 <SelectTrigger>
+                   <SelectValue placeholder="Select category" />
+                 </SelectTrigger>
+                 <SelectContent>
+                   <SelectItem value="EPEE">EPEE</SelectItem>
+                   <SelectItem value="SABRE">SABRE</SelectItem>
+                   <SelectItem value="FOIL">FOIL</SelectItem>
+                 </SelectContent>
+               </Select>
+             </div>
             <div className="space-y-2">
               <Label htmlFor="status" className="text-sm font-medium">Status</Label>
               <Select value={formData.status} onValueChange={(value) => setFormData({...formData, status: value})}>
@@ -656,18 +775,55 @@ export function AdminAthletesClient({ athletes: initialAthletes }: { athletes: A
                 </SelectTrigger>
                 <SelectContent>
                   {getUniqueRegions().map((region) => (
-                    <SelectItem key={region} value={region}>
-                      {region}
+                    <SelectItem key={region.id} value={region.id}>
+                      {region.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="image" className="text-sm font-medium">Photo</Label>
+              <div className="space-y-2">
+                <Input 
+                  id="image" 
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="cursor-pointer"
+                />
+                {(imagePreview || formData.image) && (
+                  <div className="mt-2">
+                    <img 
+                      src={imagePreview || (formData.image ? `${formData.image}?f_auto,q_100` : '')} 
+                      alt="Preview" 
+                      className="w-20 h-20 object-cover rounded-md border"
+                    />
+                    {isEditDialogOpen && formData.image && !imagePreview && (
+                      <p className="text-xs text-muted-foreground mt-1">Current image</p>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => {
               setIsAddDialogOpen(false)
               setIsEditDialogOpen(false)
+              // Reset form data when canceling
+              setFormData({
+                name: '',
+                birthDate: '',
+                gender: '',
+                category: '',
+                status: '',
+                regionId: '',
+                image: ''
+              })
+              setImageFile(null)
+              setImagePreview('')
+              setSelectedAthlete(null)
             }}>
               Cancel
             </Button>
@@ -700,6 +856,16 @@ export function AdminAthletesClient({ athletes: initialAthletes }: { athletes: A
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Image Cropper */}
+      <ImageCropper
+        isOpen={isCropperOpen}
+        onClose={() => setIsCropperOpen(false)}
+        imageSrc={tempImageSrc}
+        onCropComplete={handleCropComplete}
+        aspectRatio={4/5}
+        cropShape="rect"
+      />
     </div>
   )
 } 

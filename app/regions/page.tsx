@@ -29,23 +29,36 @@ interface RegionData {
 }
 
 export default async function RegionsPage() {
-  // Fetch regions data on the server
-  const regionsData = await prisma.region.findMany({
-    include: {
-      _count: {
-        select: { athletes: true }
-      }
-    }
-  })
+  // Fetch regions data on the server with error handling
+  let regionsData: any[] = []
+
+  try {
+    regionsData = await prisma.region.findMany({
+      include: {
+        _count: {
+          select: {
+            athletes: true
+          }
+        }
+      },
+      orderBy: {
+        name: "asc",
+      },
+    })
+  } catch (error) {
+    console.error('Database connection error:', error)
+    // Use empty array if database is not available
+    regionsData = []
+  }
 
   // Transform data for client component
   const transformedRegions: Region[] = regionsData.map((region) => ({
     id: region.id,
     name: region.name,
-    image: `/placeholder.svg?height=200&width=400&text=${encodeURIComponent(region.name)}`,
+    image: region.image ? `${region.image}?f_auto,q_100` : `/placeholder.svg?height=200&width=400&text=${encodeURIComponent(region.name)}`,
     athletes: region._count.athletes,
     clubs: Math.floor(region._count.athletes / 5) + 1,
-    description: `Pusat anggar IKASI ${region.name} dengan ${region._count.athletes} atlet terdaftar.`,
+    description: region.description || `Pusat anggar IKASI ${region.name} dengan ${region._count.athletes} atlet terdaftar.`,
   }))
 
   return (

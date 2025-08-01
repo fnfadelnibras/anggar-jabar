@@ -3,23 +3,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   Users,
   Map,
-  Trophy,
-  TrendingUp,
-  Calendar,
   Activity,
   BarChart3,
-  PieChart,
-  Target,
-  Award,
-  Clock,
-  Star,
-  Eye,
   Plus,
+  Shield,
 } from "lucide-react"
 import Link from "next/link"
 
@@ -30,70 +20,12 @@ export interface DashboardStats {
   inactiveAthletes: number
   maleAthletes: number
   femaleAthletes: number
-  athletesByCategory: { category: string; count: number }[]
-  athletesByRegion: { region: string; count: number }[]
   recentAthletes: { id: string; name: string; region: string; category: string; createdAt: string }[]
-  topRegions: { name: string; count: number }[]
-  regionDetails: { id: string; name: string; code: string; athleteCount: number }[]
+  recentAdmins: { id: string; name: string; email: string; lastLogin: string }[]
+  recentActivity: { id: string; type: string; description: string; timestamp: string }[]
 }
 
-// Simple Bar Chart Component
-const BarChart = ({ data, title }: { data: { label: string; value: number }[]; title: string }) => {
-  const maxValue = Math.max(...data.map((d) => d.value))
-  return (
-    <div className="space-y-4">
-      <h3 className="text-lg font-semibold">{title}</h3>
-      <div className="space-y-3">
-        {data.map((item, index) => (
-          <div key={index} className="space-y-1">
-            <div className="flex justify-between text-sm">
-              <span className="font-medium">{item.label}</span>
-              <span className="text-muted-foreground">{item.value}</span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div
-                className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                style={{ width: `${maxValue > 0 ? (item.value / maxValue) * 100 : 0}%` }}
-              />
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
 
-// Simple Pie Chart Component
-const PieChartComponent = ({
-  data,
-  title,
-}: {
-  data: { label: string; value: number; color: string }[]
-  title: string
-}) => {
-  const total = data.reduce((sum, item) => sum + item.value, 0)
-  return (
-    <div className="space-y-4">
-      <h3 className="text-lg font-semibold">{title}</h3>
-      <div className="space-y-3">
-        {data.map((item, index) => (
-          <div key={index} className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
-              <span className="text-sm font-medium">{item.label}</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Badge variant="secondary">{item.value}</Badge>
-              <span className="text-xs text-muted-foreground">
-                {total > 0 ? Math.round((item.value / total) * 100) : 0}%
-              </span>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
 
 export default function DashboardClient({ stats }: { stats: DashboardStats }) {
   return (
@@ -134,18 +66,18 @@ export default function DashboardClient({ stats }: { stats: DashboardStats }) {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Regions</CardTitle>
-            <Map className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalRegions}</div>
-            <p className="text-xs text-muted-foreground">
-              {stats.topRegions.filter((r) => r.count > 0).length} active regions
-            </p>
-          </CardContent>
-        </Card>
+                 <Card>
+           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+             <CardTitle className="text-sm font-medium">Total Regions</CardTitle>
+             <Map className="h-4 w-4 text-muted-foreground" />
+           </CardHeader>
+           <CardContent>
+             <div className="text-2xl font-bold">{stats.totalRegions}</div>
+             <p className="text-xs text-muted-foreground">
+               {stats.recentActivity.length} recent activities
+             </p>
+           </CardContent>
+         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -174,106 +106,140 @@ export default function DashboardClient({ stats }: { stats: DashboardStats }) {
         </Card>
       </div>
 
-      {/* Charts and Details */}
-      <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="regions">Regions</TabsTrigger>
-        </TabsList>
-        <TabsContent value="overview">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            {/* Athletes by Category */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <PieChart className="mr-2 h-4 w-4" />
-                  Athletes by Category
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <PieChartComponent
-                  data={stats.athletesByCategory.map((item, index) => ({
-                    label: item.category,
-                    value: item.count,
-                    color: ["#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6"][index % 5],
-                  }))}
-                  title="Athletes by Category"
-                />
-              </CardContent>
-            </Card>
+             {/* Recent Activity */}
+       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+         {/* Recent Athletes */}
+         <Card>
+           <CardHeader>
+             <CardTitle className="flex items-center justify-between">
+               <div className="flex items-center">
+                 <Users className="mr-2 h-4 w-4" />
+                 Recently Added Athletes
+               </div>
+               <Button asChild size="sm">
+                 <Link href="/admin/athletes">
+                   <Plus className="mr-2 h-4 w-4" />
+                   Add Athlete
+                 </Link>
+               </Button>
+             </CardTitle>
+           </CardHeader>
+           <CardContent>
+             <div className="space-y-4">
+               <div className="flex items-center justify-between">
+                 <span className="text-sm text-muted-foreground">Showing {stats.recentAthletes.length} recent athletes</span>
+                 <Badge variant="outline">Latest additions</Badge>
+               </div>
+               <div className="space-y-3">
+                 {stats.recentAthletes.slice(0, 5).map((athlete) => (
+                   <div key={athlete.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                     <div className="flex items-center space-x-3">
+                       <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                         <span className="text-xs font-medium text-primary">
+                           {athlete.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                         </span>
+                       </div>
+                       <div>
+                         <p className="font-medium text-sm">{athlete.name}</p>
+                         <p className="text-xs text-muted-foreground">{athlete.region} • {athlete.category}</p>
+                       </div>
+                     </div>
+                     <div className="text-xs text-muted-foreground">
+                       {new Date(athlete.createdAt).toLocaleDateString('id-ID')}
+                     </div>
+                   </div>
+                 ))}
+               </div>
+             </div>
+           </CardContent>
+         </Card>
 
-            {/* Top Regions */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Trophy className="mr-2 h-4 w-4" />
-                  Top Regions by Athletes
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <BarChart data={stats.topRegions.map((r) => ({ label: r.name, value: r.count }))} title="Top Regions" />
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-        <TabsContent value="regions">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            {/* Region Details Table */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <Eye className="mr-2 h-4 w-4" />
-                    Region Details
-                  </div>
-                  <Button asChild size="sm">
-                    <Link href="/admin/regions">
-                      <Plus className="mr-2 h-4 w-4" />
-                      Add Region
-                    </Link>
-                  </Button>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Showing {stats.regionDetails.length} regions</span>
-                    <Badge variant="outline">Total: {stats.regionDetails.reduce((sum, r) => sum + r.athleteCount, 0)} athletes</Badge>
-                  </div>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Region</TableHead>
-                        <TableHead>Code</TableHead>
-                        <TableHead>Athlete Count</TableHead>
-                        <TableHead>Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {stats.regionDetails.map((region) => (
-                        <TableRow key={region.id}>
-                          <TableCell className="font-medium">{region.name}</TableCell>
-                          <TableCell>{region.code}</TableCell>
-                          <TableCell>
-                            <Badge variant={region.athleteCount > 0 ? "default" : "secondary"}>{region.athleteCount} athletes</Badge>
-                          </TableCell>
-                          <TableCell>
-                            <Button asChild size="sm" variant="outline">
-                              <Link href={`/regions/${region.id}`}>
-                                <Eye className="h-4 w-4" />
-                              </Link>
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                   {/* Recent Admins */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <Shield className="mr-2 h-4 w-4" />
+                  Recently Added Admins
                 </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-      </Tabs>
+                <Button asChild size="sm">
+                  <Link href="/admin/admins">
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Admin
+                  </Link>
+                </Button>
+              </CardTitle>
+            </CardHeader>
+           <CardContent>
+             <div className="space-y-4">
+               <div className="flex items-center justify-between">
+                 <span className="text-sm text-muted-foreground">Showing {stats.recentAdmins.length} recent admins</span>
+                 <Badge variant="outline">Latest additions</Badge>
+               </div>
+               <div className="space-y-3">
+                 {stats.recentAdmins.slice(0, 5).map((admin) => (
+                   <div key={admin.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                     <div className="flex items-center space-x-3">
+                       <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                         <span className="text-xs font-medium text-primary">
+                           {admin.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                         </span>
+                       </div>
+                       <div>
+                         <p className="font-medium text-sm">{admin.name}</p>
+                         <p className="text-xs text-muted-foreground">{admin.email}</p>
+                       </div>
+                     </div>
+                     <div className="text-xs text-muted-foreground">
+                       {admin.lastLogin ? new Date(admin.lastLogin).toLocaleDateString('id-ID') : 'Never'}
+                     </div>
+                   </div>
+                 ))}
+               </div>
+             </div>
+           </CardContent>
+         </Card>
+       </div>
+
+               {/* Recent Activity */}
+        <div className="mb-8">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Activity className="mr-2 h-4 w-4" />
+                Recent Activity
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Showing {stats.recentActivity.length} recent activities</span>
+                  <Badge variant="outline">Latest updates</Badge>
+                </div>
+                <div className="space-y-3">
+                  {stats.recentActivity.slice(0, 8).map((activity) => (
+                    <div key={activity.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                          <span className="text-xs font-medium text-primary">
+                            {activity.type.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                        <div>
+                          <p className="font-medium text-sm">{activity.description}</p>
+                          <p className="text-xs text-muted-foreground">{activity.type}</p>
+                        </div>
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {new Date(activity.timestamp).toLocaleDateString('id-ID')}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
     </div>
   )
 } 

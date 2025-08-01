@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
       email: admin.email,
       phone: admin.phone || "+62 812-3456-7890",
       avatar: admin.avatar || "/placeholder-user.jpg",
-      bio: admin.bio || "Administrator untuk sistem Indonesia Fencing dengan pengalaman 5 tahun dalam manajemen atlet dan turnamen.",
+      bio: admin.bio || "Administrator untuk sistem IKASI JABAR dengan pengalaman 5 tahun dalam manajemen atlet dan turnamen.",
       location: admin.location || "Jakarta, Indonesia",
       joinDate: admin.createdAt.toISOString(),
       lastLogin: admin.lastLogin?.toISOString() || new Date().toISOString()
@@ -74,7 +74,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { name, email, phone, bio, location } = body
+    const { name, email, phone, bio, location, avatar } = body
 
     // Validate required fields
     if (!name || !email) {
@@ -108,6 +108,7 @@ export async function PUT(request: NextRequest) {
         phone,
         bio,
         location,
+        avatar,
         updatedAt: new Date()
       },
       select: {

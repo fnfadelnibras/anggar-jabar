@@ -54,3 +54,59 @@
 body {
   @apply bg-background text-foreground;
 }
+
+/* Ensure toasts appear in front of dialogs */
+.toaster {
+  z-index: 9999 !important;
+}
+
+/* Custom toast styling - smooth and centered */
+.toaster [data-sonner-toast] {
+  padding: 12px 16px !important;
+  min-height: auto !important;
+  border-radius: 12px !important;
+  backdrop-filter: blur(12px) !important;
+  background: rgba(255, 255, 255, 0.85) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12) !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.025em !important;
+}
+
+/* Dark mode toast styling */
+.dark .toaster [data-sonner-toast] {
+  background: rgba(0, 0, 0, 0.85) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Slide animation from top center */
+.toaster [data-sonner-toast] {
+  animation: slideInFromTop 0.5s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+@keyframes slideInFromTop {
+  0% {
+    transform: translateY(-100%) scale(0.95);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+/* Ensure the animation works by overriding any conflicting styles */
+.toaster [data-sonner-toast][data-state="open"],
+.toaster [data-sonner-toast][data-state="closed"] {
+  animation: slideInFromTop 0.5s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* Override any default Sonner animations */
+.toaster [data-sonner-toast][data-swipe="end"] {
+  transform: translateX(100%) !important;
+}
+
+.toaster [data-sonner-toast][data-swipe="move"] {
+  transform: translateX(var(--radix-toast-swipe-move-x)) !important;
+}

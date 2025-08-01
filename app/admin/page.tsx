@@ -2,86 +2,109 @@ import DashboardClient, { DashboardStats } from "./dashboard-client"
 import { prisma } from "@/lib/prisma"
 
 export default async function AdminDashboardPage() {
-  // Fetch data directly via Prisma on the server
-  const [athletes, regions] = await Promise.all([
-    prisma.athlete.findMany({
-      include: { region: true },
-    }),
-    prisma.region.findMany({
-      include: {
-        _count: {
-          select: { athletes: true },
+  // Fetch data directly via Prisma on the server with error handling
+  let athletes: any[] = []
+  let regions: any[] = []
+  let admins: any[] = []
+  
+  try {
+    [athletes, regions, admins] = await Promise.all([
+      prisma.athlete.findMany({
+        include: { region: true },
+      }),
+      prisma.region.findMany({
+        include: {
+          _count: {
+            select: { athletes: true },
+          },
         },
-      },
-    }),
-  ])
+      }),
+      prisma.user.findMany({
+        where: { role: 'admin' },
+        orderBy: { createdAt: 'desc' },
+      }),
+    ])
+  } catch (error) {
+    console.error('Database connection error:', error)
+    // Use empty arrays if database is not available
+    athletes = []
+    regions = []
+    admins = []
+  }
 
-  // Calculate statistics (mimic previous logic)
+  // Calculate statistics
   const totalAthletes = athletes.length
   const totalRegions = regions.length
-  const activeAthletes = athletes.filter((a) => a.status === "ACTIVE").length
-  const inactiveAthletes = athletes.filter((a) => a.status === "INACTIVE").length
-  const maleAthletes = athletes.filter((a) => a.gender === "Pria").length
-  const femaleAthletes = athletes.filter((a) => a.gender === "Wanita").length
+  const activeAthletes = athletes.filter((a: any) => a.status === "ACTIVE").length
+  const inactiveAthletes = athletes.filter((a: any) => a.status === "INACTIVE").length
+  const maleAthletes = athletes.filter((a: any) => a.gender === "Pria").length
+  const femaleAthletes = athletes.filter((a: any) => a.gender === "Wanita").length
 
-      // Athletes by category
-  const categoryCount: Record<string, number> = {}
-  for (const athlete of athletes) {
-    categoryCount[athlete.category as string] = (categoryCount[athlete.category as string] || 0) + 1
-  }
-      const athletesByCategory = Object.entries(categoryCount).map(([category, count]) => ({
-        category,
-    count: count as number,
-  }))
-
-      // Athletes by region
-  const regionCount: Record<string, number> = {}
-  for (const athlete of athletes) {
-    const regionName = athlete.region?.name ?? "Unknown"
-    regionCount[regionName] = (regionCount[regionName] || 0) + 1
-  }
-  const athletesByRegion = Object.entries(regionCount)
-    .map(([region, count]) => ({ region, count: count as number }))
-    .sort((a, b) => b.count - a.count)
-
-      // Recent athletes (last 5)
+  // Recent athletes (last 5)
   const recentAthletes = athletes
-    .sort((a, b) => Number(b.createdAt) - Number(a.createdAt))
-        .slice(0, 5)
-    .map((athlete) => ({
-          id: athlete.id,
-          name: athlete.name,
+    .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .slice(0, 5)
+    .map((athlete: any) => ({
+      id: athlete.id,
+      name: athlete.name,
       region: athlete.region?.name ?? "-",
-          category: athlete.category,
-      createdAt: new Date(athlete.createdAt).toLocaleDateString("id-ID"),
+      category: athlete.category,
+      createdAt: athlete.createdAt.toISOString(),
     }))
 
-  // Top regions by athlete count
-  const topRegions = regions
-    .map((region) => ({ name: region.name, count: region._count?.athletes || 0 }))
-    .sort((a, b) => b.count - a.count)
-        .slice(0, 5)
+  // Recent admins (last 5)
+  const recentAdmins = admins
+    .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .slice(0, 5)
+    .map((admin: any) => ({
+      id: admin.id,
+      name: admin.name || 'Unknown',
+      email: admin.email || 'No email',
+      lastLogin: admin.lastLogin?.toISOString() || null,
+    }))
 
-  // Region details for table
-  const regionDetails = regions.map((region) => ({
-        id: region.id,
-        name: region.name,
-        code: region.code,
-    athleteCount: region._count?.athletes || 0,
-      }))
+  // Recent activity from database
+  let recentActivity: any[] = []
+
+  try {
+    recentActivity = await prisma.activity.findMany({
+      take: 10,
+      orderBy: {
+        createdAt: 'desc'
+      },
+      include: {
+        user: {
+          select: {
+            name: true,
+            email: true
+          }
+        }
+      }
+    })
+  } catch (error) {
+    console.error('Database connection error:', error)
+    // Use empty array if database is not available
+    recentActivity = []
+  }
+
+  // Transform activity data for dashboard
+  const transformedActivity = recentActivity.map((activity: any) => ({
+    id: activity.id,
+    type: activity.type,
+    description: activity.description,
+    timestamp: activity.createdAt.toISOString(),
+  }))
 
   const stats: DashboardStats = {
-        totalAthletes,
-        totalRegions,
-        activeAthletes,
-        inactiveAthletes,
-        maleAthletes,
-        femaleAthletes,
-        athletesByCategory,
-        athletesByRegion,
-        recentAthletes,
-        topRegions,
-    regionDetails,
+    totalAthletes,
+    totalRegions,
+    activeAthletes,
+    inactiveAthletes,
+    maleAthletes,
+    femaleAthletes,
+    recentAthletes,
+    recentAdmins,
+    recentActivity: transformedActivity,
   }
 
   return <DashboardClient stats={stats} />

@@ -103,9 +103,19 @@ export default async function AthleteProfilePage({ params }: PageProps) {
               </CardHeader>
               <CardContent>
                 <Tabs defaultValue="bio">
-                  <TabsList className="mb-4">
-                    <TabsTrigger value="bio">Biography</TabsTrigger>
-                    <TabsTrigger value="stats">Statistics</TabsTrigger>
+                  <TabsList className="mb-4 flex flex-wrap bg-gray-100 p-1 rounded-lg">
+                    <TabsTrigger 
+                      value="bio"
+                      className="data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-gray-200 text-gray-600 hover:text-gray-800 border-0"
+                    >
+                      Biography
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="stats"
+                      className="data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-gray-200 text-gray-600 hover:text-gray-800 border-0"
+                    >
+                      Statistics
+                    </TabsTrigger>
                   </TabsList>
                   <TabsContent value="bio" className="space-y-4">
                     <div>

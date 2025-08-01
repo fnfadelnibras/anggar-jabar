@@ -17,19 +17,29 @@ interface Stats {
 }
 
 export default async function HomePage() {
-  // Fetch data on the server
-  const [athletes, regions] = await Promise.all([
-    prisma.athlete.findMany({
-      include: { region: true }
-    }),
-    prisma.region.findMany({
-      include: {
-        _count: {
-          select: { athletes: true }
+  // Fetch data on the server with error handling
+  let athletes = []
+  let regions = []
+  
+  try {
+    [athletes, regions] = await Promise.all([
+      prisma.athlete.findMany({
+        include: { region: true }
+      }),
+      prisma.region.findMany({
+        include: {
+          _count: {
+            select: { athletes: true }
+          }
         }
-      }
-    })
-  ])
+      })
+    ])
+  } catch (error) {
+    console.error('Database connection error:', error)
+    // Use default values if database is not available
+    athletes = []
+    regions = []
+  }
 
   // Calculate stats
   const stats: Stats = {
@@ -74,8 +84,8 @@ export default async function HomePage() {
                   height={64}
                   className="h-16 w-16"
                 />
-                <h1 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                  IKASI JABAR
+                <h1 className="text-4xl lg:text-5xl font-bold">
+                  IKASI<span className="bg-gradient-to-r from-yellow-400 via-blue-500 to-green-500 bg-clip-text text-transparent">JABAR</span>
                 </h1>
               </div>
               <h2 className="text-2xl lg:text-3xl font-semibold mb-4 text-gray-100">

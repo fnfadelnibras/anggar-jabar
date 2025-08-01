@@ -57,12 +57,18 @@ export default function AboutPage() {
         
         <div className="container relative z-10">
           <div className="text-center">
-            <div className="flex items-center justify-center gap-3 mb-6">
-              <Swords className="h-12 w-12 text-blue-400" />
-              <h1 className="text-5xl lg:text-6xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                IKASI JABAR
-              </h1>
-            </div>
+                         <div className="flex items-center justify-center gap-3 mb-6">
+               <Image
+                 src="/Logo.svg"
+                 alt="IKASI JABAR Logo"
+                 width={64}
+                 height={64}
+                 className="h-16 w-16"
+               />
+               <h1 className="text-5xl lg:text-6xl font-bold">
+                 IKASI<span className="bg-gradient-to-r from-yellow-400 via-blue-500 to-green-500 bg-clip-text text-transparent">JABAR</span>
+               </h1>
+             </div>
             <h2 className="text-2xl lg:text-3xl font-semibold mb-4 text-gray-100">
               Ikatan Anggar Seluruh Indonesia Jawa Barat
             </h2>
@@ -90,12 +96,37 @@ export default function AboutPage() {
       {/* Main Content */}
       <section className="container py-12">
         <Tabs defaultValue="mission" className="w-full">
-          <TabsList className="mb-6 flex flex-wrap">
-            <TabsTrigger value="mission">Visi & Misi</TabsTrigger>
-            <TabsTrigger value="history">Sejarah</TabsTrigger>
-            <TabsTrigger value="team">Tim Kami</TabsTrigger>
-            <TabsTrigger value="partners">Mitra</TabsTrigger>
-            <TabsTrigger value="developer">Developer</TabsTrigger>
+          <TabsList className="mb-6 flex flex-wrap bg-gray-100 p-1 rounded-lg">
+            <TabsTrigger 
+              value="mission"
+              className="border-0 data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-gray-200 text-gray-600 hover:text-gray-800"
+            >
+              Visi & Misi
+            </TabsTrigger>
+            <TabsTrigger 
+              value="history"
+              className="border-0 data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-gray-200 text-gray-600 hover:text-gray-800"
+            >
+              Sejarah
+            </TabsTrigger>
+            <TabsTrigger 
+              value="team"
+              className="border-0 data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-gray-200 text-gray-600 hover:text-gray-800"
+            >
+              Tim Kami
+            </TabsTrigger>
+            <TabsTrigger 
+              value="partners"
+              className="border-0 data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-gray-200 text-gray-600 hover:text-gray-800"
+            >
+              Mitra
+            </TabsTrigger>
+            <TabsTrigger 
+              value="developer"
+              className="border-0 data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-gray-200 text-gray-600 hover:text-gray-800"
+            >
+              Developer
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="mission" className="mt-0">
@@ -174,7 +205,7 @@ export default function AboutPage() {
               <div className="space-y-6">
                 <div className="relative w-full h-[400px] rounded-lg overflow-hidden">
                   <Image
-                    src="/placeholder.svg?height=400&width=600&text=IKASI+JABAR+Competition"
+                    src="/ikasijabar.jpg"
                     alt="IKASI JABAR Competition"
                     fill
                     className="object-cover"
@@ -268,7 +299,7 @@ export default function AboutPage() {
               <div className="space-y-6">
                 <div className="relative w-full h-[300px] rounded-lg overflow-hidden">
                   <Image
-                    src="/placeholder.svg?height=300&width=400&text=Historical+IKASI+Photo"
+                    src="/historical.jpg"
                     alt="Historical IKASI Photo"
                     fill
                     className="object-cover"
@@ -350,7 +381,7 @@ export default function AboutPage() {
                         Perusahaan pengembangan software yang berfokus pada solusi digital untuk organisasi olahraga dan manajemen kompetisi.
                       </p>
                       <div className="flex gap-2">
-                        <Badge variant="outline">Next.js</Badge>
+                        <Badge variant="outline">Next.js 15</Badge>
                         <Badge variant="outline">React</Badge>
                         <Badge variant="outline">TypeScript</Badge>
                         <Badge variant="outline">Tailwind CSS</Badge>
@@ -363,8 +394,14 @@ export default function AboutPage() {
               <Card className="border-primary/20">
                 <CardContent className="p-6">
                   <div className="flex items-start gap-4">
-                    <div className="relative w-16 h-16 rounded-full overflow-hidden bg-primary/10 flex items-center justify-center">
-                      <span className="text-primary font-bold text-lg">HN</span>
+                    <div className="relative w-16 h-16 rounded-full overflow-hidden">
+                      <Image
+                        src="/developer.jpg"
+                        alt="Developer"
+                        fill
+                        className="object-cover"
+                        sizes="64px"
+                      />
                     </div>
                     <div className="flex-1">
                       <h4 className="font-bold text-lg mb-1">A.M. Hud Nibras Fadhlullah</h4>
@@ -396,19 +433,21 @@ export default function AboutPage() {
                   <div>
                     <h5 className="font-semibold mb-2">Teknologi</h5>
                     <ul className="space-y-1 text-muted-foreground">
-                      <li>• Next.js 14 (App Router)</li>
+                      <li>• Next.js 15 (App Router)</li>
                       <li>• TypeScript</li>
                       <li>• Tailwind CSS</li>
                       <li>• Prisma ORM</li>
+                      <li>• Cloudinary</li>
                     </ul>
                   </div>
                   <div>
                     <h5 className="font-semibold mb-2">Fitur Utama</h5>
                     <ul className="space-y-1 text-muted-foreground">
                       <li>• Manajemen Data Atlet</li>
-                      <li>• Sistem Kompetisi</li>
+                      <li>• Manajemen Data Wilayah</li>
                       <li>• Dashboard Admin</li>
-                      <li>• Laporan Real-time</li>
+                      <li>• Upload & Crop Gambar</li>
+                      <li>• Sistem Pencarian</li>
                     </ul>
                   </div>
                 </div>
@@ -424,21 +463,39 @@ export default function AboutPage() {
                   <div>
                     <h5 className="font-semibold mb-2">Keamanan</h5>
                     <ul className="space-y-1 text-muted-foreground">
-                      <li>• Autentikasi JWT</li>
-                      <li>• Enkripsi Data</li>
+                      <li>• NextAuth.js</li>
                       <li>• Role-based Access</li>
-                      <li>• Audit Trail</li>
+                      <li>• Secure File Upload</li>
+                      <li>• Environment Variables</li>
                     </ul>
                   </div>
                   <div>
                     <h5 className="font-semibold mb-2">Performa</h5>
                     <ul className="space-y-1 text-muted-foreground">
-                      <li>• Server-side Rendering</li>
+                      <li>• React Server Components</li>
                       <li>• Optimized Images</li>
-                      <li>• Caching Strategy</li>
+                      <li>• Cloudinary CDN</li>
                       <li>• Database Indexing</li>
                     </ul>
                   </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8 p-6 bg-primary/5 rounded-lg">
+              <h4 className="font-bold text-lg mb-4 text-primary">Kontak Pengembangan</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h5 className="font-semibold mb-2">FnCorporation</h5>
+                  <p className="text-sm text-muted-foreground mb-2">Email: contact@fncorporation.com</p>
+                  <p className="text-sm text-muted-foreground mb-2">Website: www.fncorporation.com</p>
+                  <p className="text-sm text-muted-foreground">Telp: +62 22 123-4567</p>
+                </div>
+                <div>
+                  <h5 className="font-semibold mb-2">A.M. Hud Nibras Fadhlullah</h5>
+                  <p className="text-sm text-muted-foreground mb-2">Email: hud.nibras@fncorporation.com</p>
+                  <p className="text-sm text-muted-foreground mb-2">LinkedIn: linkedin.com/in/hudnibras</p>
+                  <p className="text-sm text-muted-foreground">GitHub: github.com/hudnibras</p>
                 </div>
               </div>
             </div>
@@ -449,102 +506,75 @@ export default function AboutPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
                 <h3 className="text-xl font-bold mb-4">Mitra Resmi</h3>
-                <div className="grid grid-cols-2 gap-6">
-                  <Card className="flex items-center justify-center p-6 h-32 relative">
-                    <Image
-                      src="/placeholder.svg?height=80&width=160&text=Dispora+Jabar"
-                      alt="Dinas Olahraga Jawa Barat"
-                      width={160}
-                      height={80}
-                      className="object-contain"
-                    />
-                  </Card>
-                  <Card className="flex items-center justify-center p-6 h-32 relative">
-                    <Image
-                      src="/placeholder.svg?height=80&width=160&text=KONI+Jabar"
-                      alt="KONI Jawa Barat"
-                      width={160}
-                      height={80}
-                      className="object-contain"
-                    />
-                  </Card>
-                  <Card className="flex items-center justify-center p-6 h-32 relative">
-                    <Image
-                      src="/placeholder.svg?height=80&width=160&text=IKASI+Pusat"
-                      alt="IKASI Pusat"
-                      width={160}
-                      height={80}
-                      className="object-contain"
-                    />
-                  </Card>
-                  <Card className="flex items-center justify-center p-6 h-32 relative">
-                    <Image
-                      src="/placeholder.svg?height=80&width=160&text=FIE"
-                      alt="Federation Internationale d'Escrime"
-                      width={160}
-                      height={80}
-                      className="object-contain"
-                    />
-                  </Card>
-                </div>
+                                 <div className="grid grid-cols-2 gap-6">
+                   <Card className="flex items-center justify-center p-4 h-40 relative">
+                     <Image
+                       src="/disporajabar.png"
+                       alt="Dinas Olahraga Jawa Barat"
+                       width={140}
+                       height={100}
+                       className="object-contain max-w-full max-h-full"
+                     />
+                   </Card>
+                   <Card className="flex items-center justify-center p-4 h-40 relative">
+                     <Image
+                       src="/koni_jabar.png"
+                       alt="KONI Jawa Barat"
+                       width={140}
+                       height={100}
+                       className="object-contain max-w-full max-h-full"
+                     />
+                   </Card>
+                   <Card className="flex items-center justify-center p-4 h-40 relative">
+                     <Image
+                       src="/ikasipusat.jpeg"
+                       alt="IKASI Pusat"
+                       width={140}
+                       height={100}
+                       className="object-contain max-w-full max-h-full"
+                     />
+                   </Card>
+                   <Card className="flex items-center justify-center p-4 h-40 relative">
+                     <Image
+                       src="/fie.png"
+                       alt="Federation Internationale d'Escrime"
+                       width={140}
+                       height={100}
+                       className="object-contain max-w-full max-h-full"
+                     />
+                   </Card>
+                 </div>
 
-                <h3 className="text-xl font-bold mb-4 mt-8">Sponsor Korporat</h3>
-                <div className="grid grid-cols-3 gap-4">
-                  <Card className="flex items-center justify-center p-4 h-24 relative">
-                    <Image
-                      src="/placeholder.svg?height=60&width=120&text=Bank+Jabar"
-                      alt="Bank Jabar"
-                      width={120}
-                      height={60}
-                      className="object-contain"
-                    />
-                  </Card>
-                  <Card className="flex items-center justify-center p-4 h-24 relative">
-                    <Image
-                      src="/placeholder.svg?height=60&width=120&text=Telkom+Jabar"
-                      alt="Telkom Jabar"
-                      width={120}
-                      height={60}
-                      className="object-contain"
-                    />
-                  </Card>
-                  <Card className="flex items-center justify-center p-4 h-24 relative">
-                    <Image
-                      src="/placeholder.svg?height=60&width=120&text=PLN+Jabar"
-                      alt="PLN Jabar"
-                      width={120}
-                      height={60}
-                      className="object-contain"
-                    />
-                  </Card>
-                  <Card className="flex items-center justify-center p-4 h-24 relative">
-                    <Image
-                      src="/placeholder.svg?height=60&width=120&text=Jabar+Sport"
-                      alt="Jabar Sport"
-                      width={120}
-                      height={60}
-                      className="object-contain"
-                    />
-                  </Card>
-                  <Card className="flex items-center justify-center p-4 h-24 relative">
-                    <Image
-                      src="/placeholder.svg?height=60&width=120&text=Bandung+Corp"
-                      alt="Bandung Corp"
-                      width={120}
-                      height={60}
-                      className="object-contain"
-                    />
-                  </Card>
-                  <Card className="flex items-center justify-center p-4 h-24 relative">
-                    <Image
-                      src="/placeholder.svg?height=60&width=120&text=Jabar+Media"
-                      alt="Jabar Media"
-                      width={120}
-                      height={60}
-                      className="object-contain"
-                    />
-                  </Card>
-                </div>
+                                 <h3 className="text-xl font-bold mb-4 mt-8">Sponsor Korporat</h3>
+                 <div className="grid grid-cols-3 gap-4">
+                   <Card className="flex items-center justify-center p-4 h-32 relative">
+                     <Image
+                       src="/bankbjb.jpg"
+                       alt="Bank Jabar"
+                       width={100}
+                       height={80}
+                       className="object-contain max-w-full max-h-full"
+                     />
+                   </Card>
+                   <Card className="flex items-center justify-center p-4 h-32 relative">
+                     <Image
+                       src="/telkom.jpg"
+                       alt="Telkom Jabar"
+                       width={100}
+                       height={80}
+                       className="object-contain max-w-full max-h-full"
+                     />
+                   </Card>
+                   <Card className="flex items-center justify-center p-4 h-32 relative">
+                     <Image
+                       src="/pln.jpg"
+                       alt="PLN Jabar"
+                       width={100}
+                       height={80}
+                       className="object-contain max-w-full max-h-full"
+                     />
+                   </Card>
+                 </div>
               </div>
 
               <div>
@@ -598,133 +628,7 @@ export default function AboutPage() {
             </div>
           </TabsContent>
 
-          <TabsContent value="developer" className="mt-0">
-            <h2 className="text-3xl font-bold mb-6">Tim Pengembangan Sistem</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-              <Card className="border-primary/20">
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="relative w-16 h-16 rounded-full overflow-hidden bg-primary/10 flex items-center justify-center">
-                      <span className="text-primary font-bold text-lg">FN</span>
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-bold text-lg mb-1">FnCorporation</h4>
-                      <p className="text-sm text-primary mb-2">Software Development Company</p>
-                      <p className="text-sm text-muted-foreground mb-3">
-                        Perusahaan pengembangan software yang berfokus pada solusi digital untuk organisasi olahraga dan manajemen kompetisi.
-                      </p>
-                      <div className="flex gap-2">
-                        <Badge variant="outline">Next.js</Badge>
-                        <Badge variant="outline">React</Badge>
-                        <Badge variant="outline">TypeScript</Badge>
-                        <Badge variant="outline">Tailwind CSS</Badge>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              
-              <Card className="border-primary/20">
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="relative w-16 h-16 rounded-full overflow-hidden bg-primary/10 flex items-center justify-center">
-                      <span className="text-primary font-bold text-lg">HN</span>
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-bold text-lg mb-1">A.M. Hud Nibras Fadhlullah</h4>
-                      <p className="text-sm text-primary mb-2">Lead Developer</p>
-                      <p className="text-sm text-muted-foreground mb-3">
-                        Full-stack developer dengan pengalaman dalam pengembangan aplikasi web modern dan sistem manajemen data.
-                      </p>
-                      <div className="flex gap-2">
-                        <Badge variant="outline">Full-Stack</Badge>
-                        <Badge variant="outline">UI/UX</Badge>
-                        <Badge variant="outline">Database</Badge>
-                        <Badge variant="outline">API</Badge>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-            
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <div className="p-6 bg-muted rounded-lg">
-                <h4 className="font-bold text-lg mb-4">Tentang Pengembangan Sistem</h4>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Sistem Manajemen Kompetisi Anggar IKASI JABAR dikembangkan dengan teknologi modern untuk memberikan 
-                  pengalaman terbaik bagi pengguna. Platform ini dirancang dengan mempertimbangkan kebutuhan khusus 
-                  organisasi olahraga dan standar keamanan data yang tinggi.
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <h5 className="font-semibold mb-2">Teknologi</h5>
-                    <ul className="space-y-1 text-muted-foreground">
-                      <li>• Next.js 14 (App Router)</li>
-                      <li>• TypeScript</li>
-                      <li>• Tailwind CSS</li>
-                      <li>• Prisma ORM</li>
-                    </ul>
-                  </div>
-                  <div>
-                    <h5 className="font-semibold mb-2">Fitur Utama</h5>
-                    <ul className="space-y-1 text-muted-foreground">
-                      <li>• Manajemen Data Atlet</li>
-                      <li>• Sistem Kompetisi</li>
-                      <li>• Dashboard Admin</li>
-                      <li>• Laporan Real-time</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="p-6 bg-muted rounded-lg">
-                <h4 className="font-bold text-lg mb-4">Keamanan & Performa</h4>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Sistem ini dibangun dengan mempertimbangkan aspek keamanan dan performa untuk memberikan 
-                  pengalaman yang aman dan responsif bagi semua pengguna.
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <h5 className="font-semibold mb-2">Keamanan</h5>
-                    <ul className="space-y-1 text-muted-foreground">
-                      <li>• Autentikasi JWT</li>
-                      <li>• Enkripsi Data</li>
-                      <li>• Role-based Access</li>
-                      <li>• Audit Trail</li>
-                    </ul>
-                  </div>
-                  <div>
-                    <h5 className="font-semibold mb-2">Performa</h5>
-                    <ul className="space-y-1 text-muted-foreground">
-                      <li>• Server-side Rendering</li>
-                      <li>• Optimized Images</li>
-                      <li>• Caching Strategy</li>
-                      <li>• Database Indexing</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
 
-            <div className="mt-8 p-6 bg-primary/5 rounded-lg">
-              <h4 className="font-bold text-lg mb-4 text-primary">Kontak Pengembangan</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <h5 className="font-semibold mb-2">FnCorporation</h5>
-                  <p className="text-sm text-muted-foreground mb-2">Email: contact@fncorporation.com</p>
-                  <p className="text-sm text-muted-foreground mb-2">Website: www.fncorporation.com</p>
-                  <p className="text-sm text-muted-foreground">Telp: +62 22 123-4567</p>
-                </div>
-                <div>
-                  <h5 className="font-semibold mb-2">A.M. Hud Nibras Fadhlullah</h5>
-                  <p className="text-sm text-muted-foreground mb-2">Email: hud.nibras@fncorporation.com</p>
-                  <p className="text-sm text-muted-foreground mb-2">LinkedIn: linkedin.com/in/hudnibras</p>
-                  <p className="text-sm text-muted-foreground">GitHub: github.com/hudnibras</p>
-                </div>
-              </div>
-            </div>
-          </TabsContent>
         </Tabs>
       </section>
     </PublicLayout>

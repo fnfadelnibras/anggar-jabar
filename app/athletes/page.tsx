@@ -30,12 +30,23 @@ interface AthleteData {
 }
 
 export default async function AthletesPage() {
-  // Fetch athletes data on the server
-  const athletesData = await prisma.athlete.findMany({
-    include: {
-      region: true
-    }
-  })
+  // Fetch athletes data on the server with error handling
+  let athletesData: any[] = []
+
+  try {
+    athletesData = await prisma.athlete.findMany({
+      include: {
+        region: true,
+      },
+      orderBy: {
+        name: "asc",
+      },
+    })
+  } catch (error) {
+    console.error('Database connection error:', error)
+    // Use empty array if database is not available
+    athletesData = []
+  }
 
   // Transform data for client component
   const transformedAthletes: Athlete[] = athletesData.map((athlete) => ({
@@ -44,7 +55,7 @@ export default async function AthletesPage() {
     region: athlete.region.name,
     category: athlete.category,
     verificationStatus: 'pending',
-    image: "/placeholder.svg?height=400&width=400",
+    image: athlete.image ? `${athlete.image}?f_auto,q_100` : "/placeholder.svg?height=400&width=400",
   }))
 
   // Get unique regions and categories for filters

@@ -12,12 +12,14 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Search, Plus, MoreHorizontal, Pencil, Trash2, Map, CheckCircle, ChevronLeft, ChevronRight, ArrowUpDown, Filter, X } from "lucide-react"
 import { toast } from "sonner"
+import { ImageCropper } from "@/components/ui/image-cropper"
 
 interface Region {
   id: string
   name: string
   code: string
   description?: string
+  image?: string // Cloudinary URL for region image
   _count?: {
     athletes: number
   }
@@ -35,9 +37,14 @@ export function AdminRegionsClient({ regions: initialRegions }: { regions: Regio
   const [formData, setFormData] = useState({
     name: '',
     code: '',
-    description: ''
+    description: '',
+    image: ''
   })
   const [loading, setLoading] = useState(false)
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [imagePreview, setImagePreview] = useState<string>('')
+  const [isCropperOpen, setIsCropperOpen] = useState(false)
+  const [tempImageSrc, setTempImageSrc] = useState<string>('')
   
   // Search and pagination state
   const [searchTerm, setSearchTerm] = useState('')
@@ -143,13 +150,59 @@ export function AdminRegionsClient({ regions: initialRegions }: { regions: Regio
     })
   }
 
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      setImageFile(file)
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        const imageSrc = e.target?.result as string
+        setTempImageSrc(imageSrc)
+        setIsCropperOpen(true)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const handleCropComplete = (croppedImageUrl: string) => {
+    setImagePreview(croppedImageUrl)
+    setImageFile(null) // Reset file since we're using cropped image
+    setIsCropperOpen(false)
+  }
+
+  const uploadImage = async (file: File | string): Promise<string> => {
+    const formData = new FormData()
+    
+    if (typeof file === 'string') {
+      // Convert data URL to blob
+      const response = await fetch(file)
+      const blob = await response.blob()
+      formData.append('file', blob, 'cropped-image.jpg')
+    } else {
+      formData.append('file', file)
+    }
+
+    const response = await fetch('/api/upload', {
+      method: 'POST',
+      body: formData,
+    })
+
+    if (!response.ok) {
+      throw new Error('Upload failed')
+    }
+
+    const data = await response.json()
+    return data.url
+  }
+
   const hasActiveFilters = searchTerm || athletesFilter !== 'all'
 
   const handleAdd = () => {
     setFormData({
       name: '',
       code: '',
-      description: ''
+      description: '',
+      image: ''
     })
     setIsAddDialogOpen(true)
     toast.info("Form tambah wilayah dibuka", {
@@ -162,7 +215,8 @@ export function AdminRegionsClient({ regions: initialRegions }: { regions: Regio
     setFormData({
       name: region.name,
       code: region.code,
-      description: region.description || ''
+      description: region.description || '',
+      image: region.image || ''
     })
     setIsEditDialogOpen(true)
     toast.info("Form edit wilayah dibuka", {
@@ -181,11 +235,20 @@ export function AdminRegionsClient({ regions: initialRegions }: { regions: Regio
   const handleSaveRegion = async () => {
     setLoading(true)
     try {
+      let imageUrl = formData.image
+
+      // Upload image if a new file is selected or if we have a cropped image
+      if (imageFile) {
+        imageUrl = await uploadImage(imageFile)
+      } else if (imagePreview && imagePreview !== formData.image) {
+        imageUrl = await uploadImage(imagePreview)
+      }
+
       const url = '/api/regions'
       const method = isEditDialogOpen ? 'PUT' : 'POST'
       const body = isEditDialogOpen 
-        ? { ...formData, id: selectedRegion?.id }
-        : formData
+        ? { ...formData, id: selectedRegion?.id, image: imageUrl }
+        : { ...formData, image: imageUrl }
 
       const response = await fetch(url, {
         method,
@@ -210,8 +273,11 @@ export function AdminRegionsClient({ regions: initialRegions }: { regions: Regio
         setFormData({
           name: '',
           code: '',
-          description: ''
+          description: '',
+          image: ''
         })
+        setImageFile(null)
+        setImagePreview('')
       } else {
         throw new Error('Failed to save region')
       }
@@ -365,6 +431,7 @@ export function AdminRegionsClient({ regions: initialRegions }: { regions: Regio
                   <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
               </TableHead>
+              <TableHead>Image</TableHead>
               <TableHead>
                 <Button 
                   variant="ghost" 
@@ -392,6 +459,7 @@ export function AdminRegionsClient({ regions: initialRegions }: { regions: Regio
             {currentRegions.map((region) => (
               <TableRow key={region.id}>
                 <TableCell>{region.name}</TableCell>
+                <TableCell>{region.image ? <img src={`${region.image}?f_auto,q_100,w_40,h_40,c_fill`} alt="Region" className="h-10 w-10 rounded-full" /> : 'No Image'}</TableCell>
                 <TableCell>{region.code}</TableCell>
                 <TableCell className="flex items-center">
                   <CheckCircle className="h-4 w-4 mr-1 text-muted-foreground" />
@@ -506,6 +574,48 @@ export function AdminRegionsClient({ regions: initialRegions }: { regions: Regio
                 placeholder="Description" 
               />
             </div>
+            {isEditDialogOpen && (
+              <div className="space-y-2">
+                <Label htmlFor="current-image" className="text-sm font-medium">Current Image</Label>
+                {formData.image ? (
+                  <div className="flex items-center space-x-2">
+                    <img src={formData.image} alt="Current Region" className="h-10 w-10 rounded-full" />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setFormData({ ...formData, image: '' })}
+                      className="h-10"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">No image uploaded.</p>
+                )}
+              </div>
+            )}
+            <div className="space-y-2">
+              <Label htmlFor="image" className="text-sm font-medium">Upload New Image</Label>
+              <Input
+                type="file"
+                id="image"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+              />
+                {(imagePreview || formData.image) && (
+                  <div className="mt-2">
+                    <img 
+                      src={imagePreview || (formData.image ? `${formData.image}?f_auto,q_100` : '')} 
+                      alt="Preview" 
+                      className="w-20 h-20 object-cover rounded-md border"
+                    />
+                    {isEditDialogOpen && formData.image && !imagePreview && (
+                      <p className="text-xs text-muted-foreground mt-1">Current image</p>
+                    )}
+                  </div>
+                )}
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => {
@@ -543,6 +653,16 @@ export function AdminRegionsClient({ regions: initialRegions }: { regions: Regio
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Image Cropper */}
+      <ImageCropper
+        isOpen={isCropperOpen}
+        onClose={() => setIsCropperOpen(false)}
+        imageSrc={tempImageSrc}
+        onCropComplete={handleCropComplete}
+        aspectRatio={16/9}
+        cropShape="rect"
+      />
     </div>
   )
 } 

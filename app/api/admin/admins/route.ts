@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs"
+import { logAdminCreated } from "@/lib/activity-logger"
 
 // GET /api/admin/admins - Get all admins
 export async function GET(request: NextRequest) {
@@ -65,7 +66,7 @@ export async function POST(request: NextRequest) {
 
     // Simplified - no permission check for now
     const body = await request.json()
-    const { name, email, password, phone, bio, location } = body
+    const { name, email, password, phone, bio, location, avatar } = body
 
     // Validate required fields
     if (!name || !email || !password) {
@@ -99,7 +100,7 @@ export async function POST(request: NextRequest) {
         phone,
         bio,
         location,
-        avatar: '/placeholder-user.jpg',
+        avatar: avatar || '/placeholder-user.jpg',
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -116,6 +117,9 @@ export async function POST(request: NextRequest) {
         updatedAt: true
       }
     })
+
+    // Log activity
+    await logAdminCreated(newAdmin.name || 'Unknown Admin')
 
     return NextResponse.json({
       ...newAdmin,

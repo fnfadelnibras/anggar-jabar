@@ -3,6 +3,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { prisma } from "./prisma"
 import bcrypt from "bcryptjs"
+import { logAdminLogin } from "./activity-logger"
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -36,6 +37,15 @@ export const authOptions: NextAuthOptions = {
         if (!isPasswordValid) {
           return null
         }
+
+        // Update lastLogin when user successfully logs in
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { lastLogin: new Date() }
+        })
+
+        // Log admin login activity
+        await logAdminLogin(user.name || 'Unknown Admin', user.id)
 
         return {
           id: user.id,

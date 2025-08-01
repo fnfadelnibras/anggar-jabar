@@ -1,5 +1,6 @@
 import { Swords } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 export function Footer() {
   return (
@@ -8,10 +9,16 @@ export function Footer() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="space-y-3">
               <div className="flex items-center gap-2">
-                <Swords className="h-5 w-5 text-primary" />
-                <h3 className="font-bold">
-                  IKASI<span className="text-primary">JABAR</span>
-                </h3>
+                <Image
+                  src="/Logo.svg"
+                  alt="IKASI JABAR Logo"
+                  width={120}
+                  height={40}
+                  className="h-8 w-auto"
+                />
+                                 <h3 className="font-bold">
+                   IKASI<span className="bg-gradient-to-r from-yellow-400 via-blue-500 to-green-500 bg-clip-text text-transparent">JABAR</span>
+                 </h3>
               </div>
               <p className="text-sm text-muted-foreground">
                 Sistem Manajemen Kompetisi Anggar Regional Jawa Barat

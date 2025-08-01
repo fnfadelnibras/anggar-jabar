@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { logRegionCreated, logRegionUpdated } from '@/lib/activity-logger'
 
 // GET: Ambil semua data regions
 export async function GET() {
@@ -26,7 +27,9 @@ export async function POST(req: NextRequest) {
     const newRegion = await prisma.region.create({
       data: {
         name: body.name,
-        code: body.code
+        code: body.code,
+        description: body.description,
+        image: body.image
       },
       include: {
         _count: {
@@ -36,6 +39,10 @@ export async function POST(req: NextRequest) {
         }
       }
     })
+    
+    // Log activity
+    await logRegionCreated(newRegion.name)
+    
     return NextResponse.json(newRegion, { status: 201 })
   } catch (error) {
     return NextResponse.json({ error: 'Failed to create region' }, { status: 500 })
@@ -50,7 +57,9 @@ export async function PUT(req: NextRequest) {
       where: { id: body.id },
       data: {
         name: body.name,
-        code: body.code
+        code: body.code,
+        description: body.description,
+        image: body.image
       },
       include: {
         _count: {
@@ -60,6 +69,10 @@ export async function PUT(req: NextRequest) {
         }
       }
     })
+    
+    // Log activity
+    await logRegionUpdated(updatedRegion.name)
+    
     return NextResponse.json(updatedRegion)
   } catch (error) {
     return NextResponse.json({ error: 'Failed to update region' }, { status: 500 })

@@ -69,6 +69,7 @@ export async function PUT(
       phone,
       bio,
       location,
+      avatar: body.avatar,
       updatedAt: new Date()
     }
 

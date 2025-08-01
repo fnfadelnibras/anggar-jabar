@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+
 import { Badge } from "@/components/ui/badge"
 import { Search, Filter, MapPin, Users, Trophy, Swords, ChevronLeft, ChevronRight } from "lucide-react"
 import Link from "next/link"
@@ -17,7 +17,6 @@ interface Region {
   name: string
   image: string
   athletes: number
-  clubs: number
   description: string
 }
 
@@ -62,40 +61,18 @@ export function RegionsClient({ regions }: RegionsClientProps) {
 
   return (
     <div>
-      {/* Search and Filter */}
-      <Card className="p-4 mb-8 bg-card/80 backdrop-blur-sm">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="md:col-span-2 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input 
-              placeholder="Cari nama wilayah..." 
-              className="pl-10 bg-background/50"
-              value={searchTerm}
-              onChange={(e) => handleSearch(e.target.value)}
-            />
-          </div>
-          <div>
-            <Select disabled>
-              <SelectTrigger className="bg-background/50">
-                <SelectValue placeholder="Filter per Wilayah" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Semua Wilayah</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <Select disabled>
-              <SelectTrigger className="bg-background/50">
-                <SelectValue placeholder="Filter per Kategori" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Semua Kategori</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-      </Card>
+             {/* Search */}
+       <Card className="p-4 mb-8 bg-card/80 backdrop-blur-sm">
+         <div className="relative">
+           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+           <Input 
+             placeholder="Cari nama wilayah..." 
+             className="pl-10 bg-background/50"
+             value={searchTerm}
+             onChange={(e) => handleSearch(e.target.value)}
+           />
+         </div>
+       </Card>
 
       {/* Main Content */}
       <div className="py-12">
@@ -106,104 +83,42 @@ export function RegionsClient({ regions }: RegionsClientProps) {
           </div>
         </div>
 
-        <Tabs defaultValue="grid" className="w-full">
-          <TabsList className="mb-6">
-            <TabsTrigger value="grid">Tampilan Grid</TabsTrigger>
-            <TabsTrigger value="list">Tampilan List</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="grid" className="mt-0">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {currentRegions.map((region) => (
-                <Card key={region.id} className="overflow-hidden flex flex-col">
-                  <div className="relative h-48">
-                    <Image
-                      src={region.image || "/placeholder.svg"}
-                      alt={region.name}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    />
-                    <div className="absolute top-4 left-4">
-                      <Badge className="bg-slate-700/90 text-white border-0">
-                        <Swords className="h-3 w-3 mr-1" />
-                        IKASI
-                      </Badge>
-                    </div>
-                  </div>
-                  <CardHeader>
-                    <CardTitle>{region.name}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="flex-grow">
-                    <div className="space-y-3">
-                      <div className="flex items-center text-sm">
-                        <Users className="h-4 w-4 mr-2 text-muted-foreground" />
-                        <span>{region.athletes} Atlet IKASI</span>
-                      </div>
-                      <div className="flex items-center text-sm">
-                        <MapPin className="h-4 w-4 mr-2 text-muted-foreground" />
-                        <span>{region.clubs} Klub IKASI</span>
-                      </div>
-                      <p className="text-sm text-muted-foreground mt-2">{region.description}</p>
-                    </div>
-                  </CardContent>
-                  <div className="p-6 pt-0 mt-auto">
-                    <Link href={`/regions/${region.id}`}>
-                      <Button variant="default" className="w-full bg-slate-700 hover:bg-slate-800 text-white border-0 shadow-sm hover:shadow-md transition-all duration-200">
-                        Lihat Detail
-                      </Button>
-                    </Link>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="list" className="mt-0">
-            <div className="space-y-4">
-              {currentRegions.map((region) => (
-                <Card key={region.id} className="overflow-hidden">
-                  <div className="flex flex-col md:flex-row">
-                    <div className="relative h-48 md:h-auto md:w-1/3 lg:w-1/4">
-                      <Image
-                        src={region.image || "/placeholder.svg"}
-                        alt={region.name}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 33vw, 25vw"
-                      />
-                      <div className="absolute top-4 left-4">
-                        <Badge className="bg-slate-700/90 text-white border-0">
-                          <Swords className="h-3 w-3 mr-1" />
-                          IKASI
-                        </Badge>
-                      </div>
-                    </div>
-                    <div className="flex-1 p-6">
-                      <h3 className="text-xl font-bold mb-2">{region.name}</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <div className="flex items-center text-sm">
-                          <Users className="h-4 w-4 mr-2 text-muted-foreground" />
-                          <span>{region.athletes} Atlet IKASI</span>
-                        </div>
-                        <div className="flex items-center text-sm">
-                          <MapPin className="h-4 w-4 mr-2 text-muted-foreground" />
-                          <span>{region.clubs} Klub IKASI</span>
-                        </div>
-                      </div>
-                      <p className="text-sm text-muted-foreground mb-4">{region.description}</p>
-                      <Link href={`/regions/${region.id}`}>
-                        <Button variant="default" className="bg-slate-700 hover:bg-slate-800 text-white border-0 shadow-sm hover:shadow-md transition-all duration-200">
-                          Lihat Detail
-                        </Button>
-                      </Link>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-        </Tabs>
+                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {currentRegions.map((region) => (
+                         <Card key={region.id} className="overflow-hidden flex flex-col h-full">
+                              <div className="relative aspect-[16/9] group">
+                 <Image
+                  src={region.image ? `${region.image}?f_auto,q_100` : "/placeholder.svg"}
+                  alt={region.name}
+                  width={400}
+                  height={224}
+                  className="w-full h-full object-cover rounded-t-lg group-hover:scale-105 transition-transform duration-300"
+                  quality={100}
+                  priority={false}
+                />
+              </div>
+                             <CardHeader className="pb-3">
+                 <CardTitle className="text-lg">{region.name}</CardTitle>
+               </CardHeader>
+               <CardContent className="flex-grow">
+                 <div className="space-y-4">
+                   <div className="flex items-center text-sm">
+                     <Users className="h-4 w-4 mr-2 text-muted-foreground" />
+                     <span>{region.athletes} Atlet IKASI</span>
+                   </div>
+                   <p className="text-sm text-muted-foreground line-clamp-3">{region.description}</p>
+                 </div>
+               </CardContent>
+              <div className="p-6 pt-0 mt-auto flex justify-center">
+                <Link href={`/regions/${region.id}`}>
+                  <Button variant="default" className="bg-slate-700 hover:bg-slate-800 text-white border-0 shadow-sm hover:shadow-md transition-all duration-200">
+                    Lihat Detail
+                  </Button>
+                </Link>
+              </div>
+            </Card>
+          ))}
+        </div>
 
         {/* No results message */}
         {filteredRegions.length === 0 && (

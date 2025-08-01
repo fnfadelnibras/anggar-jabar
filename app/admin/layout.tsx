@@ -5,7 +5,6 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
-  Sword,
   LayoutDashboard,
   Users,
   Map,
@@ -27,6 +26,7 @@ import {
   History,
   Shield,
 } from "lucide-react"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Input } from "@/components/ui/input"
@@ -91,8 +91,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <aside className="fixed inset-y-0 left-0 z-20 hidden w-64 border-r bg-background md:block">
         <div className="flex h-16 items-center border-b px-6">
           <Link href="/admin" className="flex items-center gap-2">
-            <Sword className="h-6 w-6 text-primary" />
-            <span className="font-bold">Indonesia Fencing</span>
+            <Image
+              src="/Logo.svg"
+              alt="IKASI JABAR Logo"
+              width={32}
+              height={32}
+              className="h-8 w-8"
+            />
+            <span className="font-bold">IKASI JABAR</span>
           </Link>
         </div>
         <ScrollArea className="h-[calc(100vh-4rem)] px-3 py-4">
@@ -133,8 +139,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <SheetContent side="left" className="w-64 p-0">
               <div className="flex h-16 items-center border-b px-6">
                 <Link href="/admin" className="flex items-center gap-2">
-                  <Sword className="h-6 w-6 text-primary" />
-                  <span className="font-bold">Indonesia Fencing</span>
+                  <Image
+                    src="/Logo.svg"
+                    alt="IKASI JABAR Logo"
+                    width={32}
+                    height={32}
+                    className="h-8 w-8"
+                  />
+                  <span className="font-bold">IKASI JABAR</span>
                 </Link>
               </div>
               <ScrollArea className="h-[calc(100vh-4rem)] px-3 py-4">

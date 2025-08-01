@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import cloudinary from "@/lib/cloudinary"
 
 // POST /api/admin/profile/avatar - Upload avatar
 export async function POST(request: NextRequest) {
@@ -43,17 +44,48 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Convert file to base64 for storage
-    const bytes = await file.arrayBuffer()
-    const buffer = Buffer.from(bytes)
-    const base64 = buffer.toString('base64')
-    const dataUrl = `data:${file.type};base64,${base64}`
+    let avatarUrl = ""
+
+    // Check if Cloudinary credentials are available
+    if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+      // Fallback to base64 storage if Cloudinary is not configured
+      const bytes = await file.arrayBuffer()
+      const buffer = Buffer.from(bytes)
+      const base64 = buffer.toString('base64')
+      avatarUrl = `data:${file.type};base64,${base64}`
+    } else {
+      // Upload to Cloudinary
+      const bytes = await file.arrayBuffer()
+      const buffer = Buffer.from(bytes)
+      
+      // Convert buffer to base64 string for Cloudinary
+      const base64String = buffer.toString('base64')
+      const dataURI = `data:${file.type};base64,${base64String}`
+      
+      try {
+        const result = await cloudinary.uploader.upload(dataURI, {
+          folder: 'admin-avatars',
+          transformation: [
+            { width: 400, height: 400, crop: 'fill', gravity: 'face' },
+            { quality: 'auto:best', fetch_format: 'auto', flags: 'progressive' }
+          ]
+        })
+        
+        avatarUrl = result.secure_url
+      } catch (cloudinaryError) {
+        console.error("Cloudinary upload error:", cloudinaryError)
+        return NextResponse.json(
+          { error: "Failed to upload image to Cloudinary" },
+          { status: 500 }
+        )
+      }
+    }
 
     // Update user avatar in database
     const updatedUser = await prisma.user.update({
       where: { email: session.user.email },
       data: {
-        avatar: dataUrl,
+        avatar: avatarUrl,
         updatedAt: new Date()
       },
       select: {

@@ -14,10 +14,9 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Key, Eye, EyeOff } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
+import { toast } from "sonner"
 
 export function ChangePasswordDialog() {
-  const { toast } = useToast()
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [showPasswords, setShowPasswords] = useState({
@@ -59,10 +58,7 @@ export function ChangePasswordDialog() {
       })
 
       if (response.ok) {
-        toast({
-          title: "Password Changed",
-          description: "Your password has been successfully updated.",
-        })
+        toast.success("Password changed successfully!")
         setOpen(false)
         setFormData({
           currentPassword: "",
@@ -71,18 +67,10 @@ export function ChangePasswordDialog() {
         })
       } else {
         const errorData = await response.json()
-        toast({
-          title: "Error",
-          description: errorData.error || "Failed to change password.",
-          type: "error",
-        })
+        toast.error(errorData.error || "Failed to change password.")
       }
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to change password. Please try again.",
-        type: "error",
-      })
+      toast.error("Failed to change password. Please try again.")
     } finally {
       setLoading(false)
     }

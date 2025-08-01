@@ -57,7 +57,8 @@ import {
   Save,
   X
 } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
+import { toast } from "sonner"
+import { ImageCropper } from "@/components/ui/image-cropper"
 
 interface Admin {
   id: string
@@ -79,24 +80,31 @@ interface AdminFormData {
   phone: string
   bio: string
   location: string
+  avatar: string
 }
 
 // Simplified without roles and permissions for now
 
 export default function AdminManagement() {
-  const { toast } = useToast()
   const [admins, setAdmins] = useState<Admin[]>([])
   const [loading, setLoading] = useState(true)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingAdmin, setEditingAdmin] = useState<Admin | null>(null)
   const [showPassword, setShowPassword] = useState(false)
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [imagePreview, setImagePreview] = useState<string>('')
+  const [isCropperOpen, setIsCropperOpen] = useState(false)
+  const [tempImageSrc, setTempImageSrc] = useState<string>('')
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [selectedAdmin, setSelectedAdmin] = useState<Admin | null>(null)
   const [formData, setFormData] = useState<AdminFormData>({
     name: '',
     email: '',
     password: '',
     phone: '',
     bio: '',
-    location: ''
+    location: '',
+    avatar: ''
   })
 
   const fetchAdmins = useCallback(async () => {
@@ -106,19 +114,11 @@ export default function AdminManagement() {
         const data = await response.json()
         setAdmins(data)
       } else {
-        toast({
-          title: "Error",
-          description: "Failed to fetch admins.",
-          type: "error",
-        })
+        toast.error("Failed to fetch admins.")
       }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to fetch admins.",
-        type: "error",
-      })
-    } finally {
+          } catch (error) {
+        toast.error("Failed to fetch admins.")
+      } finally {
       setLoading(false)
     }
   }, [toast])
@@ -140,6 +140,51 @@ export default function AdminManagement() {
     }))
   }
 
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      setImageFile(file)
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        const imageSrc = e.target?.result as string
+        setTempImageSrc(imageSrc)
+        setIsCropperOpen(true)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const handleCropComplete = (croppedImageUrl: string) => {
+    setImagePreview(croppedImageUrl)
+    setImageFile(null) // Reset file since we're using cropped image
+    setIsCropperOpen(false)
+  }
+
+  const uploadImage = async (file: File | string): Promise<string> => {
+    const formData = new FormData()
+    
+    if (typeof file === 'string') {
+      // Convert data URL to blob
+      const response = await fetch(file)
+      const blob = await response.blob()
+      formData.append('file', blob, 'cropped-image.jpg')
+    } else {
+      formData.append('file', file)
+    }
+
+    const response = await fetch('/api/upload', {
+      method: 'POST',
+      body: formData,
+    })
+
+    if (!response.ok) {
+      throw new Error('Upload failed')
+    }
+
+    const data = await response.json()
+    return data.url
+  }
+
   // Removed permission toggle function
 
   const resetForm = () => {
@@ -149,7 +194,8 @@ export default function AdminManagement() {
       password: '',
       phone: '',
       bio: '',
-      location: ''
+      location: '',
+      avatar: ''
     })
     setEditingAdmin(null)
     setShowPassword(false)
@@ -159,23 +205,31 @@ export default function AdminManagement() {
     e.preventDefault()
     
     if (!formData.name || !formData.email || (!editingAdmin && !formData.password)) {
-      toast({
-        title: "Error",
+      toast.error("Error", {
         description: "Please fill in all required fields.",
-        type: "error",
       })
       return
     }
 
     try {
+      let avatarUrl = formData.avatar
+
+      // Upload image if a new file is selected or cropped image is available
+      if (imageFile) {
+        avatarUrl = await uploadImage(imageFile)
+      } else if (imagePreview && imagePreview !== formData.avatar) {
+        // Upload cropped image
+        avatarUrl = await uploadImage(imagePreview)
+      }
+
       const url = editingAdmin 
         ? `/api/admin/admins/${editingAdmin.id}`
         : '/api/admin/admins'
       
       const method = editingAdmin ? 'PUT' : 'POST'
       const body = editingAdmin 
-        ? { ...formData, password: formData.password || undefined }
-        : formData
+        ? { ...formData, password: formData.password || undefined, avatar: avatarUrl }
+        : { ...formData, avatar: avatarUrl }
 
       const response = await fetch(url, {
         method,
@@ -186,29 +240,26 @@ export default function AdminManagement() {
       })
 
       if (response.ok) {
-        toast({
-          title: "Success",
+        toast.success("Success", {
           description: editingAdmin 
             ? "Admin updated successfully." 
             : "Admin created successfully.",
         })
         setDialogOpen(false)
         resetForm()
+        setImageFile(null)
+        setImagePreview('')
         fetchAdmins()
       } else {
         const errorData = await response.json()
-        toast({
-          title: "Error",
+        toast.error("Error", {
           description: errorData.error || "Failed to save admin.",
-          type: "error",
         })
       }
     } catch (error) {
-              toast({
-          title: "Error",
-          description: "Failed to save admin.",
-          type: "error",
-        })
+      toast.error("Error", {
+        description: "Failed to save admin.",
+      })
     }
   }
 
@@ -220,41 +271,47 @@ export default function AdminManagement() {
       password: '',
       phone: admin.phone || '',
       bio: admin.bio || '',
-      location: admin.location || ''
+      location: admin.location || '',
+      avatar: admin.avatar || ''
     })
     setDialogOpen(true)
   }
 
-  const handleDelete = async (adminId: string) => {
-    if (!confirm('Are you sure you want to delete this admin?')) {
-      return
-    }
+  const handleDelete = (admin: Admin) => {
+    setSelectedAdmin(admin)
+    setIsDeleteDialogOpen(true)
+    toast.warning("Konfirmasi penghapusan", {
+      description: `Anda akan menghapus admin: ${admin.name}`,
+    })
+  }
 
+  const handleDeleteConfirm = async () => {
+    if (!selectedAdmin) return
+    
+    setLoading(true)
     try {
-      const response = await fetch(`/api/admin/admins/${adminId}`, {
+      const response = await fetch(`/api/admin/admins/${selectedAdmin.id}`, {
         method: 'DELETE',
       })
 
       if (response.ok) {
-        toast({
-          title: "Success",
-          description: "Admin deleted successfully.",
+        toast.success("Admin berhasil dihapus!", {
+          description: "Data admin telah berhasil dihapus dari sistem.",
         })
         fetchAdmins()
+        setIsDeleteDialogOpen(false)
       } else {
         const errorData = await response.json()
-        toast({
-          title: "Error",
-          description: errorData.error || "Failed to delete admin.",
-          type: "error",
+        toast.error("Gagal menghapus data admin!", {
+          description: errorData.error || "Terjadi kesalahan saat menghapus data. Silakan coba lagi.",
         })
       }
     } catch (error) {
-              toast({
-          title: "Error",
-          description: "Failed to delete admin.",
-          type: "error",
-        })
+      toast.error("Gagal menghapus data admin!", {
+        description: "Terjadi kesalahan saat menghapus data. Silakan coba lagi.",
+      })
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -271,24 +328,19 @@ export default function AdminManagement() {
       })
 
       if (response.ok) {
-        toast({
-          title: "Success",
+        toast.success("Success", {
           description: "Admin status updated successfully.",
         })
         fetchAdmins()
       } else {
         const errorData = await response.json()
-        toast({
-          title: "Error",
+        toast.error("Error", {
           description: errorData.error || "Failed to update admin status.",
-          type: "error",
         })
       }
     } catch (error) {
-      toast({
-        title: "Error",
+      toast.error("Error", {
         description: "Failed to update admin status.",
-        type: "error",
       })
     }
   }
@@ -413,6 +465,31 @@ export default function AdminManagement() {
                   />
                 </div>
 
+                <div className="space-y-2">
+                  <Label htmlFor="avatar">Avatar</Label>
+                  <div className="space-y-2">
+                    <Input
+                      id="avatar"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="cursor-pointer"
+                    />
+                    {(imagePreview || formData.avatar) && (
+                      <div className="mt-2">
+                        <img 
+                          src={imagePreview || (formData.avatar ? `${formData.avatar}?f_auto,q_100` : '')} 
+                          alt="Preview" 
+                          className="w-20 h-20 object-cover rounded-md border"
+                        />
+                        {editingAdmin && formData.avatar && !imagePreview && (
+                          <p className="text-xs text-muted-foreground mt-1">Current image</p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
                 {/* Permissions section removed for now */}
               </div>
               <DialogFooter>
@@ -455,7 +532,7 @@ export default function AdminManagement() {
                     <TableCell>
                       <div className="flex items-center gap-3">
                         <Avatar className="h-8 w-8">
-                          <AvatarImage src={admin.avatar} alt={admin.name} />
+                          <AvatarImage src={admin.avatar ? `${admin.avatar}?f_auto,q_100` : "/placeholder-user.jpg"} alt={admin.name} />
                           <AvatarFallback>
                             {admin.name.split(' ').map(n => n[0]).join('').toUpperCase()}
                           </AvatarFallback>
@@ -527,7 +604,7 @@ export default function AdminManagement() {
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem 
-                            onClick={() => handleDelete(admin.id)}
+                            onClick={() => handleDelete(admin)}
                             className="text-red-600"
                           >
                             <Trash2 className="mr-2 h-4 w-4" />
@@ -543,6 +620,40 @@ export default function AdminManagement() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirm Deletion</DialogTitle>
+            <DialogDescription>Are you sure you want to delete this admin?</DialogDescription>
+          </DialogHeader>
+          {selectedAdmin && (
+            <div>
+              <p>You are about to delete <strong>{selectedAdmin.name}</strong>.</p>
+              <p className="text-sm text-muted-foreground">This action cannot be undone.</p>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDeleteConfirm} disabled={loading}>
+              {loading ? 'Deleting...' : 'Delete'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Image Cropper */}
+      <ImageCropper
+        isOpen={isCropperOpen}
+        onClose={() => setIsCropperOpen(false)}
+        imageSrc={tempImageSrc}
+        onCropComplete={handleCropComplete}
+        aspectRatio={1}
+        cropShape="round"
+      />
     </div>
   )
 } 

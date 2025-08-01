@@ -1,36 +1,27 @@
 # IKASI JABAR - Sistem Manajemen Kompetisi Anggar
 
-Sistem manajemen kompetisi anggar regional Jawa Barat yang dikembangkan oleh FnCorporation untuk IKASI (Ikatan Anggar Seluruh Indonesia) Jawa Barat.
+Sistem manajemen kompetisi anggar regional Jawa Barat yang dikembangkan sebagai **Tugas Akhir** untuk program **Fullstack Programming with AI** yang diselenggarakan oleh **Jabar Digital Academy** bekerja sama dengan **Alkademi**.
 
-## 🏆 Tentang Proyek
+## 📋 Tentang Proyek
 
-Sistem ini dirancang untuk mengelola data atlet, wilayah, dan kompetisi anggar di Jawa Barat dengan fitur-fitur modern dan user-friendly.
-
-### Fitur Utama
+Sistem modern untuk mengelola data atlet, wilayah, dan kompetisi anggar di Jawa Barat dengan fitur-fitur:
 
 - **Manajemen Data Atlet**: Pendaftaran, pengelolaan, dan monitoring data atlet
-- **Manajemen Wilayah**: Pengelolaan data wilayah dan organisasi anggar
+- **Manajemen Wilayah**: Pengelolaan data wilayah dan organisasi anggar  
 - **Dashboard Admin**: Panel admin untuk monitoring dan pengelolaan sistem
 - **Sistem Keamanan**: Autentikasi dan otorisasi berbasis role
+- **Image Management**: Upload dan crop gambar dengan Cloudinary
+- **Activity Logging**: Tracking aktivitas sistem real-time
 - **Responsive Design**: Interface yang responsif untuk desktop dan mobile
-- **Real-time Updates**: Update data secara real-time
 
-## 🚀 Teknologi yang Digunakan
+## 🚀 Tech Stack
 
-- **Frontend**: Next.js 14 (App Router), React, TypeScript
+- **Frontend**: Next.js 15, React, TypeScript
 - **Styling**: Tailwind CSS, shadcn/ui
-- **Database**: Prisma ORM
-- **State Management**: Redux Toolkit
-- **Authentication**: JWT
-- **Deployment**: Vercel (recommended)
-
-## 📋 Prasyarat
-
-Sebelum menjalankan proyek ini, pastikan Anda memiliki:
-
-- Node.js 18+ 
-- pnpm (recommended) atau npm
-- Database (PostgreSQL, MySQL, atau SQLite)
+- **Database**: Prisma ORM, PostgreSQL
+- **Authentication**: NextAuth.js
+- **Image Storage**: Cloudinary
+- **Deployment**: Vercel
 
 ## 🛠️ Instalasi
 
@@ -42,8 +33,6 @@ Sebelum menjalankan proyek ini, pastikan Anda memiliki:
 
 2. **Install dependencies**
    ```bash
-   pnpm install
-   # atau
    npm install
    ```
 
@@ -51,213 +40,47 @@ Sebelum menjalankan proyek ini, pastikan Anda memiliki:
    ```bash
    cp .env.example .env.local
    ```
-   
-   Edit file `.env.local` dan sesuaikan konfigurasi database:
-   ```env
-   DATABASE_URL="postgresql://username:password@localhost:5432/anggar_jabar"
-   JWT_SECRET="your-secret-key"
-   ```
 
 4. **Setup database**
    ```bash
-   pnpm prisma generate
-   pnpm prisma db push
-   pnpm prisma db seed
+   npx prisma migrate dev
+   npx prisma generate
    ```
 
 5. **Jalankan development server**
    ```bash
-   pnpm dev
+   npm run dev
    ```
-
-6. **Buka browser**
-   ```
-   http://localhost:3000
-   ```
-
-## 📁 Struktur Proyek
-
-```
-anggar-jabar/
-├── app/                    # Next.js App Router
-│   ├── admin/             # Admin pages
-│   ├── athletes/          # Athlete pages
-│   ├── regions/           # Region pages
-│   ├── about/             # About page
-│   ├── contact/           # Contact page
-│   └── privacy/           # Privacy policy
-├── components/            # React components
-│   ├── ui/               # shadcn/ui components
-│   ├── admin-layout.tsx  # Admin layout
-│   └── public-layout.tsx # Public layout
-├── lib/                  # Utilities & configurations
-│   ├── prisma.ts         # Prisma client
-│   ├── store/            # Redux store
-│   └── actions/          # Server actions
-├── prisma/               # Database schema & migrations
-└── types/                # TypeScript type definitions
-```
-
-## 🔧 Konfigurasi
-
-### Database Schema
-
-Proyek menggunakan Prisma dengan schema yang mencakup:
-- **Athlete**: Data atlet dengan relasi ke region
-- **Region**: Data wilayah/organisasi anggar
-- **User**: Data pengguna sistem admin
-
-### Environment Variables
-
-```env
-# Database
-DATABASE_URL="postgresql://username:password@localhost:5432/anggar_jabar"
-
-# Authentication
-JWT_SECRET="your-secret-key"
-
-# Application
-NEXT_PUBLIC_APP_URL="http://localhost:3000"
-```
 
 ## 🎯 Fitur Admin
 
-### Dashboard
-- Statistik atlet dan wilayah
-- Grafik distribusi kategori
-- Aktivitas terbaru
-- Quick actions
-
-### Manajemen Atlet
-- CRUD operasi data atlet
-- Filter dan pencarian
-- Export data
-- Bulk operations
-
-### Manajemen Wilayah
-- CRUD operasi data wilayah
-- Monitoring jumlah atlet per wilayah
-- Statistik wilayah
-
-## 🎨 UI/UX Features
-
-- **Responsive Design**: Mobile-first approach
-- **Dark/Light Mode**: Toggle tema
-- **Loading States**: Skeleton loading
-- **Error Handling**: User-friendly error pages
-- **Accessibility**: WCAG compliant
-
-## 🔒 Keamanan
-
-- **Authentication**: JWT-based auth
-- **Authorization**: Role-based access control
-- **Data Validation**: Server-side validation
-- **CSRF Protection**: Built-in protection
-- **Rate Limiting**: API rate limiting
-
-## 📊 Monitoring & Analytics
-
-- **Performance**: Core Web Vitals monitoring
-- **Error Tracking**: Error boundary implementation
-- **User Analytics**: Page views and interactions
-- **Database Monitoring**: Query performance
+- **Dashboard**: Statistik atlet, wilayah, dan aktivitas terbaru
+- **Manajemen Atlet**: CRUD operasi data atlet dengan image upload
+- **Manajemen Wilayah**: CRUD operasi data wilayah dengan image upload
+- **Profile Management**: Pengelolaan profil admin dengan avatar
+- **Activity Logging**: Tracking semua aktivitas sistem
 
 ## 🚀 Deployment
 
-### Status: ✅ Ready for Production
-
-Project sudah siap untuk deployment ke Vercel dengan semua fitur yang sudah diimplementasi dan dioptimasi.
-
-### Vercel (Recommended)
-
-1. **Prepare Repository**
-   ```bash
-   git add .
-   git commit -m "Ready for deployment"
-   git push origin main
-   ```
-
-2. **Connect to Vercel**
-   - Go to [Vercel Dashboard](https://vercel.com/dashboard)
-   - Import GitHub repository
-   - Set environment variables (see `DEPLOYMENT_GUIDE.md`)
-
-3. **Environment Variables Required**
-   ```env
-   DATABASE_URL="your-postgresql-url"
-   NEXTAUTH_URL="https://your-domain.vercel.app"
-   NEXTAUTH_SECRET="your-secret-key"
-   ```
-
-4. **Post-Deployment**
-   ```bash
-   # Run database migration
-   npx prisma db push
-   
-   # Create admin user
-   npm run create-admin
-   ```
-
-### Manual Deployment
-
-```bash
-# Build production
-pnpm build
-
-# Start production server
-pnpm start
-```
-
-### 📋 Deployment Checklist
-
-- ✅ **Build:** Successful (25/25 pages)
-- ✅ **Linting:** Clean (no warnings/errors)
-- ✅ **TypeScript:** All types resolved
-- ✅ **Dependencies:** All installed and compatible
-- ✅ **Database:** Schema ready for migration
-- ✅ **Authentication:** NextAuth configured
-- ✅ **Admin Features:** All CRUD operations working
-- ✅ **Public Pages:** All pages optimized
-
-## 🤝 Kontribusi
-
-1. Fork repository
-2. Buat feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push ke branch (`git push origin feature/amazing-feature`)
-5. Buat Pull Request
-
-## 📝 License
-
-Proyek ini dikembangkan oleh **FnCorporation** untuk IKASI JABAR.
+### Vercel
+- **Live Site**: [https://anggar-jabar.vercel.app](https://anggar-jabar.vercel.app)
+- **Repository**: [https://github.com/fncorporation/anggar-jabar](https://github.com/fncorporation/anggar-jabar)
 
 ## 👨‍💻 Developer
 
 **A.M. Hud Nibras Fadhlullah** - Lead Developer
-- Email: hud.nibras@fncorporation.com
-- LinkedIn: linkedin.com/in/hudnibras
-- GitHub: github.com/hudnibras
+- **Email**: hud.nibras@fncorporation.com
+- **GitHub**: [github.com/fncorporation](https://github.com/fncorporation)
+- **Vercel**: [vercel.com/fncorporation](https://vercel.com/fncorporation)
 
-## 📞 Kontak
+## 🎓 Tugas Akhir
 
-**FnCorporation**
-- Email: contact@fncorporation.com
-- Website: www.fncorporation.com
-- Telp: +62 22 123-4567
+Proyek ini dikembangkan sebagai **Tugas Akhir** untuk program **Fullstack Programming with AI** yang diselenggarakan oleh:
 
-**IKASI JABAR**
-- Email: info@ikasijabar.org
-- Website: www.ikasijabar.org
-- Alamat: Jl. Padjadjaran No. 123, Bandung, Jawa Barat
-
-## 🙏 Ucapan Terima Kasih
-
-Terima kasih kepada:
-- IKASI JABAR untuk kepercayaan dan kerjasamanya
-- Tim pengembang FnCorporation
-- Komunitas Next.js dan React
-- Semua kontributor dan tester
+- **Jabar Digital Academy** - Program pengembangan talenta digital Jawa Barat
+- **Alkademi** - Platform pembelajaran teknologi
 
 ---
 
-**Dikembangkan dengan ❤️ oleh FnCorporation untuk IKASI JABAR**
+**Dikembangkan dengan ❤️ oleh FnCorporation untuk IKASI JABAR**  
+**Tugas Akhir Fullstack Programming with AI - Jabar Digital Academy x Alkademi**

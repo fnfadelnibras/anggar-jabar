@@ -18,14 +18,22 @@ interface Athlete {
 }
 
 export default async function AdminAthletesPage() {
-  const athletesData = await prisma.athlete.findMany({
-    include: {
-      region: true,
-    },
-    orderBy: {
-      name: "asc",
-    },
-  })
+  let athletesData: any[] = []
+  
+  try {
+    athletesData = await prisma.athlete.findMany({
+      include: {
+        region: true,
+      },
+      orderBy: {
+        name: "asc",
+      },
+    })
+  } catch (error) {
+    console.error('Database connection error:', error)
+    // Use empty array if database is not available
+    athletesData = []
+  }
 
   // Transform the data to match the expected interface
   const athletes: Athlete[] = athletesData.map(athlete => ({

@@ -1,11 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { Menu } from "lucide-react"
 import Image from "next/image"
+import { usePathname } from "next/navigation"
 
 interface NavigationItem {
   name: string
@@ -18,6 +19,17 @@ interface HeaderMobileProps {
 
 export function HeaderMobile({ navigation }: HeaderMobileProps) {
   const [isOpen, setIsOpen] = useState(false)
+  const pathname = usePathname()
+
+  const navigationItems = useMemo(() => {
+    return navigation.map((item) => {
+      const isActive = pathname === item.href
+      return {
+        ...item,
+        isActive
+      }
+    })
+  }, [navigation, pathname])
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -42,18 +54,24 @@ export function HeaderMobile({ navigation }: HeaderMobileProps) {
                 className="mr-2 h-6 w-6"
               />
               <div className="flex flex-col">
-                <span className="font-bold text-sm leading-tight">IKASI JABAR</span>
+                <span className="font-bold text-sm leading-tight">
+                  IKASI<span className="bg-gradient-to-r from-yellow-400 via-blue-500 to-green-500 bg-clip-text text-transparent">JABAR</span>
+                </span>
               </div>
             </Link>
           </SheetTitle>
           <div className="my-4 h-[calc(100vh-8rem)] pb-10 pl-6">
             <div className="flex flex-col space-y-3">
-              {navigation.map((item) => (
+              {navigationItems.map((item) => (
                 <Link
                   key={item.name}
                   href={item.href}
                   onClick={() => setIsOpen(false)}
-                  className="text-foreground/60 transition-colors hover:text-foreground"
+                  className={`transition-colors hover:text-foreground ${
+                    item.isActive 
+                      ? "text-foreground font-semibold border-l-2 border-primary pl-2" 
+                      : "text-foreground/60"
+                  }`}
                 >
                   {item.name}
                 </Link>

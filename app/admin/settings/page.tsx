@@ -10,6 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
+import { ImageCropper } from "@/components/ui/image-cropper"
 import { 
   User, 
   Settings, 
@@ -19,14 +20,11 @@ import {
   Calendar,
   Shield,
   Key,
-  Bell,
-  Palette,
-  Globe,
   Save,
   Camera,
   Edit
 } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
+import { toast } from "sonner"
 import { ChangePasswordDialog } from "@/components/change-password-dialog"
 
 interface AdminProfile {
@@ -44,10 +42,14 @@ interface AdminProfile {
 }
 
 export default function AdminSettings() {
-  const { toast } = useToast()
   const [activeTab, setActiveTab] = useState("profile")
   const [loading, setLoading] = useState(false)
   const [initialLoading, setInitialLoading] = useState(true)
+  
+  // Image crop states
+  const [isCropperOpen, setIsCropperOpen] = useState(false)
+  const [tempImageSrc, setTempImageSrc] = useState("")
+  const [imageFile, setImageFile] = useState<File | null>(null)
   
   // Mock data - replace with actual data from API
   const [profile, setProfile] = useState<AdminProfile>({
@@ -86,19 +88,11 @@ export default function AdminSettings() {
           location: data.location || ""
         })
       } else {
-        toast({
-          title: "Error",
-          description: "Failed to fetch profile data.",
-          type: "error",
-        })
+        toast.error("Failed to fetch profile data.")
       }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to fetch profile data.",
-        type: "error",
-      })
-    } finally {
+          } catch (error) {
+        toast.error("Failed to fetch profile data.")
+      } finally {
       setInitialLoading(false)
     }
   }, [toast])
@@ -132,23 +126,18 @@ export default function AdminSettings() {
           ...data
         }))
         
-        toast({
-          title: "Profile Updated",
+        toast.success("Profile Updated", {
           description: "Your profile has been successfully updated.",
         })
       } else {
         const errorData = await response.json()
-        toast({
-          title: "Error",
+        toast.error("Error", {
           description: errorData.error || "Failed to update profile. Please try again.",
-          type: "error",
         })
       }
     } catch (error) {
-      toast({
-        title: "Error",
+      toast.error("Error", {
         description: "Failed to update profile. Please try again.",
-        type: "error",
       })
     } finally {
       setLoading(false)
@@ -158,41 +147,83 @@ export default function AdminSettings() {
   const handleAvatarChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
-      try {
-        const formData = new FormData()
-        formData.append('avatar', file)
+      setImageFile(file)
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        const imageSrc = e.target?.result as string
+        setTempImageSrc(imageSrc)
+        setIsCropperOpen(true)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
 
-        const response = await fetch('/api/admin/profile/avatar', {
-          method: 'POST',
-          body: formData,
+  const uploadImage = async (file: File | string): Promise<string> => {
+    const formData = new FormData()
+    
+    if (typeof file === 'string') {
+      // Convert data URL to blob
+      const response = await fetch(file)
+      const blob = await response.blob()
+      formData.append('file', blob, 'cropped-image.jpg')
+    } else {
+      formData.append('file', file)
+    }
+
+    const response = await fetch('/api/upload', {
+      method: 'POST',
+      body: formData,
+    })
+
+    if (!response.ok) {
+      throw new Error('Upload failed')
+    }
+
+    const data = await response.json()
+    return data.url
+  }
+
+  const handleCropComplete = async (croppedImageUrl: string) => {
+    try {
+      // Upload the cropped image to Cloudinary
+      const imageUrl = await uploadImage(croppedImageUrl)
+      
+      // Update the profile with the new avatar URL
+      const response = await fetch('/api/admin/profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          avatar: imageUrl
+        }),
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setProfile(prev => ({
+          ...prev,
+          avatar: data.avatar
+        }))
+        
+        toast.success("Avatar Updated", {
+          description: "Your avatar has been updated successfully.",
         })
-
-        if (response.ok) {
-          const data = await response.json()
-          setProfile(prev => ({
-            ...prev,
-            avatar: data.avatar
-          }))
-          
-          toast({
-            title: "Avatar Updated",
-            description: "Your avatar has been updated successfully.",
-          })
-        } else {
-          const errorData = await response.json()
-          toast({
-            title: "Error",
-            description: errorData.error || "Failed to update avatar.",
-            type: "error",
-          })
-        }
-      } catch (error) {
-        toast({
-          title: "Error",
-          description: "Failed to update avatar.",
-          type: "error",
+      } else {
+        const errorData = await response.json()
+        toast.error("Error", {
+          description: errorData.error || "Failed to update avatar.",
         })
       }
+    } catch (error) {
+      toast.error("Error", {
+        description: "Failed to update avatar.",
+      })
+    } finally {
+      setIsCropperOpen(false)
+      setImageFile(null)
+      setTempImageSrc("")
     }
   }
 
@@ -230,12 +261,18 @@ export default function AdminSettings() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
-          <TabsTrigger value="profile" className="flex items-center gap-2">
+        <TabsList className="grid w-full grid-cols-2 lg:w-[400px] bg-gray-100 p-1 rounded-lg">
+          <TabsTrigger 
+            value="profile" 
+            className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-gray-200 text-gray-600 hover:text-gray-800 border-0"
+          >
             <User className="h-4 w-4" />
             Profile
           </TabsTrigger>
-          <TabsTrigger value="preferences" className="flex items-center gap-2">
+          <TabsTrigger 
+            value="preferences" 
+            className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-gray-200 text-gray-600 hover:text-gray-800 border-0"
+          >
             <Settings className="h-4 w-4" />
             Preferences
           </TabsTrigger>
@@ -254,7 +291,7 @@ export default function AdminSettings() {
               <div className="flex items-start gap-6">
                 <div className="relative">
                   <Avatar className="h-24 w-24">
-                    <AvatarImage src={profile.avatar || "/placeholder-user.jpg"} alt={profile.name} />
+                    <AvatarImage src={profile.avatar ? `${profile.avatar}?f_auto,q_100` : "/placeholder-user.jpg"} alt={profile.name} />
                     <AvatarFallback className="text-lg">
                       {profile.name ? profile.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'AD'}
                     </AvatarFallback>
@@ -434,86 +471,6 @@ export default function AdminSettings() {
         </TabsContent>
 
         <TabsContent value="preferences" className="space-y-6">
-          {/* Notification Settings */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Bell className="h-5 w-5" />
-                Notification Preferences
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="font-medium">Email Notifications</h4>
-                    <p className="text-sm text-muted-foreground">Receive notifications via email</p>
-                  </div>
-                  <Button variant="outline" size="sm" disabled>Configure</Button>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="font-medium">Push Notifications</h4>
-                    <p className="text-sm text-muted-foreground">Receive push notifications in browser</p>
-                  </div>
-                  <Button variant="outline" size="sm" disabled>Configure</Button>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="font-medium">SMS Notifications</h4>
-                    <p className="text-sm text-muted-foreground">Receive notifications via SMS</p>
-                  </div>
-                  <Button variant="outline" size="sm" disabled>Configure</Button>
-                </div>
-              </div>
-              <div className="text-xs text-muted-foreground">
-                Notification settings will be available in future updates.
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Appearance Settings */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Palette className="h-5 w-5" />
-                Appearance
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="font-medium">Theme</h4>
-                    <p className="text-sm text-muted-foreground">Choose your preferred theme</p>
-                  </div>
-                  <Button variant="outline" size="sm" disabled>Light</Button>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="font-medium">Language</h4>
-                    <p className="text-sm text-muted-foreground">Select your preferred language</p>
-                  </div>
-                  <Button variant="outline" size="sm" disabled>Indonesia</Button>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="font-medium">Time Zone</h4>
-                    <p className="text-sm text-muted-foreground">Set your time zone</p>
-                  </div>
-                  <Button variant="outline" size="sm" disabled>Asia/Jakarta</Button>
-                </div>
-              </div>
-              <div className="text-xs text-muted-foreground">
-                Appearance settings will be available in future updates.
-              </div>
-            </CardContent>
-          </Card>
-
           {/* Security Settings */}
           <Card>
             <CardHeader>
@@ -555,6 +512,16 @@ export default function AdminSettings() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Image Cropper */}
+      <ImageCropper
+        isOpen={isCropperOpen}
+        onClose={() => setIsCropperOpen(false)}
+        imageSrc={tempImageSrc}
+        onCropComplete={handleCropComplete}
+        aspectRatio={1}
+        cropShape="round"
+      />
     </div>
   )
 } 

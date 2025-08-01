@@ -140,13 +140,15 @@ export function AthletesClient({ athletes, regions, categories }: AthletesClient
             className="overflow-hidden group border-border/60 hover:border-primary/80 transition-colors duration-300"
           >
             <Link href={`/athletes/${athlete.id}`} className="block">
-              <div className="relative h-80 w-full">
+              <div className="relative aspect-[4/5] w-full">
                 <Image
-                  src={athlete.image || "/placeholder.svg"}
+                  src={athlete.image ? `${athlete.image}?f_auto,q_100` : "/placeholder.svg"}
                   alt={athlete.name}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                  sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                  width={300}
+                  height={375}
+                  className="w-full h-full object-cover rounded-t-lg group-hover:scale-105 transition-transform duration-300"
+                  quality={100}
+                  priority={false}
                 />
                 <div className="absolute top-2 right-2">
                   <Badge variant="secondary">{athlete.category}</Badge>

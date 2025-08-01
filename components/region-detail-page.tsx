@@ -79,10 +79,25 @@ export function RegionDetailPageClient({ region }: { region: any }) {
 
       <section className="container py-8">
         <Tabs defaultValue="overview" value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="mb-6">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="athletes">Top Athletes</TabsTrigger>
-            <TabsTrigger value="clubs">Clubs</TabsTrigger>
+          <TabsList className="mb-6 flex flex-wrap bg-gray-100 p-1 rounded-lg">
+            <TabsTrigger 
+              value="overview"
+              className="data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-gray-200 text-gray-600 hover:text-gray-800 border-0"
+            >
+              Overview
+            </TabsTrigger>
+            <TabsTrigger 
+              value="athletes"
+              className="data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-gray-200 text-gray-600 hover:text-gray-800 border-0"
+            >
+              Top Athletes
+            </TabsTrigger>
+            <TabsTrigger 
+              value="clubs"
+              className="data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-gray-200 text-gray-600 hover:text-gray-800 border-0"
+            >
+              Clubs
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="mt-0">

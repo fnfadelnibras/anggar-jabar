@@ -8,9 +8,11 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
-    "seed": "node prisma/seed.js",
+
     "generate": "prisma generate",
-    "create-admin": "node scripts/create-admin.js"
+    "create-admin": "node scripts/create-admin.js",
+    "clear-data": "node scripts/clear-data.js",
+    "seed-regions": "node scripts/seed-regions.js"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.10.0",
@@ -27,9 +29,10 @@
     "@radix-ui/react-separator": "^1.1.7",
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-tabs": "^1.1.12",
-    "@reduxjs/toolkit": "^2.8.2",
+
     "bcryptjs": "^3.0.2",
     "class-variance-authority": "^0.7.1",
+    "cloudinary": "^2.7.0",
     "clsx": "^2.1.1",
     "dotenv": "^17.2.1",
     "lucide-react": "^0.525.0",
@@ -38,7 +41,8 @@
     "next-themes": "^0.4.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-redux": "^9.2.0",
+    "react-image-crop": "^11.0.10",
+
     "sonner": "^2.0.6",
     "tailwind-merge": "^3.3.1"
   },

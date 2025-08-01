@@ -53,7 +53,7 @@ export function AdminSidebarProfile() {
   return (
     <div className="flex items-center gap-2 mb-2">
       <Avatar className="h-8 w-8">
-        <AvatarImage src={profile?.avatar || "/placeholder-user.jpg"} alt={profile?.name || "Admin"} />
+        <AvatarImage src={profile?.avatar ? `${profile.avatar}?f_auto,q_100` : "/placeholder-user.jpg"} alt={profile?.name || "Admin"} />
         <AvatarFallback className="text-xs">{initials}</AvatarFallback>
       </Avatar>
       <div className="flex-1 min-w-0">
