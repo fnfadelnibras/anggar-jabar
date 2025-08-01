@@ -25,13 +25,49 @@ interface AthletesClientProps {
   categories: string[]
 }
 
-export function AthletesClient({ athletes, regions, categories }: AthletesClientProps) {
-  const [filteredAthletes, setFilteredAthletes] = useState<Athlete[]>(athletes)
+export function AthletesClient({ athletes: initialAthletes, regions: initialRegions, categories: initialCategories }: AthletesClientProps) {
+  const [athletes, setAthletes] = useState<Athlete[]>(initialAthletes)
+  const [regions, setRegions] = useState<string[]>(initialRegions)
+  const [categories, setCategories] = useState<string[]>(initialCategories)
+  const [filteredAthletes, setFilteredAthletes] = useState<Athlete[]>(initialAthletes)
   const [searchTerm, setSearchTerm] = useState("")
   const [regionFilter, setRegionFilter] = useState("all")
   const [categoryFilter, setCategoryFilter] = useState("all")
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 12
+
+  // Fetch fresh data from server
+  const fetchAthletes = async () => {
+    try {
+      console.log('Fetching fresh athletes data for public page...')
+      const response = await fetch('/api/athletes')
+      if (!response.ok) {
+        throw new Error('Failed to fetch athletes')
+      }
+      const data = await response.json()
+      
+      // Transform data for public display
+      const transformedAthletes: Athlete[] = data.map((athlete: any) => ({
+        id: athlete.id,
+        name: athlete.name,
+        region: athlete.region.name,
+        category: athlete.category,
+        verificationStatus: 'pending',
+        image: athlete.image ? `${athlete.image}?f_auto,q_100` : "/placeholder.svg?height=400&width=400",
+      }))
+      
+      console.log('Fresh athletes data for public:', transformedAthletes)
+      setAthletes(transformedAthletes)
+      
+      // Update regions and categories from fresh data
+      const uniqueRegions = [...new Set(data.map((a: any) => a.region.name))]
+      const uniqueCategories = [...new Set(data.map((a: any) => a.category))]
+      setRegions(uniqueRegions)
+      setCategories(uniqueCategories)
+    } catch (error) {
+      console.error('Failed to fetch athletes:', error)
+    }
+  }
 
   // Filter athletes based on search and filters
   useEffect(() => {
@@ -61,6 +97,11 @@ export function AthletesClient({ athletes, regions, categories }: AthletesClient
     setFilteredAthletes(filtered)
     setCurrentPage(1) // Reset to first page when filters change
   }, [athletes, searchTerm, regionFilter, categoryFilter])
+
+  // Fetch fresh data on component mount
+  useEffect(() => {
+    fetchAthletes()
+  }, [])
 
   const handleSearch = (value: string) => {
     setSearchTerm(value)
@@ -102,7 +143,7 @@ export function AthletesClient({ athletes, regions, categories }: AthletesClient
           <div>
             <Select value={regionFilter} onValueChange={handleRegionFilter}>
               <SelectTrigger className="bg-background/50">
-                <SelectValue placeholder="Filter per Wilayah" />
+                <SelectValue placeholder="Semua Wilayah" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Semua Wilayah</SelectItem>
@@ -117,7 +158,7 @@ export function AthletesClient({ athletes, regions, categories }: AthletesClient
           <div>
             <Select value={categoryFilter} onValueChange={handleCategoryFilter}>
               <SelectTrigger className="bg-background/50">
-                <SelectValue placeholder="Filter per Kategori" />
+                <SelectValue placeholder="Semua Kategori" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Semua Kategori</SelectItem>
@@ -132,17 +173,21 @@ export function AthletesClient({ athletes, regions, categories }: AthletesClient
         </div>
       </Card>
 
+      {/* Results Count */}
+      <div className="mb-6">
+        <p className="text-muted-foreground">
+          Menampilkan {filteredAthletes.length} dari {athletes.length} atlet
+        </p>
+      </div>
+
       {/* Athletes Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {currentAthletes.map((athlete) => (
-          <Card
-            key={athlete.id}
-            className="overflow-hidden group border-border/60 hover:border-primary/80 transition-colors duration-300"
-          >
-            <Link href={`/athletes/${athlete.id}`} className="block">
-              <div className="relative aspect-[4/5] w-full">
+      {currentAthletes.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+          {currentAthletes.map((athlete) => (
+            <Card key={athlete.id} className="group hover:shadow-lg transition-all duration-300 overflow-hidden">
+              <div className="relative aspect-[4/5] group">
                 <Image
-                  src={athlete.image ? `${athlete.image}?f_auto,q_100` : "/placeholder.svg"}
+                  src={athlete.image}
                   alt={athlete.name}
                   width={300}
                   height={375}
@@ -150,31 +195,35 @@ export function AthletesClient({ athletes, regions, categories }: AthletesClient
                   quality={100}
                   priority={false}
                 />
-                <div className="absolute top-2 right-2">
-                  <Badge variant="secondary">{athlete.category}</Badge>
-                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
               <CardContent className="p-4">
-                <h3 className="font-bold text-lg truncate">{athlete.name}</h3>
-                <p className="text-sm text-muted-foreground">{athlete.region}</p>
+                <div className="space-y-2">
+                  <h3 className="font-semibold text-lg truncate">{athlete.name}</h3>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <span>{athlete.region}</span>
+                    <span>•</span>
+                    <span>{athlete.category}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Badge variant="secondary" className="text-xs">
+                      {athlete.verificationStatus}
+                    </Badge>
+                  </div>
+                </div>
               </CardContent>
-            </Link>
-          </Card>
-        ))}
-      </div>
-
-      {/* No results message */}
-      {filteredAthletes.length === 0 && (
+            </Card>
+          ))}
+        </div>
+      ) : (
         <div className="text-center py-12">
-          <p className="text-muted-foreground text-lg">
-            Tidak ada atlet yang ditemukan dengan kriteria pencarian Anda.
-          </p>
+          <p className="text-muted-foreground">Tidak ada atlet yang ditemukan.</p>
         </div>
       )}
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="mt-8 flex items-center justify-center gap-2">
+        <div className="flex items-center justify-center gap-2">
           <Button
             variant="outline"
             size="sm"
@@ -182,7 +231,6 @@ export function AthletesClient({ athletes, regions, categories }: AthletesClient
             disabled={currentPage === 1}
           >
             <ChevronLeft className="h-4 w-4" />
-            Sebelumnya
           </Button>
           
           <div className="flex items-center gap-1">
@@ -205,19 +253,10 @@ export function AthletesClient({ athletes, regions, categories }: AthletesClient
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
           >
-            Selanjutnya
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
       )}
-
-      {/* Results count */}
-      <div className="mt-6 text-center">
-        <p className="text-sm text-muted-foreground">
-          Menampilkan {startIndex + 1}-{Math.min(endIndex, filteredAthletes.length)} dari {filteredAthletes.length} atlet
-          {totalPages > 1 && ` (Halaman ${currentPage} dari ${totalPages})`}
-        </p>
-      </div>
     </div>
   )
 } 

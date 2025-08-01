@@ -76,11 +76,17 @@ export function AdminAthletesClient({ athletes: initialAthletes }: { athletes: A
 
   const fetchAthletes = async () => {
     try {
+      console.log('Fetching fresh athletes data...')
       const response = await fetch('/api/athletes')
+      if (!response.ok) {
+        throw new Error('Failed to fetch athletes')
+      }
       const data = await response.json()
+      console.log('Fresh athletes data:', data)
       setAthletes(data)
     } catch (error) {
       console.error('Failed to fetch athletes:', error)
+      toast.error('Failed to refresh athletes data')
     }
   }
 
@@ -160,7 +166,7 @@ export function AdminAthletesClient({ athletes: initialAthletes }: { athletes: A
   const totalPages = Math.ceil(sortedAthletes.length / itemsPerPage)
   const startIndex = (currentPage - 1) * itemsPerPage
   const endIndex = startIndex + itemsPerPage
-  const currentAthletes = sortedAthletes.slice(startIndex, endIndex)
+  const paginatedAthletes = sortedAthletes.slice(startIndex, endIndex)
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -169,14 +175,11 @@ export function AdminAthletesClient({ athletes: initialAthletes }: { athletes: A
       setSortField(field)
       setSortOrder('asc')
     }
-    toast.info("Data diurutkan", {
-      description: `Data diurutkan berdasarkan ${field} (${sortField === field && sortOrder === 'asc' ? 'desc' : 'asc'})`,
-    })
   }
 
   const handleSearch = (value: string) => {
     setSearchTerm(value)
-    setCurrentPage(1) // Reset to first page when searching
+    setCurrentPage(1)
   }
 
   const handleFilterChange = (filterType: 'category' | 'status' | 'region', value: string) => {
@@ -191,7 +194,7 @@ export function AdminAthletesClient({ athletes: initialAthletes }: { athletes: A
         setRegionFilter(value)
         break
     }
-    setCurrentPage(1) // Reset to first page when filtering
+    setCurrentPage(1)
   }
 
   const clearAllFilters = () => {
@@ -199,10 +202,9 @@ export function AdminAthletesClient({ athletes: initialAthletes }: { athletes: A
     setCategoryFilter('all')
     setStatusFilter('all')
     setRegionFilter('all')
+    setSortField('name')
+    setSortOrder('asc')
     setCurrentPage(1)
-    toast.info("Filter telah dibersihkan", {
-      description: "Semua filter dan pencarian telah direset.",
-    })
   }
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -250,8 +252,6 @@ export function AdminAthletesClient({ athletes: initialAthletes }: { athletes: A
     return data.url
   }
 
-  const hasActiveFilters = searchTerm || categoryFilter !== 'all' || statusFilter !== 'all' || regionFilter !== 'all'
-
   const handleAdd = () => {
     setFormData({
       name: '',
@@ -262,14 +262,10 @@ export function AdminAthletesClient({ athletes: initialAthletes }: { athletes: A
       regionId: '',
       image: ''
     })
-    // Reset image states for add mode
+    setSelectedAthlete(null)
     setImageFile(null)
     setImagePreview('')
-    setSelectedAthlete(null)
     setIsAddDialogOpen(true)
-    toast.info("Form tambah atlet dibuka", {
-      description: "Silakan isi data atlet yang akan ditambahkan.",
-    })
   }
 
   const handleEdit = (athlete: Athlete) => {
@@ -283,40 +279,50 @@ export function AdminAthletesClient({ athletes: initialAthletes }: { athletes: A
       regionId: athlete.region.id,
       image: athlete.image || ''
     })
-    // Reset image states for edit mode
     setImageFile(null)
     setImagePreview('')
     setIsEditDialogOpen(true)
-    toast.info("Form edit atlet dibuka", {
-      description: `Mengedit data atlet: ${athlete.name}`,
-    })
   }
 
   const handleDelete = (athlete: Athlete) => {
     setSelectedAthlete(athlete)
     setIsDeleteDialogOpen(true)
-    toast.warning("Konfirmasi penghapusan", {
-      description: `Anda akan menghapus atlet: ${athlete.name}`,
-    })
   }
 
   const handleSaveAthlete = async () => {
+    if (!formData.name || !formData.birthDate || !formData.gender || !formData.category || !formData.status || !formData.regionId) {
+      toast.error("Error", {
+        description: "Please fill in all required fields.",
+      })
+      return
+    }
+
     setLoading(true)
     try {
       let imageUrl = formData.image
 
-      // Upload image if a new file is selected or if we have a cropped image
+      // Upload image if a new file is selected or cropped image is available
       if (imageFile) {
         imageUrl = await uploadImage(imageFile)
       } else if (imagePreview && imagePreview !== formData.image) {
+        // Upload cropped image
         imageUrl = await uploadImage(imagePreview)
       }
 
-      const url = '/api/athletes'
-      const method = isEditDialogOpen ? 'PUT' : 'POST'
-      const body = isEditDialogOpen 
-        ? { ...formData, id: selectedAthlete?.id, image: imageUrl }
-        : { ...formData, image: imageUrl }
+      const url = selectedAthlete 
+        ? `/api/athletes/${selectedAthlete.id}`
+        : '/api/athletes'
+      
+      const method = selectedAthlete ? 'PUT' : 'POST'
+      const body = {
+        name: formData.name,
+        birthDate: formData.birthDate,
+        gender: formData.gender,
+        category: formData.category,
+        status: formData.status,
+        regionId: formData.regionId,
+        image: imageUrl
+      }
 
       const response = await fetch(url, {
         method,
@@ -327,35 +333,26 @@ export function AdminAthletesClient({ athletes: initialAthletes }: { athletes: A
       })
 
       if (response.ok) {
-        toast.success(
-          isEditDialogOpen ? "Atlet berhasil diperbarui!" : "Atlet berhasil ditambahkan!",
-          {
-            description: isEditDialogOpen
-              ? `Data atlet ${selectedAthlete?.name} telah berhasil diperbarui.`
-              : "Data atlet baru telah berhasil ditambahkan ke sistem.",
-          }
-        )
-        await fetchAthletes()
-        await fetchRegions() // Refresh regions data
+        toast.success("Success", {
+          description: selectedAthlete 
+            ? "Athlete updated successfully." 
+            : "Athlete created successfully.",
+        })
         setIsAddDialogOpen(false)
         setIsEditDialogOpen(false)
-        setFormData({
-          name: '',
-          birthDate: '',
-          gender: '',
-          category: '',
-          status: '',
-          regionId: '',
-          image: ''
-        })
         setImageFile(null)
         setImagePreview('')
+        // Refresh data from server
+        await fetchAthletes()
       } else {
-        throw new Error('Failed to save athlete')
+        const errorData = await response.json()
+        toast.error("Error", {
+          description: errorData.error || "Failed to save athlete.",
+        })
       }
     } catch (error) {
-      toast.error("Gagal menyimpan data atlet!", {
-        description: "Terjadi kesalahan saat menyimpan data. Silakan coba lagi.",
+      toast.error("Error", {
+        description: "Failed to save athlete.",
       })
     } finally {
       setLoading(false)
@@ -367,23 +364,22 @@ export function AdminAthletesClient({ athletes: initialAthletes }: { athletes: A
     
     setLoading(true)
     try {
-      const response = await fetch('/api/athletes', {
+      const response = await fetch(`/api/athletes/${selectedAthlete.id}`, {
         method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ id: selectedAthlete.id }),
       })
 
       if (response.ok) {
-        toast.success("Atlet berhasil dihapus!", {
+        toast.success("Athlete berhasil dihapus!", {
           description: "Data atlet telah berhasil dihapus dari sistem.",
         })
-        await fetchAthletes()
-        await fetchRegions() // Refresh regions data
         setIsDeleteDialogOpen(false)
+        // Refresh data from server
+        await fetchAthletes()
       } else {
-        throw new Error('Failed to delete athlete')
+        const errorData = await response.json()
+        toast.error("Gagal menghapus data atlet!", {
+          description: errorData.error || "Terjadi kesalahan saat menghapus data. Silakan coba lagi.",
+        })
       }
     } catch (error) {
       toast.error("Gagal menghapus data atlet!", {
@@ -397,6 +393,11 @@ export function AdminAthletesClient({ athletes: initialAthletes }: { athletes: A
   // Load regions on component mount
   useEffect(() => {
     fetchRegions()
+  }, [])
+
+  // Refresh athletes data on component mount and after operations
+  useEffect(() => {
+    fetchAthletes()
   }, [])
 
   return (
@@ -593,7 +594,7 @@ export function AdminAthletesClient({ athletes: initialAthletes }: { athletes: A
             </TableRow>
           </TableHeader>
           <TableBody>
-            {currentAthletes.map((athlete) => (
+            {paginatedAthletes.map((athlete) => (
               <TableRow key={athlete.id}>
                 <TableCell className="font-medium">{athlete.name}</TableCell>
                 <TableCell>
