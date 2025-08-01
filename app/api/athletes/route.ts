@@ -10,7 +10,16 @@ export async function GET() {
         region: true
       }
     })
-    return NextResponse.json(athletes)
+    
+    // Transform the data to format dates properly
+    const formattedAthletes = athletes.map(athlete => ({
+      ...athlete,
+      birthDate: athlete.birthDate.toISOString().split('T')[0], // Convert to YYYY-MM-DD format
+      createdAt: athlete.createdAt.toISOString(),
+      updatedAt: athlete.updatedAt.toISOString(),
+    }))
+    
+    return NextResponse.json(formattedAthletes)
   } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch athletes' }, { status: 500 })
   }
@@ -38,7 +47,15 @@ export async function POST(req: NextRequest) {
     // Log activity
     await logAthleteCreated(newAthlete.name)
     
-    return NextResponse.json(newAthlete, { status: 201 })
+    // Format the response
+    const formattedAthlete = {
+      ...newAthlete,
+      birthDate: newAthlete.birthDate.toISOString().split('T')[0],
+      createdAt: newAthlete.createdAt.toISOString(),
+      updatedAt: newAthlete.updatedAt.toISOString(),
+    }
+    
+    return NextResponse.json(formattedAthlete, { status: 201 })
   } catch (error) {
     return NextResponse.json({ error: 'Failed to create athlete' }, { status: 500 })
   }
@@ -67,7 +84,15 @@ export async function PUT(req: NextRequest) {
     // Log activity
     await logAthleteUpdated(updatedAthlete.name)
     
-    return NextResponse.json(updatedAthlete)
+    // Format the response
+    const formattedAthlete = {
+      ...updatedAthlete,
+      birthDate: updatedAthlete.birthDate.toISOString().split('T')[0],
+      createdAt: updatedAthlete.createdAt.toISOString(),
+      updatedAt: updatedAthlete.updatedAt.toISOString(),
+    }
+    
+    return NextResponse.json(formattedAthlete)
   } catch (error) {
     return NextResponse.json({ error: 'Failed to update athlete' }, { status: 500 })
   }
