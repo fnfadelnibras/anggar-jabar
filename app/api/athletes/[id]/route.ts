@@ -5,12 +5,13 @@ import { logAthleteUpdated, logAthleteDeleted } from '@/lib/activity-logger'
 // PUT: Update data athlete
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const body = await req.json()
     const updatedAthlete = await prisma.athlete.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         name: body.name,
         birthDate: new Date(body.birthDate),
@@ -46,16 +47,18 @@ export async function PUT(
 // DELETE: Hapus data athlete
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
+    
     // Get athlete name before deletion for logging
     const athlete = await prisma.athlete.findUnique({
-      where: { id: params.id }
+      where: { id }
     })
     
     await prisma.athlete.delete({
-      where: { id: params.id }
+      where: { id }
     })
     
     // Log activity
