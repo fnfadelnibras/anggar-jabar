@@ -2,10 +2,10 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { signIn } from "next-auth/react"
+import { useRouter, useSearchParams } from "next/navigation"
+import { signIn, useSession } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -18,6 +18,8 @@ import { toast } from "sonner"
 
 export default function LoginPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const { data: session, status } = useSession()
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
@@ -25,28 +27,61 @@ export default function LoginPage() {
     password: ""
   })
 
+  // Redirect if already logged in
+  useEffect(() => {
+    if (status === "authenticated" && session) {
+      const callbackUrl = searchParams.get("callbackUrl") || "/admin"
+      console.log("Already authenticated, redirecting to:", callbackUrl)
+      router.push(callbackUrl)
+    }
+  }, [session, status, router, searchParams])
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
 
     try {
+      const callbackUrl = searchParams.get("callbackUrl") || "/admin"
+      console.log("Attempting login with callbackUrl:", callbackUrl)
+      
       const result = await signIn("credentials", {
         email: formData.email,
         password: formData.password,
         redirect: false,
+        callbackUrl: callbackUrl,
       })
+
+      console.log("SignIn result:", result)
 
       if (result?.error) {
         toast.error("Login failed. Please check your credentials.")
-      } else {
+      } else if (result?.ok) {
         toast.success("Login successful!")
-        router.push("/admin")
+        console.log("Login successful, redirecting to:", callbackUrl)
+        
+        // Force redirect after successful login with a delay
+        setTimeout(() => {
+          window.location.href = callbackUrl
+        }, 1500)
       }
     } catch (error) {
+      console.error("Login error:", error)
       toast.error("An error occurred during login.")
     } finally {
       setIsLoading(false)
     }
+  }
+
+  // Show loading while checking session
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-2 border-transparent border-t-gray-400 mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
