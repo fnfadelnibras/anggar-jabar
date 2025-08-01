@@ -32,9 +32,10 @@ function LoginForm() {
     if (status === "authenticated" && session) {
       const callbackUrl = searchParams.get("callbackUrl") || "/admin"
       console.log("Already authenticated, redirecting to:", callbackUrl)
-      router.push(callbackUrl)
+      // Use window.location for hard redirect to prevent loop
+      window.location.href = callbackUrl
     }
-  }, [session, status, router, searchParams])
+  }, [session, status, searchParams])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -59,10 +60,10 @@ function LoginForm() {
         toast.success("Login successful!")
         console.log("Login successful, redirecting to:", callbackUrl)
         
-        // Force redirect after successful login with a delay
+        // Force hard redirect after successful login
         setTimeout(() => {
           window.location.href = callbackUrl
-        }, 1500)
+        }, 1000)
       }
     } catch (error) {
       console.error("Login error:", error)
@@ -79,6 +80,18 @@ function LoginForm() {
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-2 border-transparent border-t-gray-400 mx-auto mb-4"></div>
           <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // If already authenticated, show loading while redirecting
+  if (status === "authenticated" && session) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-2 border-transparent border-t-gray-400 mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Redirecting to admin...</p>
         </div>
       </div>
     )
